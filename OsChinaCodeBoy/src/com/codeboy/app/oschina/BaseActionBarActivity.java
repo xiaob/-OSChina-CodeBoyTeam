@@ -1,5 +1,6 @@
 package com.codeboy.app.oschina;
 
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 /**
@@ -12,6 +13,32 @@ import android.support.v7.app.ActionBarActivity;
  * 
  * 说明 ActionBar的基类
  */
-public class BaseActionBarActivity extends ActionBarActivity{
+public class BaseActionBarActivity extends ActionBarActivity 
+	implements ActivityHelperInterface{
+
+	ActivityHelper mHelper = new ActivityHelper(this);
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		mHelper.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	public void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		mHelper.onAttachedToWindow();
+	}
+	
+	@Override
+	public void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		mHelper.onDetachedFromWindow();
+	}
+	
+	@Override
+	public OSChinaApplication getOsChinaApplication() {
+		return mHelper.getOsChinaApplication();
+	}
 
 }

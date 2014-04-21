@@ -657,6 +657,7 @@ public class ApiClient {
 		try{
 			return NewsList.parse(http_get(appContext, newUrl));		
 		}catch(Exception e){
+			e.printStackTrace();
 			if(e instanceof AppException)
 				throw (AppException)e;
 			throw AppException.network(e);

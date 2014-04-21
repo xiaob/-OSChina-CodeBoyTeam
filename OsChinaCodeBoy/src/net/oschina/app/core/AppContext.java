@@ -460,6 +460,7 @@ public class AppContext extends Application {
 					list.setNotice(notice);
 				}
 			}catch(AppException e){
+				e.printStackTrace();
 				list = (NewsList)readObject(key);
 				if(list == null)
 					throw e;

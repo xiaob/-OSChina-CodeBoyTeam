@@ -1,11 +1,20 @@
 package com.codeboy.app.oschina.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.oschina.app.adapter.ListViewNewsAdapter;
+import net.oschina.app.bean.News;
+import net.oschina.app.bean.NewsList;
+import net.oschina.app.core.AppException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.BaseSwipeRefreshFragment;
+import com.codeboy.app.oschina.R;
 
 /**
  * 类名 NewsLatestNewsFragment.java</br>
@@ -23,9 +32,34 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment {
 		return new NewsLatestNewsFragment();
 	}
 	
+	private List<News> mNews = new ArrayList<News>();
+	private ListViewNewsAdapter mAdapter;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		mAdapter = new ListViewNewsAdapter(getActivity(), mNews, R.layout.news_listitem);
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					NewsList newsList = getOsChinaApplication().getNewsList(0, 0, true);
+					mNews.addAll(newsList.getNewslist());
+					getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							mAdapter.notifyDataSetChanged();
+						}
+					});
+				} catch (AppException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();;
 	}
 	
 	@Override
@@ -43,7 +77,6 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment {
 
 	@Override
 	public BaseAdapter getListViewAdapter() {
-		return null;
+		return mAdapter;
 	}
-	
 }
