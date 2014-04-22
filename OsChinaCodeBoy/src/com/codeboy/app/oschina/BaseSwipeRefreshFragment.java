@@ -1,7 +1,6 @@
 package com.codeboy.app.oschina;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +49,8 @@ public abstract class BaseSwipeRefreshFragment extends BaseFragment
 	            android.R.color.holo_red_light);
 		
 		setupListView();
+		
+		onInitViewFinish();
 	}
 	
 	/** 初始化ListView*/
@@ -65,9 +66,28 @@ public abstract class BaseSwipeRefreshFragment extends BaseFragment
 			long id) {
 		
 	}
+	
+	/** 初始化界面结束*/
+	public void onInitViewFinish() {
+		
+	}
 
 	@Override
 	public void onRefresh() {
 		
+	}
+	
+	/** 设置正在加载的状态*/
+	public void setLoadingState() {
+		if(mSwipeRefreshLayout != null) {
+			mSwipeRefreshLayout.setRefreshing(true);
+		}
+	}
+	
+	/** 设置加载完毕的状态*/
+	public void setLoadedState() {
+		if(mSwipeRefreshLayout != null) {
+			mSwipeRefreshLayout.setRefreshing(false);
+		}
 	}
 }

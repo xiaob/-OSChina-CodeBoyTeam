@@ -8,13 +8,12 @@ import net.oschina.app.bean.News;
 import net.oschina.app.bean.NewsList;
 import net.oschina.app.core.AppException;
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.BaseAdapter;
-import android.widget.Toast;
 
 import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.BaseSwipeRefreshFragment;
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.core.DataRequestThreadHandler;
 
 /**
  * 类名 NewsLatestNewsFragment.java</br>
@@ -32,51 +31,75 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment {
 		return new NewsLatestNewsFragment();
 	}
 	
+	final static int CATELOG = 0;
+	
+	private DataRequestThreadHandler mRequestThreadHandler = new DataRequestThreadHandler();
+	
 	private List<News> mNews = new ArrayList<News>();
 	private ListViewNewsAdapter mAdapter;
+	
+	private int mCurrentPage = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		mAdapter = new ListViewNewsAdapter(getActivity(), mNews, R.layout.news_listitem);
-		
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					NewsList newsList = getOsChinaApplication().getNewsList(0, 0, true);
-					mNews.addAll(newsList.getNewslist());
-					getActivity().runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							mAdapter.notifyDataSetChanged();
-						}
-					});
-				} catch (AppException e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();;
+	}
+	
+	@Override
+	public void onInitViewFinish() {
+		mRequestThreadHandler.request(new NewsAsyncDataHandler(0));
 	}
 	
 	@Override
 	public void onRefresh() {
-		Toast.makeText(getActivity(), "刷新中...", Toast.LENGTH_SHORT).show();
-		new Handler().postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				mSwipeRefreshLayout.setRefreshing(false);
-				Toast.makeText(getActivity(), "刷新结束", Toast.LENGTH_SHORT).show();
-			}
-		}, 2000);
+		mRequestThreadHandler.request(new NewsAsyncDataHandler(++mCurrentPage));
 	}
 
 	@Override
 	public BaseAdapter getListViewAdapter() {
 		return mAdapter;
+	}
+	
+	private class NewsAsyncDataHandler implements DataRequestThreadHandler.AsyncDataHandler<NewsList> {
+
+		private int mPage;
+		
+		NewsAsyncDataHandler(int page) {
+			mPage = page;
+		}
+		
+		@Override
+		public void onPreExecute() {
+			setLoadingState();
+		}
+		
+		@Override
+		public NewsList execute() {
+			if(L.Debug) {
+				L.d("正在加载:" + mPage);
+			}
+			try {
+				return getOsChinaApplication().getNewsList(CATELOG, mPage, true);
+			} catch (AppException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		public void onPostExecute(NewsList result) {
+			setLoadedState();
+			if(result == null) {
+				return;
+			}
+			if(L.Debug) {
+				L.d("Load Page:" + mPage);
+				L.d("NewsCount--->" + result.getNewsCount());
+			}
+			mNews.addAll(result.getNewslist());
+			mAdapter.notifyDataSetChanged();
+		}
 	}
 }
