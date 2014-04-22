@@ -31,6 +31,13 @@ public class DataRequestThreadHandler extends HandlerThread
 	 * 请求数据
 	 * */
 	public synchronized void request(AsyncDataHandler datahandler) {
+		request(-1, datahandler);
+	}
+	
+	/**
+	 * 请求数据
+	 * */
+	public synchronized void request(int what, AsyncDataHandler datahandler) {
 		if(datahandler == null) {
 			return;
 		}
@@ -42,7 +49,10 @@ public class DataRequestThreadHandler extends HandlerThread
 		if(mThreadHandler == null) {
 			mThreadHandler = new Handler(getLooper(), this);
 		}
-		mThreadHandler.obtainMessage(0, datahandler).sendToTarget();
+		if(what != -1) {
+			mThreadHandler.removeMessages(what);
+		}
+		mThreadHandler.obtainMessage(what, datahandler).sendToTarget();
 	}
 	
 	@Override
