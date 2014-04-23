@@ -2,7 +2,6 @@ package net.oschina.app.bean;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class SoftwareList extends Entity{
+public class SoftwareList extends Entity implements PageList<SimpleSoftware> {
 	
 	public final static String TAG_RECOMMEND = "recommend";// 推荐
 	public final static String TAG_LASTEST = "time";// 最新
@@ -29,42 +28,26 @@ public class SoftwareList extends Entity{
 
 	private int softwarecount;
 	private int pagesize;
-	private List<Software> softwarelist = new ArrayList<Software>();
+	private List<SimpleSoftware> softwarelist = new ArrayList<SimpleSoftware>();
 
-	public static class Software implements Serializable {
-		public String name;
-		public String description;
-		public String url;
-	}
-
-	public int getSoftwarecount() {
+	@Override
+	public int getCount() {
 		return softwarecount;
 	}
 
-	public void setSoftwarecount(int softwarecount) {
-		this.softwarecount = softwarecount;
+	@Override
+	public List<SimpleSoftware> getList() {
+		return softwarelist;
 	}
 
 	public int getPageSize() {
 		return pagesize;
 	}
 
-	public void setPageSize(int pagesize) {
-		this.pagesize = pagesize;
-	}
-
-	public List<Software> getSoftwarelist() {
-		return softwarelist;
-	}
-
-	public void setSoftwarelist(List<Software> softwarelist) {
-		this.softwarelist = softwarelist;
-	}
-
 	public static SoftwareList parse(InputStream inputStream)
 			throws IOException, AppException {
 		SoftwareList softwarelist = new SoftwareList();
-		Software software = null;
+		SimpleSoftware software = null;
 		// 获得XmlPullParser解析器
 		XmlPullParser xmlParser = Xml.newPullParser();
 		try {
@@ -77,20 +60,20 @@ public class SoftwareList extends Entity{
 				switch (evtType) {
 				case XmlPullParser.START_TAG:
 					if (tag.equalsIgnoreCase("softwarecount")) {
-						softwarelist.setSoftwarecount(StringUtils.toInt(
-								xmlParser.nextText(), 0));
+						softwarelist.softwarecount = StringUtils.toInt(
+								xmlParser.nextText(), 0);
 					} else if (tag.equalsIgnoreCase("pagesize")) {
-						softwarelist.setPageSize(StringUtils.toInt(
-								xmlParser.nextText(), 0));
+						softwarelist.pagesize = StringUtils.toInt(
+								xmlParser.nextText(), 0);
 					} else if (tag.equalsIgnoreCase("software")) {
-						software = new Software();
+						software = new SimpleSoftware();
 					} else if (software != null) {
 						if (tag.equalsIgnoreCase("name")) {
-							software.name = xmlParser.nextText();
+							software.setName(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("description")) {
-							software.description = xmlParser.nextText();
+							software.setDescription(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("url")) {
-							software.url = xmlParser.nextText();
+							software.setUrl(xmlParser.nextText());
 						}
 
 					}
@@ -116,7 +99,7 @@ public class SoftwareList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("software") && software != null) {
-						softwarelist.getSoftwarelist().add(software);
+						softwarelist.getList().add(software);
 						software = null;
 					}
 					break;

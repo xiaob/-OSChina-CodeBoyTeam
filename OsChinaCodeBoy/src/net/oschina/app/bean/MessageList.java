@@ -19,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class MessageList extends Entity{
+public class MessageList extends Entity implements PageList<Messages> {
 
 	private int pageSize;
 	private int messageCount;
@@ -29,11 +29,13 @@ public class MessageList extends Entity{
 		return pageSize;
 	}
 
-	public int getMessageCount() {
+	@Override
+	public int getCount() {
 		return messageCount;
 	}
 
-	public List<Messages> getMessagelist() {
+	@Override
+	public List<Messages> getList() {
 		return messagelist;
 	}
 
@@ -111,7 +113,7 @@ public class MessageList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("message") && msg != null) {
-						msglist.getMessagelist().add(msg);
+						msglist.getList().add(msg);
 						msg = null;
 					}
 					break;

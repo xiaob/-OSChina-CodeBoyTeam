@@ -19,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class TweetList extends Entity{
+public class TweetList extends Entity implements PageList<Tweet> {
 	
 	public final static int CATALOG_LASTEST = 0;
 	public final static int CATALOG_HOT = -1;
@@ -31,12 +31,14 @@ public class TweetList extends Entity{
 	public int getPageSize() {
 		return pageSize;
 	}
-
-	public int getTweetCount() {
+	
+	@Override
+	public int getCount() {
 		return tweetCount;
 	}
 
-	public List<Tweet> getTweetlist() {
+	@Override
+	public List<Tweet> getList() {
 		return tweetlist;
 	}
 
@@ -113,7 +115,7 @@ public class TweetList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("tweet") && tweet != null) {
-						tweetlist.getTweetlist().add(tweet);
+						tweetlist.getList().add(tweet);
 						tweet = null;
 					}
 					break;

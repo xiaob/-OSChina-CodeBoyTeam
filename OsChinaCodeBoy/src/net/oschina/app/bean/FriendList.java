@@ -2,7 +2,6 @@ package net.oschina.app.bean;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,70 +19,26 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class FriendList extends Entity{
+public class FriendList extends Entity implements PageList<Friend> {
 
 	public final static int TYPE_FANS = 0x00;
 	public final static int TYPE_FOLLOWER = 0x01;
 
 	private List<Friend> friendlist = new ArrayList<Friend>();
-
-	/**
-	 * 好友实体类
-	 */
-	public static class Friend implements Serializable {
-		private int userid;
-		private String name;
-		private String face;
-		private String expertise;
-		private int gender;
-
-		public int getUserid() {
-			return userid;
-		}
-
-		public void setUserid(int userid) {
-			this.userid = userid;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getFace() {
-			return face;
-		}
-
-		public void setFace(String face) {
-			this.face = face;
-		}
-
-		public String getExpertise() {
-			return expertise;
-		}
-
-		public void setExpertise(String expertise) {
-			this.expertise = expertise;
-		}
-
-		public int getGender() {
-			return gender;
-		}
-
-		public void setGender(int gender) {
-			this.gender = gender;
-		}
+	
+	@Override
+	public int getPageSize() {
+		return 0;
 	}
 
-	public List<Friend> getFriendlist() {
+	@Override
+	public int getCount() {
+		return 0;
+	}
+
+	@Override
+	public List<Friend> getList() {
 		return friendlist;
-	}
-
-	public void setFriendlist(List<Friend> resultlist) {
-		this.friendlist = resultlist;
 	}
 
 	public static FriendList parse(InputStream inputStream) throws IOException,
@@ -105,17 +60,17 @@ public class FriendList extends Entity{
 						friend = new Friend();
 					} else if (friend != null) {
 						if (tag.equalsIgnoreCase("userid")) {
-							friend.userid = StringUtils.toInt(
-									xmlParser.nextText(), 0);
+							friend.setUserid(StringUtils.toInt(
+									xmlParser.nextText(), 0));
 						} else if (tag.equalsIgnoreCase("name")) {
-							friend.name = xmlParser.nextText();
+							friend.setName(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("portrait")) {
-							friend.face = xmlParser.nextText();
+							friend.setFace(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("expertise")) {
-							friend.expertise = xmlParser.nextText();
+							friend.setExpertise(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("gender")) {
-							friend.gender = StringUtils.toInt(
-									xmlParser.nextText(), 0);
+							friend.setGender(StringUtils.toInt(
+									xmlParser.nextText(), 0));
 						}
 					}
 					// 通知信息
@@ -140,7 +95,7 @@ public class FriendList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("friend") && friend != null) {
-						friendlist.getFriendlist().add(friend);
+						friendlist.getList().add(friend);
 						friend = null;
 					}
 					break;

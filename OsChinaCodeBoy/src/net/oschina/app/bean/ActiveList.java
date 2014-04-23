@@ -20,7 +20,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class ActiveList extends Entity{
+public class ActiveList extends Entity implements PageList<Active> {
 
 	public final static int CATALOG_LASTEST = 1;// 最新
 	public final static int CATALOG_ATME = 2;// @我
@@ -35,11 +35,13 @@ public class ActiveList extends Entity{
 		return pageSize;
 	}
 
-	public int getActiveCount() {
+	@Override
+	public int getCount() {
 		return activeCount;
 	}
 
-	public List<Active> getActivelist() {
+	@Override
+	public List<Active> getList() {
 		return activelist;
 	}
 
@@ -139,7 +141,7 @@ public class ActiveList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("active") && active != null) {
-						activelist.getActivelist().add(active);
+						activelist.getList().add(active);
 						active = null;
 					}
 					break;

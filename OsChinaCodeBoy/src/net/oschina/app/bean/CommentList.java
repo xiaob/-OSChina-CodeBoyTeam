@@ -21,7 +21,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class CommentList extends Entity{
+public class CommentList extends Entity implements PageList<Comment> {
 
 	public final static int CATALOG_NEWS = 1;
 	public final static int CATALOG_POST = 2;
@@ -36,12 +36,14 @@ public class CommentList extends Entity{
 	public int getPageSize() {
 		return pageSize;
 	}
-
-	public int getAllCount() {
+	
+	@Override
+	public int getCount() {
 		return allCount;
 	}
 
-	public List<Comment> getCommentlist() {
+	@Override
+	public List<Comment> getList() {
 		return commentlist;
 	}
 
@@ -131,7 +133,7 @@ public class CommentList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("comment") && comm != null) {
-						commlist.getCommentlist().add(comm);
+						commlist.getList().add(comm);
 						comm = null;
 					} else if (tag.equalsIgnoreCase("reply") && comm != null
 							&& reply != null) {

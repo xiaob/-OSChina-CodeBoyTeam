@@ -2,7 +2,6 @@ package net.oschina.app.bean;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class SearchList extends Entity{
+public class SearchList extends Entity implements PageList<Search> {
 
 	public final static String CATALOG_ALL = "all";
 	public final static String CATALOG_NEWS = "news";
@@ -30,84 +29,26 @@ public class SearchList extends Entity{
 	public final static String CATALOG_CODE = "code";
 
 	private int pageSize;
-	private List<Result> resultlist = new ArrayList<Result>();
-
-	/**
-	 * 搜索结果实体类
-	 */
-	public static class Result implements Serializable {
-		private int objid;
-		private int type;
-		private String title;
-		private String url;
-		private String pubDate;
-		private String author;
-
-		public int getObjid() {
-			return objid;
-		}
-
-		public void setObjid(int objid) {
-			this.objid = objid;
-		}
-
-		public int getType() {
-			return type;
-		}
-
-		public void setType(int type) {
-			this.type = type;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public void setTitle(String title) {
-			this.title = title;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		public String getPubDate() {
-			return pubDate;
-		}
-
-		public void setPubDate(String pubDate) {
-			this.pubDate = pubDate;
-		}
-
-		public String getAuthor() {
-			return author;
-		}
-
-		public void setAuthor(String author) {
-			this.author = author;
-		}
-	}
+	private List<Search> resultlist = new ArrayList<Search>();
 
 	public int getPageSize() {
 		return pageSize;
 	}
-
-	public List<Result> getResultlist() {
-		return resultlist;
+	
+	@Override
+	public int getCount() {
+		return 0;
 	}
 
-	public void setResultlist(List<Result> resultlist) {
-		this.resultlist = resultlist;
+	@Override
+	public List<Search> getList() {
+		return resultlist;
 	}
 
 	public static SearchList parse(InputStream inputStream) throws IOException,
 			AppException {
 		SearchList searchList = new SearchList();
-		Result res = null;
+		Search res = null;
 		// 获得XmlPullParser解析器
 		XmlPullParser xmlParser = Xml.newPullParser();
 		try {
@@ -123,22 +64,22 @@ public class SearchList extends Entity{
 						searchList.pageSize = StringUtils.toInt(
 								xmlParser.nextText(), 0);
 					} else if (tag.equalsIgnoreCase("result")) {
-						res = new Result();
+						res = new Search();
 					} else if (res != null) {
 						if (tag.equalsIgnoreCase("objid")) {
-							res.objid = StringUtils.toInt(xmlParser.nextText(),
-									0);
+							res.setObjid(StringUtils.toInt(xmlParser.nextText(),
+									0));
 						} else if (tag.equalsIgnoreCase("type")) {
-							res.type = StringUtils.toInt(xmlParser.nextText(),
-									0);
+							res.setType(StringUtils.toInt(xmlParser.nextText(),
+									0));
 						} else if (tag.equalsIgnoreCase("title")) {
-							res.title = xmlParser.nextText();
+							res.setTitle(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("url")) {
-							res.url = xmlParser.nextText();
+							res.setUrl(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("pubDate")) {
-							res.pubDate = xmlParser.nextText();
+							res.setPubDate(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("author")) {
-							res.author = xmlParser.nextText();
+							res.setAuthor(xmlParser.nextText());
 						}
 					}
 					// 通知信息
@@ -163,7 +104,7 @@ public class SearchList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("result") && res != null) {
-						searchList.getResultlist().add(res);
+						searchList.getList().add(res);
 						res = null;
 					}
 					break;

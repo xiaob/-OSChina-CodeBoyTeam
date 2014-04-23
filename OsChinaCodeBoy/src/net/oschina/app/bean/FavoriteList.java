@@ -2,7 +2,6 @@ package net.oschina.app.bean;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class FavoriteList extends Entity{
+public class FavoriteList extends Entity implements PageList<Favorite> {
 	
 	public final static int TYPE_ALL = 0x00;
 	public final static int TYPE_SOFTWARE = 0x01;
@@ -30,32 +29,21 @@ public class FavoriteList extends Entity{
 	public final static int TYPE_CODE = 0x05;
 
 	private int pageSize;
+	private int favoriteCount;
 	private List<Favorite> favoritelist = new ArrayList<Favorite>();
 
-	/**
-	 * 收藏实体类
-	 */
-	public static class Favorite implements Serializable {
-		public int objid;
-		public int type;
-		public String title;
-		public String url;
+	@Override
+	public int getCount() {
+		return favoriteCount;
+	}
+
+	@Override
+	public List<Favorite> getList() {
+		return favoritelist;
 	}
 
 	public int getPageSize() {
 		return pageSize;
-	}
-
-	public void setPageSize(int pagesize) {
-		this.pageSize = pagesize;
-	}
-
-	public List<Favorite> getFavoritelist() {
-		return favoritelist;
-	}
-
-	public void setFavoritelist(List<Favorite> favoritelist) {
-		this.favoritelist = favoritelist;
 	}
 
 	public static FavoriteList parse(InputStream inputStream)
@@ -74,8 +62,8 @@ public class FavoriteList extends Entity{
 				switch (evtType) {
 				case XmlPullParser.START_TAG:
 					if (tag.equalsIgnoreCase("pagesize")) {
-						favoritelist.setPageSize(StringUtils.toInt(
-								xmlParser.nextText(), 0));
+						favoritelist.favoriteCount = StringUtils.toInt(
+								xmlParser.nextText(), 0);
 					} else if (tag.equalsIgnoreCase("favorite")) {
 						favorite = new Favorite();
 					} else if (favorite != null) {
@@ -114,7 +102,7 @@ public class FavoriteList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("favorite") && favorite != null) {
-						favoritelist.getFavoritelist().add(favorite);
+						favoritelist.getList().add(favorite);
 						favorite = null;
 					}
 					break;

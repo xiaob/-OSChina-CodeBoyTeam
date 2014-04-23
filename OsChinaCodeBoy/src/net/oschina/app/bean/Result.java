@@ -19,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class Result extends Base {
+public class Result extends Entity {
 
 	private int errorCode;
 	private String errorMessage;

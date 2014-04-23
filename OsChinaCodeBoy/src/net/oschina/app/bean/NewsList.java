@@ -19,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class NewsList extends Entity{
+public class NewsList extends Entity implements PageList<News> {
 
 	public final static int CATALOG_ALL = 1;
 	public final static int CATALOG_INTEGRATION = 2;
@@ -29,6 +29,16 @@ public class NewsList extends Entity{
 	private int pageSize;
 	private int newsCount;
 	private List<News> newslist = new ArrayList<News>();
+	
+	@Override
+	public int getCount() {
+		return newsCount;
+	}
+
+	@Override
+	public List<News> getList() {
+		return newslist;
+	}
 
 	public int getCatalog() {
 		return catalog;
@@ -36,14 +46,6 @@ public class NewsList extends Entity{
 
 	public int getPageSize() {
 		return pageSize;
-	}
-
-	public int getNewsCount() {
-		return newsCount;
-	}
-
-	public List<News> getNewslist() {
-		return newslist;
 	}
 
 	public static NewsList parse(InputStream inputStream) throws IOException,
@@ -122,7 +124,7 @@ public class NewsList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("news") && news != null) {
-						newslist.getNewslist().add(news);
+						newslist.getList().add(news);
 						news = null;
 					}
 					break;

@@ -19,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class BlogList extends Entity{
+public class BlogList extends Entity implements PageList<Blog> {
 	
 	public static final int CATALOG_USER = 1;// 用户博客
 	public static final int CATALOG_LATEST = 2;// 最新博客
@@ -32,16 +32,18 @@ public class BlogList extends Entity{
 	private int pageSize;
 	private List<Blog> bloglist = new ArrayList<Blog>();
 
-	public int getBlogsCount() {
+	@Override
+	public int getCount() {
 		return blogsCount;
+	}
+
+	@Override
+	public List<Blog> getList() {
+		return bloglist;
 	}
 
 	public int getPageSize() {
 		return pageSize;
-	}
-
-	public List<Blog> getBloglist() {
-		return bloglist;
 	}
 
 	public static BlogList parse(InputStream inputStream) throws IOException,
@@ -112,7 +114,7 @@ public class BlogList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("blog") && blog != null) {
-						bloglist.getBloglist().add(blog);
+						bloglist.getList().add(blog);
 						blog = null;
 					}
 					break;

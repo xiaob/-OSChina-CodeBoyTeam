@@ -19,7 +19,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class PostList extends Entity{
+public class PostList extends Entity implements PageList<Post> {
 
 	public final static int CATALOG_ASK = 1;
 	public final static int CATALOG_SHARE = 2;
@@ -34,12 +34,14 @@ public class PostList extends Entity{
 	public int getPageSize() {
 		return pageSize;
 	}
-
-	public int getPostCount() {
+	
+	@Override
+	public int getCount() {
 		return postCount;
 	}
 
-	public List<Post> getPostlist() {
+	@Override
+	public List<Post> getList() {
 		return postlist;
 	}
 
@@ -111,7 +113,7 @@ public class PostList extends Entity{
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("post") && post != null) {
-						postlist.getPostlist().add(post);
+						postlist.getList().add(post);
 						post = null;
 					}
 					break;
