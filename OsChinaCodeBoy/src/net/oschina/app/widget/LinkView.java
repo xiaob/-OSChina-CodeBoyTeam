@@ -57,9 +57,9 @@ public class LinkView extends TextView {
 	public final static Pattern WECHAT_REG = Pattern.compile("(<{1}img[\\s]+class=\"wechat-emoji\"[\\s]+src=\"[^<]+\"[\\s]+alt=\"([^<\\s\"]+)\"[\\s]+[^<]*[>]{1})");
 
 	private static String filterWechat(String linktxt) {
-		System.out.println(linktxt);
-		if (null == linktxt)
+		if (null == linktxt) {
 			return "";
+		}
 		try {
 			Matcher match = WECHAT_REG.matcher(linktxt);
 			if (null == match)

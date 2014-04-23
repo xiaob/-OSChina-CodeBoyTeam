@@ -2,6 +2,7 @@ package com.codeboy.app.oschina;
 
 import java.util.ArrayList;
 
+import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.ui.NewsLatestNewsFragment;
 import com.codeboy.app.oschina.ui.NewsRecentBlogPostsFragment;
 import com.codeboy.app.oschina.ui.NewsTweetFragment;

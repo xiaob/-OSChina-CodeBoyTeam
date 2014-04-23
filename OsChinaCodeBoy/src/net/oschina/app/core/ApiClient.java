@@ -233,7 +233,6 @@ public class ApiClient {
 	 * @throws AppException
 	 */
 	private static InputStream _post(AppContext appContext, String url, Map<String, Object> params, Map<String,File> files) throws AppException {
-		//System.out.println("post_url==> "+url);
 		String cookie = getCookie(appContext);
 		String userAgent = getUserAgent(appContext);
 		
@@ -247,7 +246,6 @@ public class ApiClient {
         if(params != null)
         for(String name : params.keySet()){
         	parts[i++] = new StringPart(name, String.valueOf(params.get(name)), UTF_8);
-        	//System.out.println("post_key==> "+name+"    value==>"+String.valueOf(params.get(name)));
         }
         if(files != null)
         for(String file : files.keySet()){
@@ -256,7 +254,6 @@ public class ApiClient {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-        	//System.out.println("post_key_file==> "+file);
         }
 		
 		String responseBody = "";
@@ -286,7 +283,6 @@ public class ApiClient {
 	        		}
 		        }
 		     	responseBody = httpPost.getResponseBodyAsString();
-		        //System.out.println("XMLDATA=====>"+responseBody);
 		     	break;	     	
 			} catch (HttpException e) {
 				time++;
