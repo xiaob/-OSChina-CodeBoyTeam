@@ -68,6 +68,13 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mAdapter = getAdapter(mDataList);
+		/** 初始化数据*/
+		loadList(getDataTag(), 0, LISTVIEW_ACTION_INIT);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 	}
 	
 	@Override
@@ -96,8 +103,6 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	            android.R.color.holo_red_light);
 		
 		setupListView();
-		
-		onInitViewFinish();
 	}
 	
 	/** 初始化ListView*/
@@ -113,11 +118,6 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	public abstract Object getDataTag();
 	/** 异步加载数据*/
 	protected abstract Result asyncLoadList(Object tag, int page, boolean reflash);
-
-	/** 初始化界面结束*/
-	protected void onInitViewFinish() {
-		loadList(getDataTag(), 0, LISTVIEW_ACTION_INIT);
-	}
 
 	@Override
 	public void onRefresh() {

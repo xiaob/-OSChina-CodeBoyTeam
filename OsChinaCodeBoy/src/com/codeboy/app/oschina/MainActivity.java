@@ -55,6 +55,12 @@ public class MainActivity extends BaseActionBarActivity {
             mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
         }
 	}
+	
+	@Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("tab", mTabHost.getCurrentTabTag());
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
