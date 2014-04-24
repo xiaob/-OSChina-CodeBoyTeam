@@ -2,26 +2,26 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
+import com.codeboy.app.oschina.R;
+
+import android.os.Bundle;
+import android.widget.BaseAdapter;
 import net.oschina.app.adapter.ListViewBlogAdapter;
 import net.oschina.app.bean.Blog;
 import net.oschina.app.bean.BlogList;
 import net.oschina.app.core.AppException;
-import android.os.Bundle;
-import android.widget.BaseAdapter;
-
-import com.codeboy.app.oschina.R;
 
 /**
- * 类名 NewsRecentBlogPostsFragment.java</br>
- * 创建日期 2014年4月20日</br>
+ * 类名 NewsRecommonFragment.java</br>
+ * 创建日期 2014年4月24日</br>
  * @author LeonLee</br>
  * Email lendylongli@gmail.com</br>
- * 更新时间 2014年4月20日 下午11:33:52</br>
+ * 更新时间 2014年4月24日 下午1:34:30</br>
  * 最后更新者 LeonLee</br>
  * 
- * 说明 最新博客
+ * 说明 推荐阅读
  */
-public class NewsRecentBlogPostsFragment extends BaseSwipeRefreshFragment<Blog, BlogList> {
+public class NewsRecommonFragment extends BaseSwipeRefreshFragment<Blog, BlogList> {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class NewsRecentBlogPostsFragment extends BaseSwipeRefreshFragment<Blog, 
 
 	@Override
 	public Object getDataTag() {
-		return BlogList.TYPE_LATEST;
+		return BlogList.TYPE_RECOMMEND;
 	}
 
 	@Override
