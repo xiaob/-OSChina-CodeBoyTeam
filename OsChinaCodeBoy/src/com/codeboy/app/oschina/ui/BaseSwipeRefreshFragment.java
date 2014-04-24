@@ -69,7 +69,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		super.onCreate(savedInstanceState);
 		mAdapter = getAdapter(mDataList);
 		/** 初始化数据*/
-		loadList(getDataTag(), 0, LISTVIEW_ACTION_INIT);
+		loadList(0, LISTVIEW_ACTION_INIT);
 	}
 	
 	@Override
@@ -115,13 +115,12 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	
 	/** 获取适配器*/
 	public abstract BaseAdapter getAdapter(List<Data> list);
-	public abstract Object getDataTag();
 	/** 异步加载数据*/
-	protected abstract Result asyncLoadList(Object tag, int page, boolean reflash);
+	protected abstract Result asyncLoadList(int page, boolean reflash);
 
 	@Override
 	public void onRefresh() {
-		loadList(getDataTag(), 0, LISTVIEW_ACTION_REFRESH);
+		loadList(0, LISTVIEW_ACTION_REFRESH);
 	}
 	
 	/** 加载下一页*/
@@ -131,17 +130,16 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		if(L.Debug) {
 			L.d("加载下一页:" + pageIndex);
 		}
-		loadList(getDataTag(), pageIndex, LISTVIEW_ACTION_SCROLL);
+		loadList(pageIndex, LISTVIEW_ACTION_SCROLL);
 	}
 	
 	/** 
 	 * 加载数据
-	 * @param tag
-	 * @param page
-	 * @param action
+	 * @param page 页码
+	 * @param action 加载的触发事件
 	 * */
-	void loadList(Object tag, int page, int action) {
-		mRequestThreadHandler.request(page, new AsyncDataHandler(tag, page, action));
+	void loadList(int page, int action) {
+		mRequestThreadHandler.request(page, new AsyncDataHandler(page, action));
 	}
 	
 	/** 设置正在加载的状态*/
@@ -196,12 +194,10 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	
 	private class AsyncDataHandler implements DataRequestThreadHandler.AsyncDataHandler<Result> {
 
-		private Object mTag;
 		private int mPage;
 		private int mAction;
 		
-		AsyncDataHandler(Object tag, int page, int action) {
-			mTag = tag;
+		AsyncDataHandler(int page, int action) {
 			mAction = action;
 			mPage = page;
 		}
@@ -222,7 +218,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			if(mAction == LISTVIEW_ACTION_INIT) {
 				reflash = false;
 			}
-			return asyncLoadList(mTag, mPage, reflash);
+			return asyncLoadList(mPage, reflash);
 		}
 
 		@Override

@@ -27,8 +27,6 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment<News, NewsL
 		return new NewsLatestNewsFragment();
 	}
 	
-	final static int CATELOG = 0;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,14 +38,9 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment<News, NewsL
 	}
 
 	@Override
-	public Integer getDataTag() {
-		return CATELOG;
-	}
-
-	@Override
-	protected NewsList asyncLoadList(Object tag, int page, boolean reflash) {
+	protected NewsList asyncLoadList(int page, boolean reflash) {
 		try {
-			return mApplication.getNewsList((Integer)tag, page, reflash);
+			return mApplication.getNewsList(NewsList.CATALOG_ALL, page, reflash);
 		} catch (AppException e) {
 			e.printStackTrace();
 		}

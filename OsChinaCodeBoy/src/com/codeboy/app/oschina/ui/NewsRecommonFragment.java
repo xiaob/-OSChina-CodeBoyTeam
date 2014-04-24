@@ -35,14 +35,9 @@ public class NewsRecommonFragment extends BaseSwipeRefreshFragment<Blog, BlogLis
 	}
 
 	@Override
-	public Object getDataTag() {
-		return BlogList.TYPE_RECOMMEND;
-	}
-
-	@Override
-	protected BlogList asyncLoadList(Object tag, int page, boolean reflash) {
+	protected BlogList asyncLoadList(int page, boolean reflash) {
 		try {
-			return mApplication.getBlogList((String)tag, page, reflash);
+			return mApplication.getBlogList(BlogList.TYPE_RECOMMEND, page, reflash);
 		} catch (AppException e) {
 			e.printStackTrace();
 		}

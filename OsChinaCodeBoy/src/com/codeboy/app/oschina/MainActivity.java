@@ -6,6 +6,7 @@ import com.codeboy.app.oschina.ui.NewsLatestNewsFragment;
 import com.codeboy.app.oschina.ui.NewsRecentBlogPostsFragment;
 import com.codeboy.app.oschina.ui.NewsRecommonFragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -21,7 +22,7 @@ public class MainActivity extends BaseActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_viewpager_tabs);
 		
 		/*if(savedInstanceState == null) {
 			getSupportFragmentManager()
@@ -66,7 +67,8 @@ public class MainActivity extends BaseActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if(id == R.id.action_question_ask) {
-			
+			Intent intent = new Intent(this, QuestionAskActivity.class);
+			startActivity(intent);
 		} else if(id == R.id.action_tweet) {
 			
 		} else if(id == R.id.action_active) {

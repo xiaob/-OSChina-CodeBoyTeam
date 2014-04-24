@@ -28,14 +28,9 @@ public class NewsTweetFragment extends BaseSwipeRefreshFragment<Tweet, TweetList
 	}
 
 	@Override
-	public Object getDataTag() {
-		return 0;
-	}
-
-	@Override
-	protected TweetList asyncLoadList(Object tag, int page, boolean reflash) {
+	protected TweetList asyncLoadList(int page, boolean reflash) {
 		try {
-			return mApplication.getTweetList((Integer)tag, page, reflash);
+			return mApplication.getTweetList(TweetList.CATALOG_LASTEST, page, reflash);
 		} catch (AppException e) {
 			e.printStackTrace();
 		}
