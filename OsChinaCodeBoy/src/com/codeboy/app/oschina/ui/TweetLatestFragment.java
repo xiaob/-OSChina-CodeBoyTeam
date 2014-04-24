@@ -18,9 +18,9 @@ import com.codeboy.app.oschina.R;
  * 更新时间 2014年4月20日 下午11:33:40</br>
  * 最后更新者 LeonLee</br>
  * 
- * 说明 推荐阅读
+ * 说明 最新动弹
  */
-public class NewsTweetFragment extends BaseSwipeRefreshFragment<Tweet, TweetList> {
+public class TweetLatestFragment extends BaseSwipeRefreshFragment<Tweet, TweetList> {
 
 	@Override
 	public BaseAdapter getAdapter(List<Tweet> list) {

@@ -27,6 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 /**
  * 类名 BaseSwipeRefreshFragment.java</br>
@@ -42,9 +43,13 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnItemClickListener,
 	AbsListView.OnScrollListener {
 	
-	public final static int LISTVIEW_ACTION_INIT = 0x01;
-	public final static int LISTVIEW_ACTION_REFRESH = 0x02;
-	public final static int LISTVIEW_ACTION_SCROLL = 0x03;
+	public static final int LISTVIEW_ACTION_INIT = 0x01;
+	public static final int LISTVIEW_ACTION_REFRESH = 0x02;
+	public static final int LISTVIEW_ACTION_SCROLL = 0x03;
+	
+	static final int STATE_NONE = -1;
+	static final int STATE_LOADING = 0;
+	static final int STATE_LOADED = 1;
 
 	protected OSChinaApplication mApplication;
 	
@@ -53,8 +58,15 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	private View mFooterView;
 	private BaseAdapter mAdapter;
 	
+	private View mFooterProgressBar;
+	private TextView mFooterTextView;
+	
 	private List<Data> mDataList = new ArrayList<Data>();
+	//总数据
 	private int mSumData;
+	
+	//当前状态
+	private int mState = STATE_NONE;
 	
 	private DataRequestThreadHandler mRequestThreadHandler = new DataRequestThreadHandler();
 	
@@ -68,7 +80,8 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mAdapter = getAdapter(mDataList);
-		/** 初始化数据*/
+		//初始化数据,只有首发创建时调用，如果因viewpager里划动而销毁，
+		//再次创建只会调用onActivityCreated-->onCreateView-->onViewCreated
 		loadList(0, LISTVIEW_ACTION_INIT);
 	}
 	
@@ -87,6 +100,9 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		mFooterView = inflater.inflate(R.layout.listview_footer, null);
+		mFooterProgressBar = mFooterView.findViewById(R.id.listview_foot_progress);
+		mFooterTextView = (TextView) mFooterView.findViewById(R.id.listview_foot_more);
+		
 		return inflater.inflate(R.layout.fragment_base_swiperefresh, null);
 	}
 	
@@ -103,6 +119,11 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	            android.R.color.holo_red_light);
 		
 		setupListView();
+		
+		//viewpager划动到第三页，会将第一页的界面销毁，这里判断是初始状态，还是划画后再次加载
+		if(mState == STATE_LOADED && mAdapter.isEmpty()) {
+			setFooterNoMoreState();
+		}
 	}
 	
 	/** 初始化ListView*/
@@ -142,8 +163,8 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		mRequestThreadHandler.request(page, new AsyncDataHandler(page, action));
 	}
 	
-	/** 设置正在加载的状态*/
-	void setLoadingState() {
+	/** 设置顶部正在加载的状态*/
+	void setSwipeRefreshLoadingState() {
 		if(mSwipeRefreshLayout != null) {
 			mSwipeRefreshLayout.setRefreshing(true);
 			//防止多次重复刷新
@@ -151,11 +172,27 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		}
 	}
 	
-	/** 设置加载完毕的状态*/
-	void setLoadedState() {
+	/** 设置顶部加载完毕的状态*/
+	void setSwipeRefreshLoadedState() {
 		if(mSwipeRefreshLayout != null) {
 			mSwipeRefreshLayout.setRefreshing(false);
 			mSwipeRefreshLayout.setEnabled(true);
+		}
+	}
+	
+	/** 设置底部有更多数据的状态*/
+	void setFooterHasMoreState() {
+		if(mFooterView != null) {
+			mFooterProgressBar.setVisibility(View.VISIBLE);
+			mFooterTextView.setText(R.string.load_ing);
+		}
+	}
+	
+	/** 设置底部无数据的状态*/
+	void setFooterNoMoreState() {
+		if(mFooterView != null) {
+			mFooterProgressBar.setVisibility(View.GONE);
+			mFooterTextView.setText(R.string.load_empty);
 		}
 	}
 	
@@ -204,8 +241,9 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		
 		@Override
 		public void onPreExecute() {
+			mState = STATE_LOADING;
 			if(mAction == LISTVIEW_ACTION_REFRESH) {
-				setLoadingState();
+				setSwipeRefreshLoadingState();
 			}
 		}
 		
@@ -223,23 +261,30 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 
 		@Override
 		public void onPostExecute(Result result) {
+			mState = STATE_LOADED;
+			
 			if(mAction == LISTVIEW_ACTION_REFRESH) {
-				setLoadedState();
+				//将刷新状态去掉
+				setSwipeRefreshLoadedState();
 			}
 			if(result == null) {
+				//无数据的情况下，底部显示“暂无数据”
+				setFooterNoMoreState();
 				return;
 			}
+			//有数据的情况下，底部显示“正在加载...”
+			setFooterHasMoreState();
 			if(L.Debug) {
 				L.d("Load Page:" + mPage);
 				L.d("NewsCount--->" + result.getCount());
 			}
-			Notice notice = null;
+			Notice notice = result.getNotice();
 			if(mPage == 0) {
 				int newdata = 0;
-				notice = result.getNotice();
 				mSumData = result.getPageSize();
 				if (mAction == LISTVIEW_ACTION_REFRESH) {
 					if (mDataList.size() > 0) {
+						//计算新增数据条数
 						for (Data data1 : result.getList()) {
 							boolean b = false;
 							for (Data data2 : mDataList) {
@@ -248,8 +293,9 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 									break;
 								}
 							}
-							if (!b)
+							if (!b) {
 								newdata++;
+							}
 						}
 					} else {
 						newdata = result.getPageSize();
@@ -264,7 +310,9 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 								getString(R.string.new_data_toast_none), false).show();
 					}
 				}
-				mDataList.clear();// 先清除原有数据
+				// 先清除原有数据
+				mDataList.clear();
+				//加入最新的数据
 				mDataList.addAll(result.getList());
 			} else {
 				mSumData += result.getPageSize();
@@ -277,10 +325,12 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 								break;
 							}
 						}
-						if (!b)
+						if (!b) {
 							mDataList.add(data1);
+						}
 					}
 				} else {
+					//加入新增的数据
 					mDataList.addAll(result.getList());
 				}
 			}
