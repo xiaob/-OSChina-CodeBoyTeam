@@ -5,6 +5,7 @@ import java.util.List;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 import net.oschina.app.adapter.ListViewTweetAdapter;
 import net.oschina.app.bean.Tweet;
@@ -29,18 +30,23 @@ public class TweetMyFragment extends BaseSwipeRefreshFragment<Tweet, TweetList>{
 	}
 
 	@Override
-	protected TweetList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<TweetList> asyncLoadList(int page, boolean reflash) {
+		MessageData<TweetList> msg = null;
 		//用户ID,需要登录获取
 		int uid = mApplication.getLoginUid();
 		//等于0表示还没登录
 		if(uid == 0) {
-			return null;
+			msg = new MessageData<TweetList>(MessageData.MESSAGE_STATE_EMPTY);
+			return msg;
+		} else {
+			try {
+				TweetList list = mApplication.getTweetList(uid, page, reflash);
+				msg = new MessageData<TweetList>(list);
+			} catch (AppException e) {
+				e.printStackTrace();
+				msg = new MessageData<>(e);
+			}
 		}
-		try {
-			return mApplication.getTweetList(uid, page, reflash);
-		} catch (AppException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return msg;
 	}
 }

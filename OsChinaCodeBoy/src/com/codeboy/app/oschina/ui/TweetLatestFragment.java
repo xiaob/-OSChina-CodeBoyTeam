@@ -9,6 +9,7 @@ import net.oschina.app.core.AppException;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 /**
  * 类名 NewsTweetFragment.java</br>
@@ -28,12 +29,15 @@ public class TweetLatestFragment extends BaseSwipeRefreshFragment<Tweet, TweetLi
 	}
 
 	@Override
-	protected TweetList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<TweetList> asyncLoadList(int page, boolean reflash) {
+		MessageData<TweetList> msg = null;
 		try {
-			return mApplication.getTweetList(TweetList.CATALOG_LASTEST, page, reflash);
+			TweetList list = mApplication.getTweetList(TweetList.CATALOG_LASTEST, page, reflash);
+			msg = new MessageData<TweetList>(list);
 		} catch (AppException e) {
 			e.printStackTrace();
+			msg = new MessageData<TweetList>(e);
 		}
-		return null;
+		return msg;
 	}
 }

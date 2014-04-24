@@ -5,10 +5,11 @@ import java.util.List;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 import net.oschina.app.adapter.ListViewTweetAdapter;
-import net.oschina.app.bean.Tweet;
 import net.oschina.app.bean.TweetList;
+import net.oschina.app.bean.Tweet;
 import net.oschina.app.core.AppException;
 
 /**
@@ -29,12 +30,15 @@ public class TweetHotFragment extends BaseSwipeRefreshFragment<Tweet, TweetList>
 	}
 
 	@Override
-	protected TweetList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<TweetList> asyncLoadList(int page, boolean reflash) {
+		MessageData<TweetList> msg = null;
 		try {
-			return mApplication.getTweetList(TweetList.CATALOG_HOT, page, reflash);
+			TweetList list = mApplication.getTweetList(TweetList.CATALOG_HOT, page, reflash);
+			msg = new MessageData<TweetList>(list);
 		} catch (AppException e) {
 			e.printStackTrace();
+			msg = new MessageData<TweetList>(e);
 		}
-		return null;
+		return msg;
 	}
 }

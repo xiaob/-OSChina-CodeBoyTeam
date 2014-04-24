@@ -5,10 +5,11 @@ import java.util.List;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 import net.oschina.app.adapter.ListViewQuestionAdapter;
-import net.oschina.app.bean.Post;
 import net.oschina.app.bean.PostList;
+import net.oschina.app.bean.Post;
 import net.oschina.app.core.AppException;
 
 /**
@@ -30,12 +31,15 @@ public class QAJobFragment extends BaseSwipeRefreshFragment<Post, PostList> {
 	}
 
 	@Override
-	protected PostList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<PostList> asyncLoadList(int page, boolean reflash) {
+		MessageData<PostList> msg = null;
 		try {
-			return mApplication.getPostList(PostList.CATALOG_JOB, page, reflash);
+			PostList list = mApplication.getPostList(PostList.CATALOG_JOB, page, reflash);
+			msg = new MessageData<PostList>(list);
 		} catch (AppException e) {
 			e.printStackTrace();
+			msg = new MessageData<PostList>(e);
 		}
-		return null;
+		return msg;
 	}
 }

@@ -30,11 +30,19 @@
             </intent-filter>
         </activity>
         
+        <!-- 问答 -->
         <activity
             android:name="com.codeboy.app.oschina.QuestionAskActivity"
             android:label="@string/frame_title_question_ask" />
+        
+        <!-- 动弹 -->
         <activity
             android:name="com.codeboy.app.oschina.TweetActivity"
+            android:label="@string/frame_title_tweet" />
+        
+        <!-- 开源软件库 -->
+        <activity
+            android:name="com.codeboy.app.oschina.SoftwareLibraryActivity"
             android:label="@string/frame_title_tweet" />
     </application>
 

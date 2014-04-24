@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 /**
  * 类名 NewsRecentBlogPostsFragment.java</br>
@@ -35,12 +36,15 @@ public class NewsRecentBlogPostsFragment extends BaseSwipeRefreshFragment<Blog, 
 	}
 
 	@Override
-	protected BlogList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<BlogList> asyncLoadList(int page, boolean reflash) {
+		MessageData<BlogList> msg = null;
 		try {
-			return mApplication.getBlogList(BlogList.TYPE_LATEST, page, reflash);
+			BlogList list = mApplication.getBlogList(BlogList.TYPE_LATEST, page, reflash);
+			msg = new MessageData<BlogList>(list);
 		} catch (AppException e) {
 			e.printStackTrace();
+			msg = new MessageData<BlogList>(e);
 		}
-		return null;
+		return msg;
 	}
 }

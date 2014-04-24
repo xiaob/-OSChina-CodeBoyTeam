@@ -37,6 +37,11 @@
     <string name="frame_title_active_myself">我自己</string>
     <string name="frame_title_active_message">留言</string>
     
+    <string name="frame_title_software_recommon">推荐</string>
+    <string name="frame_title_software_lastest">最新</string>
+    <string name="frame_title_software_hot">最热</string>
+    <string name="frame_title_software_china">国产</string>
+    
     <string name="footbar_refresh">刷新</string>
     <string name="footbar_comment">评论</string>
     <string name="footbar_share">分享</string>

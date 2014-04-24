@@ -3,6 +3,7 @@ package com.codeboy.app.oschina.ui;
 import java.util.List;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 import android.widget.BaseAdapter;
 import net.oschina.app.adapter.ListViewQuestionAdapter;
@@ -29,13 +30,16 @@ public class QAShareFragment extends BaseSwipeRefreshFragment<Post, PostList> {
 	}
 
 	@Override
-	protected PostList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<PostList> asyncLoadList(int page, boolean reflash) {
+		MessageData<PostList> msg = null;
 		try {
-			return mApplication.getPostList(PostList.CATALOG_SHARE, page, reflash);
+			PostList list = mApplication.getPostList(PostList.CATALOG_SHARE, page, reflash);
+			msg = new MessageData<PostList>(list);
 		} catch (AppException e) {
 			e.printStackTrace();
+			msg = new MessageData<PostList>(e);
 		}
-		return null;
+		return msg;
 	}
 
 }

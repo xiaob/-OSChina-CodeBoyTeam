@@ -11,6 +11,8 @@ import net.oschina.app.core.AppException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.codeboy.app.library.util.CRC32;
+
 import android.util.Xml;
 
 /**
@@ -19,7 +21,7 @@ import android.util.Xml;
  * @version 1.0
  * @created 2012-3-21
  */
-public class SoftwareList extends Entity implements PageList<SimpleSoftware> {
+public class SoftwareList extends SimpleSoftware implements PageList<SimpleSoftware> {
 	
 	public final static String TAG_RECOMMEND = "recommend";// 推荐
 	public final static String TAG_LASTEST = "time";// 最新
@@ -69,7 +71,9 @@ public class SoftwareList extends Entity implements PageList<SimpleSoftware> {
 						software = new SimpleSoftware();
 					} else if (software != null) {
 						if (tag.equalsIgnoreCase("name")) {
-							software.setName(xmlParser.nextText());
+							String name = xmlParser.nextText();
+							software.setName(name);
+							software.id = (int) CRC32.getStringCheckSum(name);
 						} else if (tag.equalsIgnoreCase("description")) {
 							software.setDescription(xmlParser.nextText());
 						} else if (tag.equalsIgnoreCase("url")) {

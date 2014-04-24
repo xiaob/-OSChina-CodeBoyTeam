@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.modul.MessageData;
 
 /**
  * 类名 NewsLatestNewsFragment.java</br>
@@ -38,12 +39,15 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment<News, NewsL
 	}
 
 	@Override
-	protected NewsList asyncLoadList(int page, boolean reflash) {
+	protected MessageData<NewsList> asyncLoadList(int page, boolean reflash) {
+		MessageData<NewsList> msg = null;
 		try {
-			return mApplication.getNewsList(NewsList.CATALOG_ALL, page, reflash);
+			NewsList list = mApplication.getNewsList(NewsList.CATALOG_ALL, page, reflash);
+			msg = new MessageData<NewsList>(list);
 		} catch (AppException e) {
 			e.printStackTrace();
+			msg = new MessageData<NewsList>(e);
 		}
-		return null;
+		return msg;
 	}
 }

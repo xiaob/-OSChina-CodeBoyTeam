@@ -16,20 +16,26 @@
         app:showAsAction="never"/>
     
     <item 
-        android:id="@+id/action_active"
+        android:id="@+id/action_software"
         android:orderInCategory="102"
+        android:title="@string/main_menu_software"
+        app:showAsAction="never"/>
+    
+    <item 
+        android:id="@+id/action_active"
+        android:orderInCategory="103"
         android:title="@string/frame_title_active"
         app:showAsAction="never"/>
     
     <item 
         android:id="@+id/action_myinfo"
-        android:orderInCategory="103"
+        android:orderInCategory="104"
         android:title="@string/main_menu_myinfo"
         app:showAsAction="never"/>
     
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="104"
+        android:orderInCategory="105"
         android:title="@string/main_menu_setting"
         app:showAsAction="never"/>
 

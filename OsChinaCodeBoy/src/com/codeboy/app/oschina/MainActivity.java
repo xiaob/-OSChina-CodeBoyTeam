@@ -24,12 +24,6 @@ public class MainActivity extends BaseActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_viewpager_tabs);
 		
-		/*if(savedInstanceState == null) {
-			getSupportFragmentManager()
-			.beginTransaction()
-			.replace(R.id.container, NewsLatestNewsFragment.newInstance())
-			.commit();
-		}*/
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup();
 
@@ -71,6 +65,9 @@ public class MainActivity extends BaseActionBarActivity {
 			startActivity(intent);
 		} else if(id == R.id.action_tweet) {
 			Intent intent = new Intent(this, TweetActivity.class);
+			startActivity(intent);
+		} else if(id == R.id.action_software) {
+			Intent intent = new Intent(this, SoftwareLibraryActivity.class);
 			startActivity(intent);
 		} else if(id == R.id.action_active) {
 			

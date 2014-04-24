@@ -14,6 +14,7 @@ import com.codeboy.app.oschina.BaseFragment;
 import com.codeboy.app.oschina.OSChinaApplication;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.core.DataRequestThreadHandler;
+import com.codeboy.app.oschina.modul.MessageData;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -43,9 +44,9 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnItemClickListener,
 	AbsListView.OnScrollListener {
 	
-	public static final int LISTVIEW_ACTION_INIT = 0x01;
-	public static final int LISTVIEW_ACTION_REFRESH = 0x02;
-	public static final int LISTVIEW_ACTION_SCROLL = 0x03;
+	public static final int LISTVIEW_ACTION_INIT = 1;
+	public static final int LISTVIEW_ACTION_REFRESH = 2;
+	public static final int LISTVIEW_ACTION_SCROLL = 3;
 	
 	static final int STATE_NONE = -1;
 	static final int STATE_LOADING = 0;
@@ -62,11 +63,14 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	private TextView mFooterTextView;
 	
 	private List<Data> mDataList = new ArrayList<Data>();
-	//总数据
+	//当前页面已加载的数据总和
 	private int mSumData;
 	
-	//当前状态
+	//当前UI状态
 	private int mState = STATE_NONE;
+	
+	//当前数据状态，如果是已经全部加载，则不再执行滚动到底部就加载的情况
+	private int mMessageState = MessageData.MESSAGE_STATE_MORE;
 	
 	private DataRequestThreadHandler mRequestThreadHandler = new DataRequestThreadHandler();
 	
@@ -137,7 +141,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	/** 获取适配器*/
 	public abstract BaseAdapter getAdapter(List<Data> list);
 	/** 异步加载数据*/
-	protected abstract Result asyncLoadList(int page, boolean reflash);
+	protected abstract MessageData<Result> asyncLoadList(int page, boolean reflash);
 
 	@Override
 	public void onRefresh() {
@@ -180,11 +184,27 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		}
 	}
 	
+	/** 设置底部有错误的状态*/
+	void setFooterErrorState() {
+		if(mFooterView != null) {
+			mFooterProgressBar.setVisibility(View.GONE);
+			mFooterTextView.setText(R.string.load_error);
+		}
+	}
+	
 	/** 设置底部有更多数据的状态*/
 	void setFooterHasMoreState() {
 		if(mFooterView != null) {
-			mFooterProgressBar.setVisibility(View.VISIBLE);
-			mFooterTextView.setText(R.string.load_ing);
+			mFooterProgressBar.setVisibility(View.GONE);
+			mFooterTextView.setText(R.string.load_more);
+		}
+	}
+	
+	/** 设置底部已加载全部的状态*/
+	void setFooterFullState() {
+		if(mFooterView != null) {
+			mFooterProgressBar.setVisibility(View.GONE);
+			mFooterTextView.setText(R.string.load_full);
 		}
 	}
 	
@@ -193,6 +213,14 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		if(mFooterView != null) {
 			mFooterProgressBar.setVisibility(View.GONE);
 			mFooterTextView.setText(R.string.load_empty);
+		}
+	}
+	
+	/** 设置底部加载中的状态*/
+	void setFooterLoadingState() {
+		if(mFooterView != null) {
+			mFooterProgressBar.setVisibility(View.VISIBLE);
+			mFooterTextView.setText(R.string.load_ing);
 		}
 	}
 	
@@ -206,6 +234,11 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		Adapter adapter = view.getAdapter();
 		if(adapter == null || adapter.getCount() == 0) {
+			return;
+		}
+		//数据已经全部加载，或数据为空时，不处理滚动事件
+		if(mMessageState == MessageData.MESSAGE_STATE_FULL
+				|| mMessageState == MessageData.MESSAGE_STATE_EMPTY) {
 			return;
 		}
 		// 判断是否滚动到底部
@@ -229,7 +262,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		
 	}
 	
-	private class AsyncDataHandler implements DataRequestThreadHandler.AsyncDataHandler<Result> {
+	private class AsyncDataHandler implements DataRequestThreadHandler.AsyncDataHandler<MessageData<Result>> {
 
 		private int mPage;
 		private int mAction;
@@ -241,14 +274,17 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		
 		@Override
 		public void onPreExecute() {
+			//开始加载
 			mState = STATE_LOADING;
 			if(mAction == LISTVIEW_ACTION_REFRESH) {
 				setSwipeRefreshLoadingState();
+			} else if(mAction == LISTVIEW_ACTION_SCROLL) {
+				setFooterLoadingState();
 			}
 		}
 		
 		@Override
-		public Result execute() {
+		public MessageData<Result> execute() {
 			if(L.Debug) {
 				L.d("正在加载:" + mPage);
 			}
@@ -260,23 +296,43 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		}
 
 		@Override
-		public void onPostExecute(Result result) {
+		public void onPostExecute(MessageData<Result> msg) {
+			//加载结束
 			mState = STATE_LOADED;
-			
+			//如果动作是下拉刷新，则将刷新中的状态去掉
 			if(mAction == LISTVIEW_ACTION_REFRESH) {
-				//将刷新状态去掉
 				setSwipeRefreshLoadedState();
 			}
-			if(result == null) {
-				//无数据的情况下，底部显示“暂无数据”
+			
+			//无数据的情况下(已经加载全部数据，与一开始没有数据)
+			if(msg.state == MessageData.MESSAGE_STATE_EMPTY && mDataList.size() != 0) {
+				msg.state = MessageData.MESSAGE_STATE_FULL;
+			}
+			//记录最后的数据状态
+			mMessageState = msg.state;
+			
+			if(msg.state == MessageData.MESSAGE_STATE_EMPTY) {
+				//底部显示“暂无数据”
 				setFooterNoMoreState();
 				return;
+			} else if(msg.state == MessageData.MESSAGE_STATE_ERROR){
+				setFooterErrorState();
+				return;
+			} else if(msg.state == MessageData.MESSAGE_STATE_FULL) {
+				//当页数少于要求的加载页数的时，可以判断是已经加载完，没有更多的数据
+				setFooterFullState();
+			} else if(msg.state == MessageData.MESSAGE_STATE_MORE) {
+				//有数据的情况下，底部显示“正在加载...”
+				setFooterHasMoreState();
 			}
-			//有数据的情况下，底部显示“正在加载...”
-			setFooterHasMoreState();
+			
+			Result result = msg.result;
 			if(L.Debug) {
+				L.d("Fragment:" + getClass().getSimpleName());
 				L.d("Load Page:" + mPage);
-				L.d("NewsCount--->" + result.getCount());
+				L.d("Count:" + result.getCount());
+				L.d("PageSize:" + result.getPageSize());
+				L.d("ListSize:" + result.getList().size());
 			}
 			Notice notice = result.getNotice();
 			if(mPage == 0) {
@@ -300,7 +356,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 					} else {
 						newdata = result.getPageSize();
 					}
-					// 提示新加载数据
+					// 提示新添加的数据条数
 					if (newdata > 0) {
 						NewDataToast.makeText( getActivity(),
 										getString(R.string.new_data_toast_message,
@@ -334,6 +390,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 					mDataList.addAll(result.getList());
 				}
 			}
+			//通知listview去刷新界面
 			mAdapter.notifyDataSetChanged();
 		}
 	}
