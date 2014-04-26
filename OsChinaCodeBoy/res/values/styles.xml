@@ -26,6 +26,69 @@
 		<item name="android:clickable">true</item>
 		<item name="android:background">@drawable/widget_dface_border</item>
 		<item name="android:src">@drawable/widget_dface_loading</item>
-    </style> 
-
+    </style>
+    
+    <!-- 基本Dialog的样式 -->
+    <style name="BaseDialogStyle" parent="@android:style/Theme.Dialog">
+	    
+	</style>
+    
+    <!-- 透明的Dialog -->
+    <style name="TransparentDialog" parent="BaseDialogStyle">
+        <item name="android:windowFrame">@null</item><!--边框-->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">false</item><!--半透明-->
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+        <item name="android:windowBackground">@color/full_transparent</item><!--背景透明-->
+        <item name="android:backgroundDimEnabled">false</item><!--模糊-->
+    </style>
+    
+      <!-- 半透明的Dialog -->
+    <style name="TranslucenceDialog" parent="TransparentDialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:backgroundDimEnabled">true</item><!--模糊-->
+    </style>
+    
+    <!-- 用户资料layout样式 -->
+    <style name="UserInfoLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:gravity">center_vertical</item>
+		<item name="android:focusable">true</item>
+		<item name="android:clickable">true</item>
+    </style>
+    
+    <!-- 用户资料左边的文本样式 -->
+    <style name="UserInfoLeftTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_marginLeft">10dip</item>
+		<item name="android:duplicateParentState">true</item>
+		<item name="android:textSize">@dimen/text_size_15</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/grayslate</item>
+    </style>
+    
+    <!-- 用户资料右边的文本样式 -->
+    <style name="UserInfoRightTextStyle">
+        <item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_marginRight">10dip</item>
+		<item name="android:duplicateParentState">true</item>
+		<item name="android:textSize">@dimen/text_size_14</item>
+		<item name="android:textColor">@color/black</item>
+    </style>
+    <!-- 用户资料右边的文本样式 -->
+    <style name="UserInfoRightText2Style">
+        <item name="android:layout_width">0dip</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:layout_weight">1</item>
+		<item name="android:layout_marginRight">10dip</item>
+		<item name="android:duplicateParentState">true</item>
+		<item name="android:textSize">@dimen/text_size_14</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/author_text</item>
+    </style>
 </resources>

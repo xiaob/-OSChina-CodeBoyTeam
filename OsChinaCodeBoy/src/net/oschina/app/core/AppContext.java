@@ -14,6 +14,9 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.UUID;
 
+import com.codeboy.app.oschina.LoginActivity;
+import com.codeboy.app.oschina.R;
+
 import net.oschina.app.bean.ActiveList;
 import net.oschina.app.bean.Barcode;
 import net.oschina.app.bean.Blog;
@@ -44,8 +47,10 @@ import net.oschina.app.common.FileUtils;
 import net.oschina.app.common.ImageUtils;
 import net.oschina.app.common.MethodsCompat;
 import net.oschina.app.common.StringUtils;
+import net.oschina.app.common.UIHelper;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
@@ -54,9 +59,8 @@ import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
-
-import com.codeboy.app.oschina.R;
 
 /**
  * 全局应用程序类：用于保存和调用全局应用配置及访问网络数据
@@ -79,15 +83,6 @@ public class AppContext extends Application {
 	
 	private String saveImagePath;//保存图片路径
 	
-	private Handler unLoginHandler = new Handler(){
-		public void handleMessage(Message msg) {
-			/*if(msg.what == 1){
-				UIHelper.ToastMessage(AppContext.this, getString(R.string.msg_login_error));
-				UIHelper.showLoginDialog(AppContext.this);
-			}*/
-		}		
-	};
-	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -107,6 +102,8 @@ public class AppContext extends Application {
 			setProperty(AppConfig.SAVE_IMAGE_PATH, AppConfig.DEFAULT_SAVE_IMAGE_PATH);
 			saveImagePath = AppConfig.DEFAULT_SAVE_IMAGE_PATH;
 		}
+		//初始化用记的登录信息
+		initLoginInfo();
 	}
 	
 	/**
@@ -231,7 +228,19 @@ public class AppContext extends Application {
 	 * 未登录或修改密码后的处理
 	 */
 	public Handler getUnLoginHandler() {
-		return this.unLoginHandler;
+		Handler unLoginHandler = new Handler(Looper.getMainLooper()){
+			public void handleMessage(Message msg) {
+				if(msg.what == 1){
+					UIHelper.ToastMessage(AppContext.this, getString(R.string.msg_login_error));
+					//跳转到登录界面
+					Context context = getApplicationContext();
+					Intent intent = new Intent(context, LoginActivity.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(intent);
+				}
+			}		
+		};
+		return unLoginHandler;
 	}
 	
 	/**

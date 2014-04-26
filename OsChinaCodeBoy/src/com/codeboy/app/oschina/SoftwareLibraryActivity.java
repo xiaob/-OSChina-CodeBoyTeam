@@ -14,7 +14,7 @@ import com.codeboy.app.oschina.ui.SoftwareRecommonFragment;
 /**
  * 类名 SoftwareLibraryActivity.java</br>
  * 创建日期 2014年4月25日</br>
- * @author LeonLee</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
  * 更新时间 2014年4月25日 上午12:10:39</br>
  * 最后更新者 LeonLee</br>

@@ -25,6 +25,12 @@
     <string name="new_data_toast_message">有 %d 条更新</string>
     <string name="new_data_toast_none">没有新更新</string>
     
+    <string name="loading_userinfo">正在加载资料,请稍候...</string>
+    <string name="loaded_userinfo">加载完毕</string>
+    <string name="upload_user_avatar">正在上传头像,请稍候...</string>
+    <string name="upload_user_avatar_error">无法保存上传的头像，请检查SD卡是否挂载</string>
+    <string name="upload_user_avatar_error2">图像不存在，上传失败。</string>
+    
     <string name="select">选择</string>
     <string name="share">分享</string>
     <string name="sharing">分享中...</string>

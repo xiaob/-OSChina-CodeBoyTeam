@@ -8,13 +8,13 @@ import java.util.zip.CheckedInputStream;
 
 /**
  * 类名 CRC32.java</br>
- * 创建日期 2013-6-10</br>
- * @author LiWenLong</br>
+ * 创建日期 2014年4月26日</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
- * 更新时间 下午11:53:51</br>
- * 最后更新者 LeOn</br>
+ * 更新时间 2014年4月26日 下午12:16:38</br>
+ * 最后更新者 LeonLee</br>
  * 
- * 说明 CRC32校验算法
+ * 说明 说明 CRC32校验算法
  */
 public class CRC32 {
 	

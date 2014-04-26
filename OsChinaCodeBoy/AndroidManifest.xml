@@ -30,6 +30,16 @@
             </intent-filter>
         </activity>
         
+        <!-- 登录 -->
+        <activity
+            android:name="com.codeboy.app.oschina.LoginActivity"
+            android:label="@string/login_dialog_title" />
+        
+        <!-- 我的资料 -->
+        <activity
+            android:name="com.codeboy.app.oschina.UserInfoActivity"
+            android:label="@string/userinfo_title" />
+        
         <!-- 问答 -->
         <activity
             android:name="com.codeboy.app.oschina.QuestionAskActivity"

@@ -17,13 +17,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * 类包 L.java </br>
- * 创建日期 2012-8-21</br>
- * 作者LiWenLong </br>
- * 更新时间 上午12:07:13 </br>
- * @author LeOn
- *
- * 说明 调试类</br>
+ * 类名 L.java</br>
+ * 创建日期  2012-8-21</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
+ * Email lendylongli@gmail.com</br>
+ * 更新时间 2014年4月26日 下午12:16:53</br>
+ * 最后更新者 LeonLee</br>
+ * 
+ * 说明 调试类
  */
 public class L {
 

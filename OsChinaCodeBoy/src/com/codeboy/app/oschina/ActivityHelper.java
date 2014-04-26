@@ -6,7 +6,7 @@ import android.os.Bundle;
 /**
  * 类名 ActivityHelper.java</br>
  * 创建日期 2014年4月22日</br>
- * @author LeonLee</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
  * 更新时间 2014年4月22日 上午12:45:23</br>
  * 最后更新者 LeonLee</br>

@@ -38,12 +38,13 @@ import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 
 /**
- * 类名 Util.java</br> 
+ * 类名 Util.java</br>
  * 创建日期 2013-4-3</br>
- * @author LiWenLong</br> 
- * Email lendylongli@gmail.com</br> 
- * 更新时间 2013-7-31 下午5:03:35</br>
- * 最后更新者 LeOn</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
+ * Email lendylongli@gmail.com</br>
+ * 更新时间 2014年4月26日 下午12:17:29</br>
+ * 最后更新者 LeonLee</br>
+ * 
  * 说明 常用工具类
  */
 public class Util {
@@ -122,10 +123,9 @@ public class Util {
 			try {
 				return manager.getApplicationIcon(appInfo);
 			} catch (OutOfMemoryError e) {
-				L.e("OutOfMemoryError:" + e.getMessage());
+				e.printStackTrace();
 			}
 		}
-		L.d("null == packageInfo");
 		return null;
 	}
 
@@ -275,7 +275,7 @@ public class Util {
 			calendar.setTime(d);
 			return calendar.getTimeInMillis();
 		} catch (ParseException e) {
-			L.w("parse date error:" + e.getMessage());
+			e.printStackTrace();
 			return 0;
 		}
 	}
@@ -286,7 +286,7 @@ public class Util {
 		try {
 			return format.format(date);
 		} catch (Exception e) {
-			L.e("", e);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -323,7 +323,7 @@ public class Util {
 		try {
 			date = format.parse(parse);
 		} catch (ParseException e) {
-			L.w("", e);
+			e.printStackTrace();
 			date = new Date(System.currentTimeMillis());
 		}
 		return date;
@@ -377,7 +377,7 @@ public class Util {
 					writer.write(buff, 0, offset);
 				}
 			} catch (IOException e) {
-				L.e("", e);
+				e.printStackTrace();
 			} finally {
 				try {
 					if (reader != null) {
@@ -385,11 +385,11 @@ public class Util {
 						reader.close();
 					}
 				} catch (IOException e) {
-					L.e("", e);
+					e.printStackTrace();
 				}
 			}
 		} catch (FileNotFoundException e) {
-			L.e("", e);
+			e.printStackTrace();
 		}
 	}
 
@@ -420,6 +420,7 @@ public class Util {
 			b = BitmapFactory.decodeStream(fis, null, o2);
 			fis.close();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return b;
 	}
@@ -444,7 +445,7 @@ public class Util {
 		try {
 			bmp = BitmapFactory.decodeFile(path, opts);
 		} catch (OutOfMemoryError err) {
-			L.d("Out of memory....", err);
+			err.printStackTrace();
 			return null;
 		}
 		return bmp;
@@ -577,7 +578,9 @@ public class Util {
 	 * */
 	public static boolean hasStorage(boolean requireWriteAccess) {
 		String state = Environment.getExternalStorageState();
-		L.d("storage state is " + state);
+		if(L.Debug){
+			L.d("storage state is " + state);
+		}
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			if (requireWriteAccess) {

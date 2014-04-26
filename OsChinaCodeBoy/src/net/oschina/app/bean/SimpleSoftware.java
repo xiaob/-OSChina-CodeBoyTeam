@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 类名 SimpleSoftware.java</br>
  * 创建日期 2014年4月23日</br>
- * @author LeonLee</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
  * 更新时间 2014年4月23日 下午9:19:09</br>
  * 最后更新者 LeonLee</br>

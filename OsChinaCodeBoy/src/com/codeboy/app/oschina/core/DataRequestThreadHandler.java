@@ -10,7 +10,7 @@ import com.codeboy.app.library.os.HandlerThread;
 /**
  * 类名 DataRequestHandler.java</br>
  * 创建日期 2014年4月22日</br>
- * @author LeonLee</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
  * 更新时间 2014年4月22日 下午1:14:46</br>
  * 最后更新者 LeonLee</br>
@@ -30,13 +30,6 @@ public class DataRequestThreadHandler extends HandlerThread
 	/**
 	 * 请求数据
 	 * */
-	public synchronized void request(AsyncDataHandler datahandler) {
-		request(-1, datahandler);
-	}
-	
-	/**
-	 * 请求数据
-	 * */
 	public synchronized void request(int what, AsyncDataHandler datahandler) {
 		if(datahandler == null) {
 			return;
@@ -49,9 +42,8 @@ public class DataRequestThreadHandler extends HandlerThread
 		if(mThreadHandler == null) {
 			mThreadHandler = new Handler(getLooper(), this);
 		}
-		if(what != -1) {
-			mThreadHandler.removeMessages(what);
-		}
+		//将相同的任务移除
+		mThreadHandler.removeMessages(what);
 		mThreadHandler.obtainMessage(what, datahandler).sendToTarget();
 	}
 	
@@ -62,6 +54,7 @@ public class DataRequestThreadHandler extends HandlerThread
 		if(mMainHandler == null) {
 			mMainHandler = new Handler(Looper.getMainLooper());
 		}
+		//通过主线程，将数据回调
 		mMainHandler.post(new Runnable() {
 			
 			@Override

@@ -9,20 +9,56 @@ import com.codeboy.app.oschina.ui.NewsRecommonFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TabHost;
 
+
+/**
+ * 类名 MainActivity.java</br>
+ * 创建日期 2014年4月26日</br>
+ * @author LeonLee (http://my.oschina.net/lendylongli)</br>
+ * Email lendylongli@gmail.com</br>
+ * 更新时间 2014年4月26日 下午12:15:10</br>
+ * 最后更新者 LeonLee</br>
+ * 
+ * 说明 类的描述
+ */
 public class MainActivity extends BaseActionBarActivity {
 	
-	TabHost mTabHost;
-    ViewPager  mViewPager;
-    TabsFragmentPagerAdapter mTabsAdapter;
+	private TabHost mTabHost;
+	private ViewPager  mViewPager;
+	private TabsFragmentPagerAdapter mTabsAdapter;
+    
+    private DrawerLayout mDrawerLayout;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_viewpager_tabs);
+		setContentView(R.layout.activity_main);
+		
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		
+		findViewById(R.id.drawer_login_button).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+				startActivityForResult(intent, 12345);
+			}
+		});
+		
+		findViewById(R.id.drawer_userinfo_button).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+				startActivity(intent);
+			}
+		});
 		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
         mTabHost.setup();
