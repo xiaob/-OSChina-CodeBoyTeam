@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+
+import com.codeboy.app.library.util.Util;
 
 import net.oschina.app.bean.MyInformation;
 import net.oschina.app.bean.Result;
@@ -13,8 +16,8 @@ import net.oschina.app.common.StringUtils;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppConfig;
 import net.oschina.app.core.AppException;
-import net.oschina.app.widget.LoadingDialog;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -80,12 +83,11 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	
 	private MyInformation user;
 	
-	private LoadingDialog loadingDialog;
+	private ProgressDialog loadingDialog;
 	//控制加载用户数据
 	private boolean isLoaddingUserInfo = false;
 
-	private Uri origUri;
-	private Uri cropUri;
+	private Uri photoUri;
 	private File protraitFile;
 	private Bitmap protraitBitmap;
 
@@ -136,7 +138,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 
 	/** 初始化界面*/
 	private void initView() {
-		loadingDialog = new LoadingDialog(this);
+		loadingDialog = new ProgressDialog(this);
 		
 		editer = (Button) findViewById(R.id.user_info_editer);
 		editer.setOnClickListener(editerClickListener);
@@ -187,7 +189,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 			protected void onPreExecute() {
 				if(isRefresh) {
 					isLoaddingUserInfo = true;
-					loadingDialog.setLoadText(R.string.loading_userinfo);
+					loadingDialog.setMessage(getString(R.string.loading_userinfo));
 					loadingDialog.show();
 				}
 			}
@@ -274,63 +276,31 @@ public class UserInfoActivity extends BaseActionBarActivity {
 					followers, fans);*/
 		}
 	};
-
-	/** 裁剪头像的绝对路径*/
-	private Uri getUploadTempFile(Uri uri) {
-		String storageState = Environment.getExternalStorageState();
-		if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-			File savedir = new File(FILE_SAVEPATH);
-			if (!savedir.exists()) {
-				savedir.mkdirs();
-			}
+	
+	/**
+	 * 生成输出图片的文件
+	 * @return
+	 */
+	public static File getOutputMediaFile() {
+		File mediaStorageDir = null;
+		if(Util.hasFroyo()) {
+			mediaStorageDir = Environment.getExternalStoragePublicDirectory(
+					Environment.DIRECTORY_PICTURES);
 		} else {
-			UIHelper.ToastMessage(UserInfoActivity.this, 
-					R.string.upload_user_avatar_error);
-			return null;
+			mediaStorageDir = new File(FILE_SAVEPATH);
 		}
-		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss")
-				.format(new Date());
-		String thePath = ImageUtils.getAbsolutePathFromNoStandardUri(uri);
-
-		// 如果是标准Uri
-		if (StringUtils.isEmpty(thePath)) {
-			thePath = ImageUtils.getAbsoluteImagePath(UserInfoActivity.this, uri);
-		}
-		String ext = FileUtils.getFileFormat(thePath);
-		ext = StringUtils.isEmpty(ext) ? "jpg" : ext;
-		// 照片命名
-		String cropFileName = "osc_crop_" + timeStamp + "." + ext;
-		// 裁剪头像的绝对路径
-		String protraitPath = FILE_SAVEPATH + cropFileName;
-		protraitFile = new File(protraitPath);
-
-		cropUri = Uri.fromFile(protraitFile);
-		return this.cropUri;
-	}
-
-	/** 拍照保存的绝对路径*/
-	private Uri getCameraTempFile() {
-		String storageState = Environment.getExternalStorageState();
-		if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-			File savedir = new File(FILE_SAVEPATH);
-			if (!savedir.exists()) {
-				savedir.mkdirs();
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				return null;
 			}
-		} else {
-			UIHelper.ToastMessage(UserInfoActivity.this, 
-					R.string.upload_user_avatar_error);
-			return null;
 		}
-		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss")
+
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA)
 				.format(new Date());
-		// 照片命名
-		String cropFileName = "osc_camera_" + timeStamp + ".jpg";
-		// 裁剪头像的绝对路径
-		String protraitPath = FILE_SAVEPATH + cropFileName;
-		protraitFile = new File(protraitPath);
-		cropUri = Uri.fromFile(protraitFile);
-		this.origUri = this.cropUri;
-		return this.cropUri;
+		File mediaFile = new File(mediaStorageDir.getPath() + File.separator
+				+ "IMG_" + timeStamp + ".jpg");
+
+		return mediaFile;
 	}
 
 	/**
@@ -362,12 +332,17 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	 * @param output
 	 */
 	private void startImagePick() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		intent.setType("image/*");
-		startActivityForResult(Intent.createChooser(intent, 
-				getString(R.string.userinfo_upload_avatar_choose)),
-				ImageUtils.REQUEST_CODE_GETIMAGE_BYCROP);
+		Intent intent = new Intent(Intent.ACTION_PICK);
+		intent.setDataAndType(
+				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				"image/*");
+		try {
+			startActivityForResult(Intent.createChooser(intent, 
+					getString(R.string.userinfo_upload_avatar_choose)),
+					ImageUtils.REQUEST_CODE_GETIMAGE_BYCROP);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -376,8 +351,14 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	 * @param output
 	 */
 	private void startActionCamera() {
+		File file = getOutputMediaFile();
+		if(file == null) {
+			UIHelper.ToastMessage(this, R.string.tips_check_sdcart);
+			return;
+		}
+		photoUri = Uri.fromFile(file);
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, this.getCameraTempFile());
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
 		startActivityForResult(intent,
 				ImageUtils.REQUEST_CODE_GETIMAGE_BYCAMERA);
 	}
@@ -388,9 +369,18 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	 * @param data 原始图片
 	 */
 	private void startActionCrop(Uri data) {
+		//截图后保存的文件
+		File file = getOutputMediaFile();
+		if(file == null) {
+			UIHelper.ToastMessage(this, R.string.tips_check_sdcart);
+			return;
+		}
+		protraitFile = file;
+		photoUri = Uri.fromFile(protraitFile);
+		
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(data, "image/*");
-		intent.putExtra("output", this.getUploadTempFile(data));
+		intent.putExtra("output", photoUri);
 		intent.putExtra("crop", "true");
 		intent.putExtra("aspectX", 1);// 裁剪框比例
 		intent.putExtra("aspectY", 1);
@@ -398,8 +388,12 @@ public class UserInfoActivity extends BaseActionBarActivity {
 		intent.putExtra("outputY", CROP_SIZE);
 		intent.putExtra("scale", true);// 去黑边
 		intent.putExtra("scaleUpIfNeeded", true);// 去黑边
-		startActivityForResult(intent,
-				ImageUtils.REQUEST_CODE_GETIMAGE_BYSDCARD);
+		try {
+			startActivityForResult(intent,
+					ImageUtils.REQUEST_CODE_GETIMAGE_BYSDCARD);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** 上传新照片 */
@@ -424,8 +418,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 								.updatePortrait(protraitFile);
 						if (res != null && res.OK()) {
 							// 保存新头像到缓存
-							String filename = FileUtils.getFileName(user
-									.getFace());
+							String filename = FileUtils.getFileName(user.getFace());
 							ImageUtils.saveImage(UserInfoActivity.this, filename,
 									protraitBitmap);
 						}
@@ -445,7 +438,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 			
 			@Override
 			protected void onPreExecute() {
-				loadingDialog.setLoadText(R.string.upload_user_avatar);
+				loadingDialog.setMessage(getString(R.string.upload_user_avatar));
 				//设置为不可以关闭的对话框
 				loadingDialog.setCancelable(false);
 				loadingDialog.show();
@@ -461,11 +454,15 @@ public class UserInfoActivity extends BaseActionBarActivity {
 				loadingDialog.hide();
 				if (msg.what == 1 && msg.obj != null) {
 					Result res = (Result) msg.obj;
-					// 提示信息
-					UIHelper.ToastMessage(UserInfoActivity.this, res.getErrorMessage());
 					if (res.OK()) {
+						// 提示信息
+						UIHelper.ToastMessage(UserInfoActivity.this, 
+								R.string.upload_user_avatar_success);
 						// 显示新头像
 						face.setImageBitmap(protraitBitmap);
+					} else {
+						UIHelper.ToastMessage(UserInfoActivity.this, 
+								res.getErrorMessage());
 					}
 				} else if (msg.what == -1 && msg.obj != null) {
 					((AppException) msg.obj).makeToast(UserInfoActivity.this);
@@ -487,7 +484,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 		switch (requestCode) {
 		case ImageUtils.REQUEST_CODE_GETIMAGE_BYCAMERA:
 			// 拍照后裁剪
-			startActionCrop(origUri);
+			startActionCrop(photoUri);
 			break;
 		case ImageUtils.REQUEST_CODE_GETIMAGE_BYCROP:
 			// 选图后裁剪

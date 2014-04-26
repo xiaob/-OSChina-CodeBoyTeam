@@ -27,6 +27,8 @@
             android:id="@+id/login_account_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            android:imeOptions="actionNext"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/black"
             android:hint="@string/login_dialog_account_hint" />
@@ -50,6 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
+            android:imeOptions="actionDone"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/black"
             android:hint="@string/login_dialog_password_hint" />

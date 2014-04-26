@@ -1,5 +1,7 @@
 package com.codeboy.app.oschina;
 
+import java.util.regex.Pattern;
+
 import net.oschina.app.bean.Result;
 import net.oschina.app.bean.User;
 import net.oschina.app.common.StringUtils;
@@ -13,10 +15,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 /**
  * 类名 LoginActivity.java</br>
@@ -29,7 +38,7 @@ import android.widget.EditText;
  * 说明 登录
  */
 public class LoginActivity extends BaseActionBarActivity 
-	implements OnClickListener{
+	implements OnClickListener, OnEditorActionListener{
 
 	private EditText mAccountEditText;
 	private EditText mPasswordEditText;
@@ -69,6 +78,44 @@ public class LoginActivity extends BaseActionBarActivity
 	    if(!StringUtils.isEmpty(user.getPwd())){
 	    	mPasswordEditText.setText(user.getPwd());
 	    }
+	    mPasswordEditText.setOnEditorActionListener(this);
+	    mAccountEditText.addTextChangedListener(new TextWatcher() {
+			//账号只能输入特定的字符
+	    	String regEx = "[^-._@0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]";
+	    	Pattern p = Pattern.compile(regEx);
+	    	
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+		        int editEnd = mAccountEditText.getSelectionEnd();
+				String text = s.toString();
+				String resultText = p.matcher(text).replaceAll("");
+				//如果处理后的文本是一样的，则不再需要执行以下
+				if(text.equals(resultText)) {
+					return;
+				}
+				
+				if(editEnd > resultText.length()) {
+					editEnd = resultText.length();
+				} else {
+					editEnd = editEnd - 1;
+				}
+				editEnd = editEnd < 0 ? 0 : editEnd;
+				mAccountEditText.removeTextChangedListener(this);
+				mAccountEditText.setText(resultText);
+				mAccountEditText.setSelection(editEnd);
+				mAccountEditText.addTextChangedListener(this);
+			}
+		});
 	}
 	
 	@Override
@@ -79,21 +126,40 @@ public class LoginActivity extends BaseActionBarActivity
 
 	@Override
 	public void onClick(View v) {
+		checkLogin();
+	}
+	
+	/** 登录信息检查与登录*/
+	private void checkLogin() {
 		String account = mAccountEditText.getText().toString();
 		String passwd = mPasswordEditText.getText().toString();
 		boolean remember = mRememberCheckBox.isChecked();
 		
 		////检查用户输入的参数
 		if(StringUtils.isEmpty(account)){
-			UIHelper.ToastMessage(v.getContext(), getString(R.string.msg_login_email_null));
+			UIHelper.ToastMessage(this, getString(R.string.msg_login_email_null));
 			return;
 		}
 		if(StringUtils.isEmpty(passwd)){
-			UIHelper.ToastMessage(v.getContext(), getString(R.string.msg_login_pwd_null));
+			UIHelper.ToastMessage(this, getString(R.string.msg_login_pwd_null));
 			return;
 		}
 		
 		login(account, passwd, remember);
+	}
+	
+	@Override
+	public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		//在输入法里点击了“完成”，则去登录
+		if(actionId == EditorInfo.IME_ACTION_DONE) {
+			checkLogin();
+			//将输入法隐藏
+			InputMethodManager imm = (InputMethodManager)getSystemService(
+					Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(mPasswordEditText.getWindowToken(), 0);
+			return true;
+		}
+		return false;
 	}
 	
 	//登录验证

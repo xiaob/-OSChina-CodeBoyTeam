@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -45,9 +46,6 @@ import android.util.DisplayMetrics;
  * @created 2012-3-21
  */
 public class ImageUtils {
-
-	public final static String SDCARD_MNT = "/mnt/sdcard";
-	public final static String SDCARD = "/sdcard";
 
 	/** 请求相册 */
 	public static final int REQUEST_CODE_GETIMAGE_BYSDCARD = 0;
@@ -223,7 +221,8 @@ public class ImageUtils {
 	 * @return
 	 */
 	public static String getTempFileName() {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss_SS");
+		SimpleDateFormat format = new SimpleDateFormat(
+				"yyyy-MM-dd_HH-mm-ss_SS", Locale.CHINA);
 		String fileName = format.format(new Timestamp(System
 				.currentTimeMillis()));
 		return fileName;
@@ -246,22 +245,13 @@ public class ImageUtils {
 	 * @return
 	 */
 	public static String getAbsolutePathFromNoStandardUri(Uri mUri) {
-		String filePath = null;
-
 		String mUriString = mUri.toString();
 		mUriString = Uri.decode(mUriString);
-
-		String pre1 = "file://" + SDCARD + File.separator;
-		String pre2 = "file://" + SDCARD_MNT + File.separator;
-
-		if (mUriString.startsWith(pre1)) {
-			filePath = Environment.getExternalStorageDirectory().getPath()
-					+ File.separator + mUriString.substring(pre1.length());
-		} else if (mUriString.startsWith(pre2)) {
-			filePath = Environment.getExternalStorageDirectory().getPath()
-					+ File.separator + mUriString.substring(pre2.length());
+		String pre = "file://";
+		if(mUriString != null && mUriString.startsWith(pre)) {
+			return mUriString.substring(pre.length());
 		}
-		return filePath;
+		return null;
 	}
 
 	/**

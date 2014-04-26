@@ -33,6 +33,7 @@
         <!-- 登录 -->
         <activity
             android:name="com.codeboy.app.oschina.LoginActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
             android:label="@string/login_dialog_title" />
         
         <!-- 我的资料 -->
