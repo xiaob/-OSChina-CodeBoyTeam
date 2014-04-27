@@ -4,6 +4,7 @@ package com.codeboy.app.oschina;
 import com.codeboy.app.library.common.DoubleClickExitHelper;
 import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.modul.DrawerMenuCallBack;
+import com.codeboy.app.oschina.ui.ActiveMainFragment;
 import com.codeboy.app.oschina.ui.DrawerMenuFragment;
 import com.codeboy.app.oschina.ui.NewsMainFragment;
 import com.codeboy.app.oschina.ui.QAMainFragment;
@@ -44,19 +45,30 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	static final String CONTENT_TAG_QA = "content_questionask";
 	static final String CONTENT_TAG_TWEET = "content_tweet";
 	static final String CONTENT_TAG_SOFTWARE = "content_software";
+	static final String CONTENT_TAG_ACTIVE = "content_active";
 	
 	static final String CONTENTS[] = {
 		CONTENT_TAG_NEWS,
 		CONTENT_TAG_QA,
 		CONTENT_TAG_TWEET,
-		CONTENT_TAG_SOFTWARE
+		CONTENT_TAG_SOFTWARE,
+		CONTENT_TAG_ACTIVE
 	};
 	
 	static final String FRAGMENTS[] = {
 		NewsMainFragment.class.getName(),
 		QAMainFragment.class.getName(),
 		TweetMainFragment.class.getName(),
-		SoftwareMainFragment.class.getName()
+		SoftwareMainFragment.class.getName(),
+		ActiveMainFragment.class.getName()
+	};
+	
+	static final int TITLES[] = {
+		R.string.frame_title_news,
+		R.string.frame_title_question_ask,
+		R.string.frame_title_tweet,
+		R.string.frame_title_software,
+		R.string.frame_title_active
 	};
 	
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -95,6 +107,7 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 			.replace(R.id.drawer_content, NewsMainFragment.newInstance(), CONTENT_TAG_NEWS)
 			.commit();
 			
+			mActionBar.setTitle(TITLES[0]);
 			mCurrentContentTag = CONTENT_TAG_NEWS;
 		}
 	}
@@ -127,10 +140,7 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 				mDrawerLayout.closeDrawers();
 				return true;
 			}
-		}
-		boolean result = mDoubleClickExitHelper.onKeyDown(keyCode, event);
-		if(result) {
-			return true;
+			return mDoubleClickExitHelper.onKeyDown(keyCode, event);
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -154,6 +164,8 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 		}
 		ft.replace(R.id.drawer_content, Fragment.instantiate(this, FRAGMENTS[pos]), tag);
 		ft.commit();
+		
+		mActionBar.setTitle(TITLES[pos]);
 		mCurrentContentTag = tag;
 	}
 
@@ -175,6 +187,11 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	@Override
 	public void onClickSoftware() {
 		showContent(3);
+	}
+	
+	@Override
+	public void onClickAvtive() {
+		showContent(4);
 	}
 	
 	private class DrawerMenuListener implements DrawerLayout.DrawerListener {

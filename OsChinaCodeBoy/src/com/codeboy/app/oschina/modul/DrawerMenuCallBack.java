@@ -20,4 +20,6 @@ public interface DrawerMenuCallBack {
 	public void onClickTweet();
 	/** 点击开源软件库*/
 	public void onClickSoftware();
+	/** 点击我的空间*/
+	public void onClickAvtive();
 }

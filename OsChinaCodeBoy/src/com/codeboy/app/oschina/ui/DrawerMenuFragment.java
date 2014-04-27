@@ -198,6 +198,8 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 	
 	/** 点击了我的空间*/
 	private void onClickActive() {
-		
+		if(mCallBack != null) {
+			mCallBack.onClickAvtive();
+		}
 	}
 }
