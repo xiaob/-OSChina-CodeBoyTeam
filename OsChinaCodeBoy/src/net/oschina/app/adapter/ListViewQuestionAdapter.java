@@ -48,7 +48,7 @@ public class ListViewQuestionAdapter extends BaseAdapter {
 		this.listContainer = LayoutInflater.from(context);	//创建视图容器并设置上下文
 		this.itemViewResource = resource;
 		this.listItems = data;
-		this.bmpManager = new BitmapManager(BitmapFactory.decodeResource(context.getResources(), R.drawable.widget_dface_loading));
+		this.bmpManager = new BitmapManager(BitmapFactory.decodeResource(context.getResources(), R.drawable.mini_avatar));
 	}
 	
 	public int getCount() {
@@ -94,7 +94,7 @@ public class ListViewQuestionAdapter extends BaseAdapter {
 		Post post = listItems.get(position);
 		String faceURL = post.getFace();
 		if(faceURL.endsWith("portrait.gif") || StringUtils.isEmpty(faceURL)){
-			listItemView.face.setImageResource(R.drawable.widget_dface);
+			listItemView.face.setImageResource(R.drawable.mini_avatar);
 		}else{
 			bmpManager.loadBitmap(faceURL, listItemView.face);
 		}

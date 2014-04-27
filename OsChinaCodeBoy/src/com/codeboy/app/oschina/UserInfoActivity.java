@@ -33,9 +33,9 @@ import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -56,7 +56,7 @@ import android.widget.TextView;
  * 
  * 说明 用户资料界面
  */
-public class UserInfoActivity extends BaseActionBarActivity {
+public class UserInfoActivity extends BaseActionBarActivity implements OnClickListener {
 	
 	//头像截图的大小
 	private final static int CROP_SIZE = 200;
@@ -65,6 +65,8 @@ public class UserInfoActivity extends BaseActionBarActivity {
 			AppConfig.DEFAULT_IMAGE_PORTRAIT_PATH;
 	
 	private final static int REFLASH_ITEM_ID = 100;
+	
+	private final static int LOGIN_REQUEST = 2014;
 
 	private ImageView face;
 	private ImageView gender;
@@ -77,9 +79,6 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	private TextView followers;
 	private TextView fans;
 	private TextView favorites;
-	private LinearLayout favorites_ll;
-	private LinearLayout followers_ll;
-	private LinearLayout fans_ll;
 	
 	private MyInformation user;
 	
@@ -90,19 +89,34 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	private Uri photoUri;
 	private File protraitFile;
 	private Bitmap protraitBitmap;
+	
+	private OSChinaApplication application;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//须要在setContentView 前调用
 		supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
-		setContentView(R.layout.activity_user_info);
 		
 		ActionBar bar = getSupportActionBar();
 		int flags = ActionBar.DISPLAY_HOME_AS_UP;
 		int change = bar.getDisplayOptions() ^ flags;
         bar.setDisplayOptions(change, flags);
+        
+        application = getOsChinaApplication();
 
+		//先判断用户是否已经登录了
+		if(!application.isLogin()) {
+			//跳转登录
+			Intent intent = new Intent(this, LoginActivity.class);
+			startActivityForResult(intent, LOGIN_REQUEST);
+		} else {
+			setupView();
+		}
+	}
+	
+	private void setupView() {
+		setContentView(R.layout.activity_user_info);
 		// 初始化视图控件
 		initView();
 		// 加载用户数据
@@ -141,7 +155,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 		loadingDialog = new ProgressDialog(this);
 		
 		editer = (Button) findViewById(R.id.user_info_editer);
-		editer.setOnClickListener(editerClickListener);
+		editer.setOnClickListener(this);
 
 		face = (ImageView) findViewById(R.id.user_info_userface);
 		gender = (ImageView) findViewById(R.id.user_info_gender);
@@ -153,9 +167,36 @@ public class UserInfoActivity extends BaseActionBarActivity {
 		followers = (TextView) findViewById(R.id.user_info_followers);
 		fans = (TextView) findViewById(R.id.user_info_fans);
 		favorites = (TextView) findViewById(R.id.user_info_favorites);
-		favorites_ll = (LinearLayout) findViewById(R.id.user_info_favorites_ll);
-		followers_ll = (LinearLayout) findViewById(R.id.user_info_followers_ll);
-		fans_ll = (LinearLayout) findViewById(R.id.user_info_fans_ll);
+		
+		findViewById(R.id.user_info_favorites_ll).setOnClickListener(this);
+		findViewById(R.id.user_info_followers_ll).setOnClickListener(this);
+		findViewById(R.id.user_info_fans_ll).setOnClickListener(this);
+		
+		findViewById(R.id.user_info_logout).setOnClickListener(this);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		int id = v.getId();
+		if(id == R.id.user_info_logout) {
+			onLogoutClick();
+			return;
+		} else if(id == R.id.user_info_editer) {
+			onEditerClick();
+			return;
+		}
+		
+		if(!application.isLogin()) {
+			return;
+		}
+		
+		if(id == R.id.user_info_favorites_ll) {
+			onFavoritesClick();
+		} else if(id == R.id.user_info_followers_ll) {
+			onFollowersClick();
+		} else if(id == R.id.user_info_fans_ll) {
+			onFansClick();
+		}
 	}
 	
 	/** 
@@ -173,8 +214,7 @@ public class UserInfoActivity extends BaseActionBarActivity {
 			protected Message doInBackground(Void... params) {
 				Message msg = new Message();
 				try {
-					MyInformation user = getOsChinaApplication()
-							.getMyInformation(isRefresh);
+					MyInformation user = application.getMyInformation(isRefresh);
 					msg.what = 1;
 					msg.obj = user;
 				} catch (AppException e) {
@@ -211,10 +251,11 @@ public class UserInfoActivity extends BaseActionBarActivity {
 					UIHelper.showUserFace(face, user.getFace());
 
 					// 用户性别
-					if (user.getGender() == 1)
+					if (user.getGender() == 1) {
 						gender.setImageResource(R.drawable.widget_gender_man);
-					else
+					} else {
 						gender.setImageResource(R.drawable.widget_gender_woman);
+					}
 
 					// 其他资料
 					name.setText(user.getName());
@@ -226,10 +267,6 @@ public class UserInfoActivity extends BaseActionBarActivity {
 					followers.setText(user.getFollowerscount() + "");
 					fans.setText(user.getFanscount() + "");
 					favorites.setText(user.getFavoritecount() + "");
-
-					favorites_ll.setOnClickListener(favoritesClickListener);
-					fans_ll.setOnClickListener(fansClickListener);
-					followers_ll.setOnClickListener(followersClickListener);
 					
 					if(isRefresh) {
 						UIHelper.ToastMessage(UserInfoActivity.this, R.string.loaded_userinfo);
@@ -241,47 +278,48 @@ public class UserInfoActivity extends BaseActionBarActivity {
 			
 		}.execute();
 	}
-
-	private View.OnClickListener editerClickListener = new View.OnClickListener() {
-		public void onClick(View v) {
-			CharSequence[] items = { getString(R.string.img_from_album),
-					getString(R.string.img_from_camera) };
-			imageChooseItem(items);
-		}
-	};
-
-	private View.OnClickListener favoritesClickListener = new View.OnClickListener() {
-		public void onClick(View v) {
-			//TODO
-			//UIHelper.showUserFavorite(v.getContext());
-		}
-	};
-
-	private View.OnClickListener fansClickListener = new View.OnClickListener() {
-		public void onClick(View v) {
-			int followers = user != null ? user.getFollowerscount() : 0;
-			int fans = user != null ? user.getFanscount() : 0;
-			//TODO
-			/*UIHelper.showUserFriend(v.getContext(), FriendList.TYPE_FANS,
-					followers, fans);*/
-		}
-	};
-
-	private View.OnClickListener followersClickListener = new View.OnClickListener() {
-		public void onClick(View v) {
-			int followers = user != null ? user.getFollowerscount() : 0;
-			int fans = user != null ? user.getFanscount() : 0;
-			//TODO
-			/*UIHelper.showUserFriend(v.getContext(), FriendList.TYPE_FOLLOWER,
-					followers, fans);*/
-		}
-	};
 	
+	private void onLogoutClick() {
+		application.logout();
+		finish();
+	}
+
+	/** 点击了编辑头像*/
+	private void onEditerClick() {
+		CharSequence[] items = { getString(R.string.img_from_album),
+				getString(R.string.img_from_camera) };
+		imageChooseItem(items);
+	}
+
+	/**点击了收藏 */
+	private void onFavoritesClick() {
+		//TODO
+		//UIHelper.showUserFavorite(v.getContext());
+	}
+	
+	/** 点击了粉丝*/
+	private void onFansClick() {
+		int followers = user != null ? user.getFollowerscount() : 0;
+		int fans = user != null ? user.getFanscount() : 0;
+		//TODO
+		/*UIHelper.showUserFriend(v.getContext(), FriendList.TYPE_FANS,
+				followers, fans);*/
+	}
+	
+	/** 点击了关注*/
+	private void onFollowersClick() {
+		int followers = user != null ? user.getFollowerscount() : 0;
+		int fans = user != null ? user.getFanscount() : 0;
+		//TODO
+		/*UIHelper.showUserFriend(v.getContext(), FriendList.TYPE_FOLLOWER,
+				followers, fans);*/
+	}
+
 	/**
 	 * 生成输出图片的文件
 	 * @return
 	 */
-	public static File getOutputMediaFile() {
+	private File getOutputMediaFile() {
 		File mediaStorageDir = null;
 		if(Util.hasFroyo()) {
 			mediaStorageDir = Environment.getExternalStoragePublicDirectory(
@@ -478,6 +516,17 @@ public class UserInfoActivity extends BaseActionBarActivity {
 	@Override
 	protected void onActivityResult(final int requestCode,
 			final int resultCode, final Intent data) {
+		//如果是从登录回来的
+		if(requestCode == LOGIN_REQUEST) {
+			if(resultCode == RESULT_OK) {
+				//登录成功，初始化界面
+				setupView();
+			} else {
+				//登录取消，结束当前页面
+				finish();
+			}
+			return;
+		}
 		if (resultCode != RESULT_OK)
 			return;
 

@@ -231,7 +231,8 @@ public class LoginActivity extends BaseActionBarActivity
 						finish();
 					}
 				}else if(msg.what == 0){
-					UIHelper.ToastMessage(context, getString(R.string.msg_login_fail)+msg.obj);
+					UIHelper.ToastMessage(context, getString(
+							R.string.msg_login_fail) + msg.obj);
 				}else if(msg.what == -1){
 					((AppException)msg.obj).makeToast(context);
 				}

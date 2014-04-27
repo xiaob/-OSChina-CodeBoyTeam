@@ -1,20 +1,21 @@
 package com.codeboy.app.oschina;
 
 
-import com.codeboy.app.oschina.adapter.TabsFragmentPagerAdapter;
-import com.codeboy.app.oschina.ui.NewsLatestNewsFragment;
-import com.codeboy.app.oschina.ui.NewsRecentBlogPostsFragment;
-import com.codeboy.app.oschina.ui.NewsRecommonFragment;
+import com.codeboy.app.library.util.L;
+import com.codeboy.app.oschina.modul.DrawerMenuCallBack;
+import com.codeboy.app.oschina.ui.DrawerMenuFragment;
+import com.codeboy.app.oschina.ui.NewsMainFragment;
+import com.codeboy.app.oschina.ui.QAMainFragment;
+import com.codeboy.app.oschina.ui.SoftwareMainFragment;
+import com.codeboy.app.oschina.ui.TweetMainFragment;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.TabHost;
+import android.view.Gravity;
+import android.view.KeyEvent;
 
 
 /**
@@ -25,93 +26,107 @@ import android.widget.TabHost;
  * 更新时间 2014年4月26日 下午12:15:10</br>
  * 最后更新者 LeonLee</br>
  * 
- * 说明 类的描述
+ * 说明 主界面 
  */
-public class MainActivity extends BaseActionBarActivity {
-	
-	private TabHost mTabHost;
-	private ViewPager  mViewPager;
-	private TabsFragmentPagerAdapter mTabsAdapter;
+public class MainActivity extends BaseActionBarActivity implements DrawerMenuCallBack{
     
+	static final String DRAWER_MENU_TAG = "drawer_menu";
+	static final String DRAWER_CONTENT_TAG = "drawer_content";
+	
+	static final String CONTENT_TAG_NEWS = "content_news";
+	static final String CONTENT_TAG_QA = "content_questionask";
+	static final String CONTENT_TAG_TWEET = "content_tweet";
+	static final String CONTENT_TAG_SOFTWARE = "content_software";
+	
+	static final String CONTENTS[] = {
+		CONTENT_TAG_NEWS,
+		CONTENT_TAG_QA,
+		CONTENT_TAG_TWEET,
+		CONTENT_TAG_SOFTWARE
+	};
+	
+	static final String FRAGMENTS[] = {
+		NewsMainFragment.class.getName(),
+		QAMainFragment.class.getName(),
+		TweetMainFragment.class.getName(),
+		SoftwareMainFragment.class.getName()
+	};
+	
+	private FragmentManager mFragmentManager;
     private DrawerLayout mDrawerLayout;
+    
+    //当前显示的界面标识
+    private String mCurrentContentTag;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
+		mFragmentManager = getSupportFragmentManager();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		
-		findViewById(R.id.drawer_login_button).setOnClickListener(new OnClickListener() {
+		if(savedInstanceState == null) {
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.replace(R.id.drawer_menu, DrawerMenuFragment.newInstance(), DRAWER_MENU_TAG)
+			.replace(R.id.drawer_content, NewsMainFragment.newInstance(), CONTENT_TAG_NEWS)
+			.commit();
 			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-				startActivityForResult(intent, 12345);
-			}
-		});
-		
-		findViewById(R.id.drawer_userinfo_button).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
-				startActivity(intent);
-			}
-		});
-		
-		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
-        mTabHost.setup();
-
-        mViewPager = (ViewPager)findViewById(R.id.viewpager);
-
-        mTabsAdapter = new TabsFragmentPagerAdapter(this, mTabHost, mViewPager);
-
-        mTabsAdapter.addTab(mTabHost.newTabSpec("news").setIndicator(
-        		getString(R.string.frame_title_news_lastest)), NewsLatestNewsFragment.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("blog").setIndicator(
-        		getString(R.string.frame_title_news_blog)),
-                NewsRecentBlogPostsFragment.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("recommon").setIndicator(
-        		getString(R.string.frame_title_news_recommend)),
-                NewsRecommonFragment.class, null);
-
-        if (savedInstanceState != null) {
-            mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
-        }
+			mCurrentContentTag = CONTENT_TAG_NEWS;
+		}
 	}
 	
 	@Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("tab", mTabHost.getCurrentTabTag());
-    }
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK) {
+			//判断菜单是否打开
+			if(mDrawerLayout.isDrawerOpen(Gravity.START)) {
+				mDrawerLayout.closeDrawers();
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	/** 显示内容*/
+	private void showContent(int pos) {
+		mDrawerLayout.closeDrawers();
+		String tag = CONTENTS[pos];
+		if(tag.equals(mCurrentContentTag)) {
+			if(L.Debug) {
+				L.d("show content:" + tag);
+			}
+			return;
+		}
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		if(mCurrentContentTag != null) {
+			Fragment fragment = mFragmentManager.findFragmentByTag(mCurrentContentTag);
+			if(fragment != null) {
+				ft.remove(fragment);
+			}
+		}
+		ft.replace(R.id.drawer_content, Fragment.instantiate(this, FRAGMENTS[pos]), tag);
+		ft.commit();
+		mCurrentContentTag = tag;
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if(id == R.id.action_question_ask) {
-			Intent intent = new Intent(this, QuestionAskActivity.class);
-			startActivity(intent);
-		} else if(id == R.id.action_tweet) {
-			Intent intent = new Intent(this, TweetActivity.class);
-			startActivity(intent);
-		} else if(id == R.id.action_software) {
-			Intent intent = new Intent(this, SoftwareLibraryActivity.class);
-			startActivity(intent);
-		} else if(id == R.id.action_active) {
-			
-		} else if(id == R.id.action_myinfo) {
-			
-		} else if (id == R.id.action_settings) {
-			return true;
-		} 
-		return super.onOptionsItemSelected(item);
+	public void onClickNews() {
+		showContent(0);
+	}
+
+	@Override
+	public void onClickQuestionAsk() {
+		showContent(1);
+	}
+
+	@Override
+	public void onClickTweet() {
+		showContent(2);
+	}
+
+	@Override
+	public void onClickSoftware() {
+		showContent(3);
 	}
 }

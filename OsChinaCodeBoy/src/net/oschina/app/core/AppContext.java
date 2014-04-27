@@ -217,7 +217,7 @@ public class AppContext extends Application {
 	/**
 	 * 用户注销
 	 */
-	public void Logout() {
+	public void logout() {
 		ApiClient.cleanCookie();
 		this.cleanCookie();
 		this.login = false;
@@ -248,11 +248,12 @@ public class AppContext extends Application {
 	 */
 	public void initLoginInfo() {
 		User loginUser = getLoginInfo();
-		if(loginUser!=null && loginUser.getUid()>0 && loginUser.isRememberMe()){
+		if(loginUser != null && loginUser.getUid() > 0 
+				&& loginUser.isRememberMe()){
 			this.loginUid = loginUser.getUid();
 			this.login = true;
 		}else{
-			this.Logout();
+			logout();
 		}
 	}
 	

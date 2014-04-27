@@ -11,7 +11,7 @@
 
     <ImageView 
     	android:id="@+id/question_listitem_userface"
-      	style="@style/user_face_image"/>
+      	style="@style/UserFaceImageStyle"/>
 
 	<LinearLayout
     	android:layout_width="fill_parent" 

@@ -17,6 +17,7 @@
     <string name="main_menu_setting">系统设置</string>
     <string name="main_menu_exit">退出程序</string>
     
+    <string name="frame_title_news">资讯</string>
     <string name="frame_title_news_lastest">最新资讯</string>
     <string name="frame_title_news_blog">最新博客</string>
     <string name="frame_title_news_recommend">推荐阅读</string>
@@ -37,6 +38,7 @@
     <string name="frame_title_active_myself">我自己</string>
     <string name="frame_title_active_message">留言</string>
     
+    <string name="frame_title_software">开源软件</string>
     <string name="frame_title_software_recommon">推荐</string>
     <string name="frame_title_software_lastest">最新</string>
     <string name="frame_title_software_hot">最热</string>

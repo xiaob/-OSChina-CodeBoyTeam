@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -17,15 +17,40 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
     
-    
-    <style name="user_face_image">
+    <!-- 用户列表头像的样式 -->
+    <style name="UserFaceImageStyle">
 		<item name="android:layout_width">40.0dip</item>
 		<item name="android:layout_height">40.0dip</item>
 		<item name="android:scaleType">fitCenter</item>
 		<item name="android:padding">1.0dip</item>
 		<item name="android:clickable">true</item>
-		<item name="android:background">@drawable/widget_dface_border</item>
-		<item name="android:src">@drawable/widget_dface_loading</item>
+		<item name="android:src">@drawable/mini_avatar</item>
+    </style>
+    
+    <!-- 绿色按钮样式 -->
+    <style name="GreenButtonStyle">
+        <item name="android:background">@drawable/btn_style_green</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    
+    <!-- 红色按钮样式 -->
+    <style name="RedButtonStyle">
+        <item name="android:background">@drawable/btn_style_red</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    
+    <!-- 灰色按钮样式 -->
+    <style name="GreyButtonStyle">
+        <item name="android:background">@drawable/btn_style_grey</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    
+    <!-- 输入框的样式 -->
+    <style name="EditTextStyle">
+        <item name="android:background">@drawable/edittext_bg_selector</item>
     </style>
     
     <!-- 基本Dialog的样式 -->
@@ -90,5 +115,23 @@
 		<item name="android:textSize">@dimen/text_size_14</item>
 		<item name="android:textStyle">bold</item>
 		<item name="android:textColor">@color/author_text</item>
+    </style>
+    
+    <!-- 菜单layout的样式 -->
+    <style name="MenuItemLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dip</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingLeft">20dip</item>
+        <item name="android:paddingRight">20dip</item>
+    </style>
+    
+    <!-- 菜单TextView的样式 -->
+    <style name="MenuItemTextViewStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_20</item>
     </style>
 </resources>

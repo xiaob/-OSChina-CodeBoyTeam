@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.Map;
 import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
-import android.util.Log;
 
 /**
  * 文件操作工具包
@@ -75,7 +73,7 @@ public class FileUtils {
 			inStream.close();
 			return outStream.toString();
 		} catch (IOException e) {
-			Log.i("FileTest", e.getMessage());
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -410,7 +408,6 @@ public class FileUtils {
 						deletedFile.delete();
 					}
 					newPath.delete();
-					Log.i("DirectoryManager deleteDirectory", fileName);
 					status = true;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -441,7 +438,6 @@ public class FileUtils {
 			checker.checkDelete(newPath.toString());
 			if (newPath.isFile()) {
 				try {
-					Log.i("DirectoryManager deleteFile", fileName);
 					newPath.delete();
 					status = true;
 				} catch (SecurityException se) {
@@ -498,7 +494,6 @@ public class FileUtils {
 		File f = new File(filePath);
 		checker.checkDelete(filePath);
 		if (f.isFile()) {
-			Log.i("DirectoryManager deleteFile", filePath);
 			f.delete();
 			return true;
 		}

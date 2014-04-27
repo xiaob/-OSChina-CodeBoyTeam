@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -59,9 +59,9 @@ public class TabsFragmentPagerAdapter extends FragmentPagerAdapter
         }
     }
 
-    public TabsFragmentPagerAdapter(FragmentActivity activity, TabHost tabHost, ViewPager pager) {
-        super(activity.getSupportFragmentManager());
-        mContext = activity;
+    public TabsFragmentPagerAdapter(FragmentManager fm, TabHost tabHost, ViewPager pager) {
+        super(fm);
+        mContext = pager.getContext();
         mTabHost = tabHost;
         mViewPager = pager;
         mTabHost.setOnTabChangedListener(this);

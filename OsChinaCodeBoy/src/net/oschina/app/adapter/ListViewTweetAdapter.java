@@ -7,7 +7,6 @@ import com.codeboy.app.oschina.R;
 import net.oschina.app.bean.Tweet;
 import net.oschina.app.common.BitmapManager;
 import net.oschina.app.common.StringUtils;
-import net.oschina.app.common.UIHelper;
 import net.oschina.app.widget.LinkView;
 import net.oschina.app.widget.LinkView.OnLinkClickListener;
 import android.content.Context;
@@ -55,7 +54,7 @@ public class ListViewTweetAdapter extends MyBaseAdapter {
 		this.itemViewResource = resource;
 		this.listItems = data;
 		this.bmpManager = new BitmapManager(BitmapFactory.decodeResource(
-				context.getResources(), R.drawable.widget_dface_loading));
+				context.getResources(), R.drawable.mini_avatar));
 	}
 
 	public int getCount() {
@@ -149,7 +148,7 @@ public class ListViewTweetAdapter extends MyBaseAdapter {
 
 		String faceURL = tweet.getFace();
 		if (faceURL.endsWith("portrait.gif") || StringUtils.isEmpty(faceURL)) {
-			listItemView.userface.setImageResource(R.drawable.widget_dface);
+			listItemView.userface.setImageResource(R.drawable.mini_avatar);
 		} else {
 			bmpManager.loadBitmap(faceURL, listItemView.userface);
 		}

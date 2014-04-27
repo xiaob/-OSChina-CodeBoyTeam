@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/menu_user_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dip"
+            android:layout_marginTop="20dip" >
+
+            <ImageView
+                android:id="@+id/user_info_userface"
+                android:layout_width="72dip"
+                android:layout_height="72dip"
+                android:scaleType="fitCenter"
+                android:src="@drawable/default_avatar" />
+
+            <ImageView
+                android:id="@+id/user_info_gender"
+                android:layout_width="18dip"
+                android:layout_height="18dip"
+                android:layout_alignBottom="@id/user_info_userface"
+                android:layout_marginLeft="10.0dip"
+                android:layout_toRightOf="@id/user_info_userface"
+                android:scaleType="fitCenter"
+                android:src="@drawable/widget_gender_man" />
+
+            <TextView
+                android:id="@+id/user_info_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/user_info_gender"
+                android:layout_alignLeft="@id/user_info_gender"
+                android:layout_marginBottom="10.0dip"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_18" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dip"
+            android:divider="?attr/dividerHorizontal"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/menu_item_news"
+                style="@style/MenuItemLayoutStyle" >
+
+                <TextView
+                    style="@style/MenuItemTextViewStyle"
+                    android:text="@string/frame_title_news"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/menu_item_qa"
+                style="@style/MenuItemLayoutStyle" >
+
+                <TextView
+                    style="@style/MenuItemTextViewStyle"
+                    android:text="@string/frame_title_question_ask"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/menu_item_tweet"
+                style="@style/MenuItemLayoutStyle" >
+
+                <TextView
+                    style="@style/MenuItemTextViewStyle"
+                    android:text="@string/frame_title_tweet"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/menu_item_software"
+                style="@style/MenuItemLayoutStyle" >
+
+                <TextView
+                    style="@style/MenuItemTextViewStyle"
+                    android:text="@string/frame_title_software"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/menu_item_active"
+                style="@style/MenuItemLayoutStyle" >
+
+                <TextView
+                    style="@style/MenuItemTextViewStyle"
+                    android:text="@string/frame_title_active"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

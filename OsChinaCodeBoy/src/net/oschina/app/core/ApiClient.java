@@ -215,7 +215,7 @@ public class ApiClient {
 			try {
 				Result res = Result.parse(new ByteArrayInputStream(responseBody.getBytes()));	
 				if(res.getErrorCode() == 0){
-					appContext.Logout();
+					appContext.logout();
 					appContext.getUnLoginHandler().sendEmptyMessage(1);
 				}
 			} catch (Exception e) {
@@ -318,7 +318,7 @@ public class ApiClient {
 			try {
 				Result res = Result.parse(new ByteArrayInputStream(responseBody.getBytes()));	
 				if(res.getErrorCode() == 0){
-					appContext.Logout();
+					appContext.logout();
 					appContext.getUnLoginHandler().sendEmptyMessage(1);
 				}
 			} catch (Exception e) {

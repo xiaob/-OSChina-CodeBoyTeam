@@ -226,7 +226,7 @@ public class UIHelper {
 		// 读取本地图片
 		if (StringUtils.isEmpty(imgURL) || imgURL.endsWith("portrait.gif")) {
 			Bitmap bmp = BitmapFactory.decodeResource(imgView.getResources(),
-					R.drawable.widget_dface);
+					R.drawable.default_avatar);
 			imgView.setImageBitmap(bmp);
 			return;
 		}
