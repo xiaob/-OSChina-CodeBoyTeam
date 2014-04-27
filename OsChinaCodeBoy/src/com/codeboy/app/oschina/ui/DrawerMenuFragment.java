@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +75,7 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 		public void onReceive(Context context, Intent intent) {
 			L.d("收到用户账号变化的广播。。。");
 			//接收到变化后，更新用户资料
-			setupUserView();
+			setupUserView(true);
 		}
 	};
 	
@@ -106,10 +107,10 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 		view.findViewById(R.id.menu_item_software).setOnClickListener(this);
 		view.findViewById(R.id.menu_item_active).setOnClickListener(this);
 		
-		setupUserView();
+		setupUserView(false);
 	}
 	
-	private void setupUserView() {
+	private void setupUserView(final boolean reflash) {
 		//判断是否已经登录，如果已登录则显示用户的头像与信息
 		if(!mApplication.isLogin()) {
 			mAvatarImageView.setImageResource(R.drawable.default_avatar);
@@ -118,30 +119,44 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 			mLoginTipsLayout.setVisibility(View.VISIBLE);
 			return;
 		}
+		
 		mInfoLayout.setVisibility(View.VISIBLE);
 		mLoginTipsLayout.setVisibility(View.GONE);
+		mNameTextView.setText("");
 		
-		MyInformation user = null;
-		try {
-			user = mApplication.getMyInformation(false);
-		} catch (AppException e) {
-			e.printStackTrace();
-		}
-		if(user == null) {
-			return;
-		}
-		// 加载用户头像
-		UIHelper.showUserFace(mAvatarImageView, user.getFace());
+		new AsyncTask<Void, Void, MyInformation>() {
+			
+			@Override
+			protected MyInformation doInBackground(Void... params) {
+				MyInformation user = null;
+				try {
+					user = mApplication.getMyInformation(reflash);
+				} catch (AppException e) {
+					e.printStackTrace();
+				}
+				return user;
+			}
+			
+			@Override
+			protected void onPostExecute(MyInformation user) {
+				if(user == null || isDetached()) {
+					return;
+				}
+				// 加载用户头像
+				UIHelper.showUserFace(mAvatarImageView, user.getFace());
 
-		// 用户性别
-		if (user.getGender() == 1) {
-			mGenderImageView.setImageResource(R.drawable.widget_gender_man);
-		} else {
-			mGenderImageView.setImageResource(R.drawable.widget_gender_woman);
-		}
+				// 用户性别
+				if (user.getGender() == 1) {
+					mGenderImageView.setImageResource(R.drawable.widget_gender_man);
+				} else {
+					mGenderImageView.setImageResource(R.drawable.widget_gender_woman);
+				}
 
-		// 其他资料
-		mNameTextView.setText(user.getName());
+				// 其他资料
+				mNameTextView.setText(user.getName());
+			}
+			
+		}.execute();
 	}
 
 	@Override
