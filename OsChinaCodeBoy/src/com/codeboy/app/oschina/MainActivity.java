@@ -1,6 +1,7 @@
 package com.codeboy.app.oschina;
 
 
+import com.codeboy.app.library.common.DoubleClickExitHelper;
 import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.modul.DrawerMenuCallBack;
 import com.codeboy.app.oschina.ui.DrawerMenuFragment;
@@ -9,13 +10,19 @@ import com.codeboy.app.oschina.ui.QAMainFragment;
 import com.codeboy.app.oschina.ui.SoftwareMainFragment;
 import com.codeboy.app.oschina.ui.TweetMainFragment;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.View;
 
 
 /**
@@ -52,19 +59,35 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 		SoftwareMainFragment.class.getName()
 	};
 	
+	private ActionBarDrawerToggle mDrawerToggle;
+	
 	private FragmentManager mFragmentManager;
     private DrawerLayout mDrawerLayout;
     
     //当前显示的界面标识
     private String mCurrentContentTag;
+    
+    private ActionBar mActionBar;
+    private DoubleClickExitHelper mDoubleClickExitHelper;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
+		mActionBar = getSupportActionBar();
+		mActionBar.setDisplayHomeAsUpEnabled(true);
+		mActionBar.setHomeButtonEnabled(true);
+		
+		mDoubleClickExitHelper = new DoubleClickExitHelper(this);
+		
 		mFragmentManager = getSupportFragmentManager();
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerLayout.setDrawerListener(new DrawerMenuListener());
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.drawable.ic_drawer, 0, 0);
 		
 		if(savedInstanceState == null) {
 			FragmentTransaction ft = mFragmentManager.beginTransaction();
@@ -77,6 +100,26 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	}
 	
 	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		mDrawerToggle.syncState();
+	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+	
+	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK) {
 			//判断菜单是否打开
@@ -84,6 +127,10 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 				mDrawerLayout.closeDrawers();
 				return true;
 			}
+		}
+		boolean result = mDoubleClickExitHelper.onKeyDown(keyCode, event);
+		if(result) {
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -129,4 +176,26 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	public void onClickSoftware() {
 		showContent(3);
 	}
+	
+	private class DrawerMenuListener implements DrawerLayout.DrawerListener {
+        @Override
+        public void onDrawerOpened(View drawerView) {
+            mDrawerToggle.onDrawerOpened(drawerView);
+        }
+
+        @Override
+        public void onDrawerClosed(View drawerView) {
+            mDrawerToggle.onDrawerClosed(drawerView);
+        }
+
+        @Override
+        public void onDrawerSlide(View drawerView, float slideOffset) {
+            mDrawerToggle.onDrawerSlide(drawerView, slideOffset);
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+            mDrawerToggle.onDrawerStateChanged(newState);
+        }
+    }
 }
