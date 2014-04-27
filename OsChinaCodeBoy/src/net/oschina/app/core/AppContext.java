@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import com.codeboy.app.oschina.LoginActivity;
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.core.BroadcastController;
 
 import net.oschina.app.bean.ActiveList;
 import net.oschina.app.bean.Barcode;
@@ -75,7 +76,18 @@ public class AppContext extends Application {
 	public static final int NETTYPE_CMNET = 0x03;
 	
 	public static final int PAGE_SIZE = 20;//默认分页大小
-	private static final int CACHE_TIME = 60*60000;//缓存失效时间
+	private static final int CACHE_TIME = 60 * 60000;//缓存失效时间
+	
+	static final String PROP_KEY_UID = "user.uid";
+	static final String PROP_KEY_NAME = "user.name";
+	static final String PROP_KEY_FACE = "user.face";
+	static final String PROP_KEY_ACCOUNT = "user.account";
+	static final String PROP_KEY_PASSWORD = "user.pwd";
+	static final String PROP_KEY_LOCATION = "user.location";
+	static final String PROP_KEY_FOLLOWERS = "user.followers";
+	static final String PROP_KEY_FANS = "user.fans";
+	static final String PROP_KEY_SCORE = "user.score";
+	static final String PROP_KEY_ISREMEMBERME = "user.isRememberMe";
 	
 	private boolean login = false;	//登录状态
 	private int loginUid = 0;	//登录用户的id
@@ -103,7 +115,12 @@ public class AppContext extends Application {
 			saveImagePath = AppConfig.DEFAULT_SAVE_IMAGE_PATH;
 		}
 		//初始化用记的登录信息
-		initLoginInfo();
+		User loginUser = getLoginInfo();
+		if(loginUser != null && loginUser.getUid() > 0 
+				&& loginUser.isRememberMe()){
+			this.loginUid = loginUser.getUid();
+			this.login = true;
+		}
 	}
 	
 	/**
@@ -148,7 +165,7 @@ public class AppContext extends Application {
 		if (nType == ConnectivityManager.TYPE_MOBILE) {
 			String extraInfo = networkInfo.getExtraInfo();
 			if(!StringUtils.isEmpty(extraInfo)){
-				if (extraInfo.toLowerCase().equals("cmnet")) {
+				if ("cmnet".equalsIgnoreCase(extraInfo)) {
 					netType = NETTYPE_CMNET;
 				} else {
 					netType = NETTYPE_CMWAP;
@@ -219,9 +236,11 @@ public class AppContext extends Application {
 	 */
 	public void logout() {
 		ApiClient.cleanCookie();
-		this.cleanCookie();
+		cleanCookie();
 		this.login = false;
 		this.loginUid = 0;
+		//发送广播通知
+		BroadcastController.sendUserChangeBroadcase(this);
 	}
 	
 	/**
@@ -244,28 +263,31 @@ public class AppContext extends Application {
 	}
 	
 	/**
-	 * 初始化用户登录信息
-	 */
-	public void initLoginInfo() {
-		User loginUser = getLoginInfo();
-		if(loginUser != null && loginUser.getUid() > 0 
-				&& loginUser.isRememberMe()){
-			this.loginUid = loginUser.getUid();
-			this.login = true;
-		}else{
-			logout();
-		}
-	}
-	
-	/**
 	 * 用户登录验证
-	 * @param account
-	 * @param pwd
-	 * @return
+	 * @param account 用户账号
+	 * @param pwd 密码
+	 * @param remember 是否记录
+	 * @return 返回用户对象
 	 * @throws AppException
 	 */
-	public User loginVerify(String account, String pwd) throws AppException {
-		return ApiClient.login(this, account, pwd);
+	public User loginVerify(String account, String pwd, boolean remember) throws AppException {
+		User user = ApiClient.login(this, account, pwd);
+		user.setAccount(account);
+        user.setPwd(pwd);
+        user.setRememberMe(remember);
+        
+        Result res = user.getValidate();
+        if(res.OK()){
+        	//清空原先cookie
+			ApiClient.cleanCookie();
+        	//保存登录信息
+        	saveLoginInfo(user);
+        	//发送通知，用户账号发生变化
+        	BroadcastController.sendUserChangeBroadcase(this);
+        	//发送通知广播
+			BroadcastController.sendNoticeBroadCast(this, user.getNotice());
+        }
+		return user;
 	}
 	
 	/**
@@ -276,7 +298,7 @@ public class AppContext extends Application {
 	 */
 	public MyInformation getMyInformation(boolean isRefresh) throws AppException {
 		MyInformation myinfo = null;
-		String key = "myinfo_"+loginUid;
+		String key = "myinfo_" + loginUid;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				myinfo = ApiClient.myInformation(this, loginUid);
@@ -315,7 +337,9 @@ public class AppContext extends Application {
 			_hisname = hisname;
 		}
 		UserInformation userinfo = null;
-		String key = "userinfo_"+uid+"_"+hisuid+"_"+(URLEncoder.encode(hisname))+"_"+pageIndex+"_"+PAGE_SIZE; 
+		String key = "userinfo_" + uid + "_" + hisuid + "_"
+				+ (URLEncoder.encode(hisname)) + "_" + pageIndex + "_"
+				+ PAGE_SIZE; 
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {			
 			try{
 				userinfo = ApiClient.information(this, uid, hisuid, _hisname, pageIndex, PAGE_SIZE);
@@ -391,7 +415,8 @@ public class AppContext extends Application {
 	 */
 	public FavoriteList getFavoriteList(int type, int pageIndex, boolean isRefresh) throws AppException {
 		FavoriteList list = null;
-		String key = "favoritelist_"+loginUid+"_"+type+"_"+pageIndex+"_"+PAGE_SIZE; 
+		String key = "favoritelist_" + loginUid + "_" + type + "_" + pageIndex
+				+ "_" + PAGE_SIZE; 
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getFavoriteList(this, loginUid, type, pageIndex, PAGE_SIZE);
@@ -424,7 +449,7 @@ public class AppContext extends Application {
 	 */
 	public FriendList getFriendList(int relation, int pageIndex, boolean isRefresh) throws AppException {
 		FriendList list = null;
-		String key = "friendlist_"+loginUid+"_"+relation+"_"+pageIndex+"_"+PAGE_SIZE; 
+		String key = "friendlist_" + loginUid + "_" + relation + "_" + pageIndex + "_" + PAGE_SIZE; 
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getFriendList(this, loginUid, relation, pageIndex, PAGE_SIZE);
@@ -458,7 +483,7 @@ public class AppContext extends Application {
 	 */
 	public NewsList getNewsList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
 		NewsList list = null;
-		String key = "newslist_"+catalog+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "newslist_" + catalog + "_" + pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getNewsList(this, catalog, pageIndex, PAGE_SIZE);
@@ -491,7 +516,7 @@ public class AppContext extends Application {
 	 */
 	public News getNews(int news_id, boolean isRefresh) throws AppException {		
 		News news = null;
-		String key = "news_"+news_id;
+		String key = "news_" + news_id;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				news = ApiClient.getNewsDetail(this, news_id);
@@ -524,7 +549,9 @@ public class AppContext extends Application {
 	 */
 	public BlogList getUserBlogList(int authoruid, String authorname, int pageIndex, boolean isRefresh) throws AppException {
 		BlogList list = null;
-		String key = "userbloglist_"+authoruid+"_"+(URLEncoder.encode(authorname))+"_"+loginUid+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "userbloglist_" + authoruid + "_"
+				+ (URLEncoder.encode(authorname)) + "_" + loginUid + "_"
+				+ pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getUserBlogList(this, authoruid, authorname, loginUid, pageIndex, PAGE_SIZE);
@@ -557,7 +584,7 @@ public class AppContext extends Application {
 	 */
 	public BlogList getBlogList(String type, int pageIndex, boolean isRefresh) throws AppException {
 		BlogList list = null;
-		String key = "bloglist_"+type+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "bloglist_" + type + "_" + pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getBlogList(this, type, pageIndex, PAGE_SIZE);
@@ -589,7 +616,7 @@ public class AppContext extends Application {
 	 */
 	public Blog getBlog(int blog_id, boolean isRefresh) throws AppException {
 		Blog blog = null;
-		String key = "blog_"+blog_id;
+		String key = "blog_" + blog_id;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				blog = ApiClient.getBlogDetail(this, blog_id);
@@ -622,7 +649,7 @@ public class AppContext extends Application {
 	 */
 	public SoftwareList getSoftwareList(String searchTag, int pageIndex, boolean isRefresh) throws AppException {
 		SoftwareList list = null;
-		String key = "softwarelist_"+searchTag+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "softwarelist_" + searchTag + "_" + pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getSoftwareList(this, searchTag, pageIndex, PAGE_SIZE);
@@ -655,7 +682,7 @@ public class AppContext extends Application {
 	 */
 	public SoftwareList getSoftwareTagList(int searchTag, int pageIndex, boolean isRefresh) throws AppException {
 		SoftwareList list = null;
-		String key = "softwaretaglist_"+searchTag+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "softwaretaglist_" + searchTag + "_" + pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (isCacheDataFailure(key) || isRefresh)) {
 			try{
 				list = ApiClient.getSoftwareTagList(this, searchTag, pageIndex, PAGE_SIZE);
@@ -687,7 +714,7 @@ public class AppContext extends Application {
 	 */
 	public SoftwareCatalogList getSoftwareCatalogList(int tag) throws AppException {
 		SoftwareCatalogList list = null;
-		String key = "softwarecataloglist_"+tag;
+		String key = "softwarecataloglist_" + tag;
 		if(isNetworkConnected() && isCacheDataFailure(key)) {
 			try{
 				list = ApiClient.getSoftwareCatalogList(this, tag);
@@ -719,7 +746,7 @@ public class AppContext extends Application {
 	 */
 	public Software getSoftware(String ident, boolean isRefresh) throws AppException {
 		Software soft = null;
-		String key = "software_"+(URLEncoder.encode(ident));
+		String key = "software_" + (URLEncoder.encode(ident));
 		if(isNetworkConnected() && (isCacheDataFailure(key) || isRefresh)) {
 			try{
 				soft = ApiClient.getSoftwareDetail(this, ident);
@@ -752,7 +779,7 @@ public class AppContext extends Application {
 	 */
 	public PostList getPostList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
 		PostList list = null;
-		String key = "postlist_"+catalog+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "postlist_" + catalog + "_" + pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {		
 			try{
 				list = ApiClient.getPostList(this, catalog, pageIndex, PAGE_SIZE);
@@ -785,7 +812,7 @@ public class AppContext extends Application {
 	 */
 	public PostList getPostListByTag(String tag, int pageIndex, boolean isRefresh) throws AppException {
 		PostList list = null;
-		String key = "postlist_"+(URLEncoder.encode(tag))+"_"+pageIndex+"_"+PAGE_SIZE;
+		String key = "postlist_" + (URLEncoder.encode(tag)) + "_"+pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {		
 			try{
 				list = ApiClient.getPostListByTag(this, tag, pageIndex, PAGE_SIZE);
@@ -817,7 +844,7 @@ public class AppContext extends Application {
 	 */
 	public Post getPost(int post_id, boolean isRefresh) throws AppException {		
 		Post post = null;
-		String key = "post_"+post_id;
+		String key = "post_" + post_id;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {	
 			try{
 				post = ApiClient.getPostDetail(this, post_id);
@@ -1261,31 +1288,32 @@ public class AppContext extends Application {
 	 * @param username
 	 * @param pwd
 	 */
-	public void saveLoginInfo(final User user) {
+	void saveLoginInfo(final User user) {
 		this.loginUid = user.getUid();
 		this.login = true;
 		setProperties(new Properties(){{
-			setProperty("user.uid", String.valueOf(user.getUid()));
-			setProperty("user.name", user.getName());
-			setProperty("user.face", FileUtils.getFileName(user.getFace()));//用户头像-文件名
-			setProperty("user.account", user.getAccount());
-			setProperty("user.pwd", CyptoUtils.encode("oschinaApp",user.getPwd()));
-			setProperty("user.location", user.getLocation());
-			setProperty("user.followers", String.valueOf(user.getFollowers()));
-			setProperty("user.fans", String.valueOf(user.getFans()));
-			setProperty("user.score", String.valueOf(user.getScore()));
-			setProperty("user.isRememberMe", String.valueOf(user.isRememberMe()));//是否记住我的信息
+			setProperty(PROP_KEY_UID, String.valueOf(user.getUid()));
+			setProperty(PROP_KEY_NAME, user.getName());
+			setProperty(PROP_KEY_FACE, FileUtils.getFileName(user.getFace()));//用户头像-文件名
+			setProperty(PROP_KEY_ACCOUNT, user.getAccount());
+			setProperty(PROP_KEY_PASSWORD, CyptoUtils.encode("oschinaApp",user.getPwd()));
+			setProperty(PROP_KEY_LOCATION, user.getLocation());
+			setProperty(PROP_KEY_FOLLOWERS, String.valueOf(user.getFollowers()));
+			setProperty(PROP_KEY_FANS, String.valueOf(user.getFans()));
+			setProperty(PROP_KEY_SCORE, String.valueOf(user.getScore()));
+			setProperty(PROP_KEY_ISREMEMBERME, String.valueOf(user.isRememberMe()));//是否记住我的信息
 		}});		
 	}
 	
 	/**
 	 * 清除登录信息
 	 */
-	public void cleanLoginInfo() {
+	void cleanLoginInfo() {
 		this.loginUid = 0;
 		this.login = false;
-		removeProperty("user.uid","user.name","user.face","user.account","user.pwd",
-				"user.location","user.followers","user.fans","user.score","user.isRememberMe");
+		removeProperty(PROP_KEY_UID, PROP_KEY_NAME, PROP_KEY_FACE, PROP_KEY_ACCOUNT,
+				PROP_KEY_PASSWORD, PROP_KEY_LOCATION, PROP_KEY_FOLLOWERS, PROP_KEY_FANS,
+				PROP_KEY_SCORE, PROP_KEY_ISREMEMBERME);
 	}
 	
 	/**
@@ -1294,16 +1322,16 @@ public class AppContext extends Application {
 	 */
 	public User getLoginInfo() {		
 		User lu = new User();		
-		lu.setUid(StringUtils.toInt(getProperty("user.uid"), 0));
-		lu.setName(getProperty("user.name"));
-		lu.setFace(getProperty("user.face"));
-		lu.setAccount(getProperty("user.account"));
-		lu.setPwd(CyptoUtils.decode("oschinaApp",getProperty("user.pwd")));
-		lu.setLocation(getProperty("user.location"));
-		lu.setFollowers(StringUtils.toInt(getProperty("user.followers"), 0));
-		lu.setFans(StringUtils.toInt(getProperty("user.fans"), 0));
-		lu.setScore(StringUtils.toInt(getProperty("user.score"), 0));
-		lu.setRememberMe(StringUtils.toBool(getProperty("user.isRememberMe")));
+		lu.setUid(StringUtils.toInt(getProperty(PROP_KEY_UID), 0));
+		lu.setName(getProperty(PROP_KEY_NAME));
+		lu.setFace(getProperty(PROP_KEY_FACE));
+		lu.setAccount(getProperty(PROP_KEY_ACCOUNT));
+		lu.setPwd(CyptoUtils.decode("oschinaApp", getProperty(PROP_KEY_PASSWORD)));
+		lu.setLocation(getProperty(PROP_KEY_LOCATION));
+		lu.setFollowers(StringUtils.toInt(getProperty(PROP_KEY_FOLLOWERS), 0));
+		lu.setFans(StringUtils.toInt(getProperty(PROP_KEY_FANS), 0));
+		lu.setScore(StringUtils.toInt(getProperty(PROP_KEY_SCORE), 0));
+		lu.setRememberMe(StringUtils.toBool(getProperty(PROP_KEY_ISREMEMBERME)));
 		return lu;
 	}
 	
@@ -1344,22 +1372,21 @@ public class AppContext extends Application {
 	 * 是否加载显示文章图片
 	 * @return
 	 */
-	public boolean isLoadImage()
-	{
+	public boolean isLoadImage() {
 		String perf_loadimage = getProperty(AppConfig.CONF_LOAD_IMAGE);
 		//默认是加载的
-		if(StringUtils.isEmpty(perf_loadimage))
+		if(StringUtils.isEmpty(perf_loadimage)) {
 			return true;
-		else
+		} else {
 			return StringUtils.toBool(perf_loadimage);
+		}
 	}
 	
 	/**
 	 * 设置是否加载文章图片
 	 * @param b
 	 */
-	public void setConfigLoadimage(boolean b)
-	{
+	public void setConfigLoadimage(boolean b) {
 		setProperty(AppConfig.CONF_LOAD_IMAGE, String.valueOf(b));
 	}
 	
@@ -1367,22 +1394,21 @@ public class AppContext extends Application {
 	 * 是否发出提示音
 	 * @return
 	 */
-	public boolean isVoice()
-	{
+	public boolean isVoice() {
 		String perf_voice = getProperty(AppConfig.CONF_VOICE);
 		//默认是开启提示声音
-		if(StringUtils.isEmpty(perf_voice))
+		if(StringUtils.isEmpty(perf_voice)) {
 			return true;
-		else
+		} else {
 			return StringUtils.toBool(perf_voice);
+		}
 	}
 	
 	/**
 	 * 设置是否发出提示音
 	 * @param b
 	 */
-	public void setConfigVoice(boolean b)
-	{
+	public void setConfigVoice(boolean b) {
 		setProperty(AppConfig.CONF_VOICE, String.valueOf(b));
 	}
 	
@@ -1390,76 +1416,50 @@ public class AppContext extends Application {
 	 * 是否启动检查更新
 	 * @return
 	 */
-	public boolean isCheckUp()
-	{
+	public boolean isCheckUp() {
 		String perf_checkup = getProperty(AppConfig.CONF_CHECKUP);
 		//默认是开启
-		if(StringUtils.isEmpty(perf_checkup))
+		if(StringUtils.isEmpty(perf_checkup)) {
 			return true;
-		else
+		} else {
 			return StringUtils.toBool(perf_checkup);
+		}
 	}
 	
 	/**
 	 * 设置启动检查更新
 	 * @param b
 	 */
-	public void setConfigCheckUp(boolean b)
-	{
+	public void setConfigCheckUp(boolean b) {
 		setProperty(AppConfig.CONF_CHECKUP, String.valueOf(b));
-	}
-	
-	/**
-	 * 是否左右滑动
-	 * @return
-	 */
-	public boolean isScroll()
-	{
-		String perf_scroll = getProperty(AppConfig.CONF_SCROLL);
-		//默认是关闭左右滑动
-		if(StringUtils.isEmpty(perf_scroll))
-			return false;
-		else
-			return StringUtils.toBool(perf_scroll);
-	}
-	
-	/**
-	 * 设置是否左右滑动
-	 * @param b
-	 */
-	public void setConfigScroll(boolean b)
-	{
-		setProperty(AppConfig.CONF_SCROLL, String.valueOf(b));
 	}
 	
 	/**
 	 * 是否Https登录
 	 * @return
 	 */
-	public boolean isHttpsLogin()
-	{
+	public boolean isHttpsLogin() {
 		String perf_httpslogin = getProperty(AppConfig.CONF_HTTPS_LOGIN);
 		//默认是http
-		if(StringUtils.isEmpty(perf_httpslogin))
+		if(StringUtils.isEmpty(perf_httpslogin)) {
 			return false;
-		else
+		} else {
 			return StringUtils.toBool(perf_httpslogin);
+		}
 	}
 	
 	/**
 	 * 设置是是否Https登录
 	 * @param b
 	 */
-	public void setConfigHttpsLogin(boolean b)
-	{
+	public void setConfigHttpsLogin(boolean b) {
 		setProperty(AppConfig.CONF_HTTPS_LOGIN, String.valueOf(b));
 	}
 	
 	/**
 	 * 清除保存的缓存
 	 */
-	public void cleanCookie()
-	{
+	public void cleanCookie() {
 		removeProperty(AppConfig.CONF_COOKIE);
 	}
 	
@@ -1468,8 +1468,7 @@ public class AppContext extends Application {
 	 * @param cachefile
 	 * @return
 	 */
-	private boolean isReadDataCache(String cachefile)
-	{
+	private boolean isReadDataCache(String cachefile) {
 		return readObject(cachefile) != null;
 	}
 	
@@ -1478,8 +1477,7 @@ public class AppContext extends Application {
 	 * @param cachefile
 	 * @return
 	 */
-	private boolean isExistDataCache(String cachefile)
-	{
+	private boolean isExistDataCache(String cachefile) {
 		boolean exist = false;
 		File data = getFileStreamPath(cachefile);
 		if(data.exists())
@@ -1492,8 +1490,7 @@ public class AppContext extends Application {
 	 * @param cachefile
 	 * @return
 	 */
-	public boolean isCacheDataFailure(String cachefile)
-	{
+	public boolean isCacheDataFailure(String cachefile) {
 		boolean failure = false;
 		File data = getFileStreamPath(cachefile);
 		if(data.exists() && (System.currentTimeMillis() - data.lastModified()) > CACHE_TIME)
@@ -1675,7 +1672,7 @@ public class AppContext extends Application {
 		return null;
 	}
 
-	public boolean containsProperty(String key){
+	public boolean containsProperty(String key) {
 		Properties props = getProperties();
 		 return props.containsKey(key);
 	}
@@ -1695,6 +1692,7 @@ public class AppContext extends Application {
 	public String getProperty(String key){
 		return AppConfig.getAppConfig(this).get(key);
 	}
+	
 	public void removeProperty(String...key){
 		AppConfig.getAppConfig(this).remove(key);
 	}
@@ -1706,6 +1704,7 @@ public class AppContext extends Application {
 	public String getSaveImagePath() {
 		return saveImagePath;
 	}
+	
 	/**
 	 * 设置内存中保存图片的路径
 	 * @return
@@ -1713,5 +1712,4 @@ public class AppContext extends Application {
 	public void setSaveImagePath(String saveImagePath) {
 		this.saveImagePath = saveImagePath;
 	}	
-	
 }

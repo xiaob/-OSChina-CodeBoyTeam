@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+    </style>
+
+    <!-- Application theme. -->
+    <style name="OSChinaAppTheme" parent="AppBaseTheme">
+        <item name="android:buttonStyle">@android:style/Widget.Button</item>
+    </style>
+</resources>

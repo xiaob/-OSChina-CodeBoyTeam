@@ -6,21 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.oschina.app.adapter.GridViewFaceAdapter;
-import net.oschina.app.bean.AccessInfo;
-import net.oschina.app.bean.Active;
-import net.oschina.app.bean.Comment;
-import net.oschina.app.bean.CommentList;
-import net.oschina.app.bean.Messages;
-import net.oschina.app.bean.News;
-import net.oschina.app.bean.Notice;
-import net.oschina.app.bean.Post;
-import net.oschina.app.bean.Report;
-import net.oschina.app.bean.Result;
-import net.oschina.app.bean.Search;
-import net.oschina.app.bean.Tweet;
-import net.oschina.app.bean.URLs;
 import net.oschina.app.core.ApiClient;
-import net.oschina.app.core.AppConfig;
 import net.oschina.app.core.AppContext;
 import net.oschina.app.core.AppException;
 import net.oschina.app.widget.LinkView;
@@ -28,14 +14,12 @@ import net.oschina.app.widget.LinkView.MyURLSpan;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -53,23 +37,12 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codeboy.app.oschina.BaseActivity;
 import com.codeboy.app.oschina.R;
 
 /**
@@ -80,7 +53,6 @@ import com.codeboy.app.oschina.R;
  * @created 2012-3-21
  */
 public class UIHelper {
-	private final static String TAG = "UIHelper";
 	
 	public final static int LISTVIEW_ACTION_INIT = 0x01;
 	public final static int LISTVIEW_ACTION_REFRESH = 0x02;
@@ -401,43 +373,6 @@ public class UIHelper {
 					}
 				});
 		builder.show();
-	}
-
-	/**
-	 * 发送通知广播
-	 * 
-	 * @param context
-	 * @param notice
-	 */
-	public static void sendBroadCast(Context context, Notice notice) {
-		if (!((AppContext) context.getApplicationContext()).isLogin()
-				|| notice == null)
-			return;
-		Intent intent = new Intent("net.oschina.app.action.APPWIDGET_UPDATE");
-		intent.putExtra("atmeCount", notice.getAtmeCount());
-		intent.putExtra("msgCount", notice.getMsgCount());
-		intent.putExtra("reviewCount", notice.getReviewCount());
-		intent.putExtra("newFansCount", notice.getNewFansCount());
-		context.sendBroadcast(intent);
-	}
-
-	/**
-	 * 发送广播-发布动弹
-	 * 
-	 * @param context
-	 * @param notice
-	 */
-	public static void sendBroadCastTweet(Context context, int what,
-			Result res, Tweet tweet) {
-		if (res == null && tweet == null)
-			return;
-		Intent intent = new Intent("net.oschina.app.action.APP_TWEETPUB");
-		intent.putExtra("MSG_WHAT", what);
-		if (what == 1)
-			intent.putExtra("RESULT", res);
-		else
-			intent.putExtra("TWEET", tweet);
-		context.sendBroadcast(intent);
 	}
 
 	/**

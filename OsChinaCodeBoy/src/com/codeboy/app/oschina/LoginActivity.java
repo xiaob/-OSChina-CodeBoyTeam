@@ -178,17 +178,12 @@ public class LoginActivity extends BaseActionBarActivity
 				Message msg =new Message();
 				try {
 					AppContext ac = getOsChinaApplication(); 
-	                User user = ac.loginVerify(account, pwd);
-	                user.setAccount(account);
-	                user.setPwd(pwd);
-	                user.setRememberMe(isRememberMe);
+	                User user = ac.loginVerify(account, pwd, isRememberMe);
 	                Result res = user.getValidate();
 	                if(res.OK()){
-	                	ac.saveLoginInfo(user);//保存登录信息
 	                	msg.what = 1;//成功
 	                	msg.obj = user;
 	                }else{
-	                	ac.cleanLoginInfo();//清除登录信息
 	                	msg.what = 0;//失败
 	                	msg.obj = res.getErrorMessage();
 	                }
@@ -220,20 +215,16 @@ public class LoginActivity extends BaseActionBarActivity
 				if(msg.what == 1){
 					User user = (User)msg.obj;
 					if(user != null){
-						//清空原先cookie
-						ApiClient.cleanCookie();
-						//发送通知广播
-						UIHelper.sendBroadCast(context, user.getNotice());
 						//提示登陆成功
 						UIHelper.ToastMessage(context, R.string.msg_login_success);
 						//返回标识，成功登录
 						setResult(RESULT_OK);
 						finish();
 					}
-				}else if(msg.what == 0){
+				} else if(msg.what == 0){
 					UIHelper.ToastMessage(context, getString(
 							R.string.msg_login_fail) + msg.obj);
-				}else if(msg.what == -1){
+				} else if(msg.what == -1){
 					((AppException)msg.obj).makeToast(context);
 				}
 			}

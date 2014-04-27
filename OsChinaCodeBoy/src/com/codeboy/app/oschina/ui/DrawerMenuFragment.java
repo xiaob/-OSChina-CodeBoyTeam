@@ -4,6 +4,8 @@ import net.oschina.app.bean.MyInformation;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,10 +15,12 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.BaseFragment;
 import com.codeboy.app.oschina.OSChinaApplication;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.UserInfoActivity;
+import com.codeboy.app.oschina.core.BroadcastController;
 import com.codeboy.app.oschina.modul.DrawerMenuCallBack;
 
 /**
@@ -38,6 +42,8 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 	private ImageView mAvatarImageView;
 	private ImageView mGenderImageView;
 	private TextView mNameTextView;
+	private View mInfoLayout;
+	private View mLoginTipsLayout;
 
 	//通过回调与Activity通讯
 	private DrawerMenuCallBack mCallBack;
@@ -49,13 +55,28 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 		if(activity instanceof DrawerMenuCallBack) {
 			mCallBack = (DrawerMenuCallBack) activity;
 		}
+		//注册一个用户发生变化的广播
+		BroadcastController.registerUserChangeReceiver(activity, 
+				mUserChangeReceiver);
 	}
 	
 	@Override
 	public void onDetach() {
 		super.onDetach();
 		mCallBack = null;
+		L.d("is activity is null?" + (getActivity() == null));
+		BroadcastController.unregisterReceiver(getActivity(), mUserChangeReceiver);
 	}
+	
+	private BroadcastReceiver mUserChangeReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			L.d("收到用户账号变化的广播。。。");
+			//接收到变化后，更新用户资料
+			setupUserView();
+		}
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +96,9 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 		mGenderImageView = (ImageView) view.findViewById(R.id.user_info_gender);
 		mNameTextView = (TextView) view.findViewById(R.id.user_info_username);
 		
+		mInfoLayout = view.findViewById(R.id.user_info_layout);
+		mLoginTipsLayout = view.findViewById(R.id.user_info_login_tips_layout);
+		
 		view.findViewById(R.id.menu_user_layout).setOnClickListener(this);
 		view.findViewById(R.id.menu_item_news).setOnClickListener(this);
 		view.findViewById(R.id.menu_item_qa).setOnClickListener(this);
@@ -82,10 +106,21 @@ public class DrawerMenuFragment extends BaseFragment implements OnClickListener{
 		view.findViewById(R.id.menu_item_software).setOnClickListener(this);
 		view.findViewById(R.id.menu_item_active).setOnClickListener(this);
 		
-		//如果已经登录，则显示用户的头像与信息
+		setupUserView();
+	}
+	
+	private void setupUserView() {
+		//判断是否已经登录，如果已登录则显示用户的头像与信息
 		if(!mApplication.isLogin()) {
+			mAvatarImageView.setImageResource(R.drawable.default_avatar);
+			mNameTextView.setText("");
+			mInfoLayout.setVisibility(View.GONE);
+			mLoginTipsLayout.setVisibility(View.VISIBLE);
 			return;
 		}
+		mInfoLayout.setVisibility(View.VISIBLE);
+		mLoginTipsLayout.setVisibility(View.GONE);
+		
 		MyInformation user = null;
 		try {
 			user = mApplication.getMyInformation(false);
