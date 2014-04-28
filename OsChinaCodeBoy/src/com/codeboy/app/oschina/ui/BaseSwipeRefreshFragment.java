@@ -127,6 +127,8 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		//viewpager划动到第三页，会将第一页的界面销毁，这里判断是初始状态，还是划画后再次加载
 		if(mState == STATE_LOADED && mAdapter.isEmpty()) {
 			setFooterNoMoreState();
+		} else if(mState == STATE_LOADED && mAdapter.getCount() < AppContext.PAGE_SIZE) {
+			setFooterFullState();
 		}
 	}
 	
