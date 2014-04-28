@@ -16,6 +16,10 @@
 	<color name="grayslate">#708090</color>
 	<color name="lightblue">#0083FF</color>
 	
+	<color name="theme_green">#ff45c01a</color>
+	<color name="tab_title_normal_color">#ff666666</color>
+	<color name="background_tab_pressed">#33000000</color>
+	
 	<color name="list_devider_color">#ffb0b0b0</color>
 	<color name="layout_item_pressed_color">#60000000</color>
 	

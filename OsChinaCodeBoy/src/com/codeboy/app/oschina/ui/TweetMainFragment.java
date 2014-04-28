@@ -21,16 +21,13 @@ public class TweetMainFragment extends BaseMainFragment{
 
 	@Override
 	protected void onSetupTabAdapter(TabsFragmentPagerAdapter adapter) {
-		adapter.addTab(mTabHost.newTabSpec("tweet_latest").setIndicator(
-        		getString(R.string.frame_title_tweet_lastest)), 
-        		TweetLatestFragment.class, null);
+		adapter.addTab(getString(R.string.frame_title_tweet_lastest),
+				"tweet_latest", TweetLatestFragment.class, null);
         
-        adapter.addTab(mTabHost.newTabSpec("tweet_hot").setIndicator(
-        		getString(R.string.frame_title_tweet_hot)),
-                TweetHotFragment.class, null);
+        adapter.addTab(getString(R.string.frame_title_tweet_hot),
+        		"tweet_hot", TweetHotFragment.class, null);
         
-        adapter.addTab(mTabHost.newTabSpec("tweet_my").setIndicator(
-        		getString(R.string.frame_title_tweet_my)),
-                TweetMyFragment.class, null);
+        adapter.addTab(getString(R.string.frame_title_tweet_my),
+        		"tweet_my", TweetMyFragment.class, null);
 	}
 }

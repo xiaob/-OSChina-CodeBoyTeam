@@ -2,6 +2,8 @@ package com.codeboy.app.oschina.adapter;
 
 import java.util.ArrayList;
 
+import com.astuetz.PagerSlidingTabStrip;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,9 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TabHost;
-import android.widget.TabWidget;
 
 /**
  * 类名 TabsFragmentPagerAdapter.java</br>
@@ -24,10 +24,10 @@ import android.widget.TabWidget;
  * 说明 ViewPager + Tabs
  */
 public class TabsFragmentPagerAdapter extends FragmentPagerAdapter 
-	implements TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+	implements ViewPager.OnPageChangeListener {
 	
 	private final Context mContext;
-    private final TabHost mTabHost;
+    private final PagerSlidingTabStrip mTabStrip;
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
@@ -35,8 +35,10 @@ public class TabsFragmentPagerAdapter extends FragmentPagerAdapter
         private final String tag;
         private final Class<?> clss;
         private final Bundle args;
+        private final String title;
 
-        TabInfo(String _tag, Class<?> _class, Bundle _args) {
+        TabInfo(String _title, String _tag, Class<?> _class, Bundle _args) {
+        	title = _title;
             tag = _tag;
             clss = _class;
             args = _args;
@@ -59,24 +61,27 @@ public class TabsFragmentPagerAdapter extends FragmentPagerAdapter
         }
     }
 
-    public TabsFragmentPagerAdapter(FragmentManager fm, TabHost tabHost, ViewPager pager) {
+    public TabsFragmentPagerAdapter(FragmentManager fm, PagerSlidingTabStrip tabStrip, ViewPager pager) {
         super(fm);
         mContext = pager.getContext();
-        mTabHost = tabHost;
+        mTabStrip = tabStrip;
         mViewPager = pager;
-        mTabHost.setOnTabChangedListener(this);
         mViewPager.setAdapter(this);
+        
         mViewPager.setOnPageChangeListener(this);
+        
+        mTabStrip.setViewPager(mViewPager, false);
     }
     
-    public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args) {
-        tabSpec.setContent(new DummyTabFactory(mContext));
-        String tag = tabSpec.getTag();
-
-        TabInfo info = new TabInfo(tag, clss, args);
+    public void addTab(String title, String tag, Class<?> clss, Bundle args) {
+        TabInfo info = new TabInfo(title, tag, clss, args);
         mTabs.add(info);
-        mTabHost.addTab(tabSpec);
-        notifyDataSetChanged();
+    }
+    
+    @Override
+    public void notifyDataSetChanged() {
+    	super.notifyDataSetChanged();
+    	mTabStrip.notifyDataSetChanged();
     }
 
     @Override
@@ -89,29 +94,24 @@ public class TabsFragmentPagerAdapter extends FragmentPagerAdapter
         TabInfo info = mTabs.get(position);
         return Fragment.instantiate(mContext, info.clss.getName(), info.args);
     }
-
-    @Override
-    public void onTabChanged(String tabId) {
-        int position = mTabHost.getCurrentTab();
-        mViewPager.setCurrentItem(position);
-    }
+    
+	@Override
+	public CharSequence getPageTitle(int position) {
+		return mTabs.get(position).title;
+	}
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		
+		mTabStrip.onPageScrollStateChanged(state);
 	}
 
 	@Override
 	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-		
+		mTabStrip.onPageScrolled(position, positionOffset, positionOffsetPixels);
 	}
 
 	@Override
     public void onPageSelected(int position) {
-		TabWidget widget = mTabHost.getTabWidget();
-        int oldFocusability = widget.getDescendantFocusability();
-        widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        mTabHost.setCurrentTab(position);
-        widget.setDescendantFocusability(oldFocusability);
+		mTabStrip.onPageSelected(position);
 	}
 }

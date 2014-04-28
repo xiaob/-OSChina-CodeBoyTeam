@@ -21,25 +21,19 @@ public class QAMainFragment extends BaseMainFragment{
 
 	@Override
 	protected void onSetupTabAdapter(TabsFragmentPagerAdapter adapter) {
-		adapter.addTab(mTabHost.newTabSpec("question_ask").setIndicator(
-        		getString(R.string.frame_title_question_ask)), 
-        		QAQuestionAskFragment.class, null);
+		adapter.addTab(getString(R.string.frame_title_question_ask),
+				"question_ask", QAQuestionAskFragment.class, null);
         
-        adapter.addTab(mTabHost.newTabSpec("share").setIndicator(
-        		getString(R.string.frame_title_question_share)),
-                QAShareFragment.class, null);
+        adapter.addTab(getString(R.string.frame_title_question_share),
+        		"share", QAShareFragment.class, null);
         
-        adapter.addTab(mTabHost.newTabSpec("other").setIndicator(
-        		getString(R.string.frame_title_question_other)),
-                QAOtherFragment.class, null);
+        adapter.addTab(getString(R.string.frame_title_question_other),
+        		"other", QAOtherFragment.class, null);
         
-        adapter.addTab(mTabHost.newTabSpec("job").setIndicator(
-        		getString(R.string.frame_title_question_job)),
-                QAJobFragment.class, null);
+        adapter.addTab(getString(R.string.frame_title_question_job),
+        		"job", QAJobFragment.class, null);
         
-        adapter.addTab(mTabHost.newTabSpec("site").setIndicator(
-        		getString(R.string.frame_title_question_site)),
-                QASiteFragment.class, null);
+        adapter.addTab(getString(R.string.frame_title_question_site),
+        		"site", QASiteFragment.class, null);
 	}
-
 }

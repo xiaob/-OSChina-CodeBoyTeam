@@ -21,13 +21,8 @@ public class NewsMainFragment extends BaseMainFragment{
 
 	@Override
 	protected void onSetupTabAdapter(TabsFragmentPagerAdapter adapter) {
-		adapter.addTab(mTabHost.newTabSpec("news").setIndicator(
-        		getString(R.string.frame_title_news_lastest)), NewsLatestNewsFragment.class, null);
-		adapter.addTab(mTabHost.newTabSpec("blog").setIndicator(
-        		getString(R.string.frame_title_news_blog)),
-                NewsRecentBlogPostsFragment.class, null);
-		adapter.addTab(mTabHost.newTabSpec("recommon").setIndicator(
-        		getString(R.string.frame_title_news_recommend)),
-                NewsRecommonFragment.class, null);
+		adapter.addTab(getString(R.string.frame_title_news_lastest), "news", NewsLatestNewsFragment.class, null);
+		adapter.addTab(getString(R.string.frame_title_news_blog), "blog", NewsRecentBlogPostsFragment.class, null);
+		adapter.addTab(getString(R.string.frame_title_news_recommend), "recommon", NewsRecommonFragment.class, null);
 	}
 }

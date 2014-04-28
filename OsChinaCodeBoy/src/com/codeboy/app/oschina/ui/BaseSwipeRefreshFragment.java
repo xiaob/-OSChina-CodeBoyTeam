@@ -311,6 +311,9 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			if(msg.state == MessageData.MESSAGE_STATE_EMPTY && mDataList.size() != 0) {
 				msg.state = MessageData.MESSAGE_STATE_FULL;
 			}
+			if(msg.result != null && msg.result.getList().size() == 0) {
+				msg.state = MessageData.MESSAGE_STATE_FULL;
+			}
 			//记录最后的数据状态
 			mMessageState = msg.state;
 			

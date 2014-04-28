@@ -21,18 +21,17 @@ public class SoftwareMainFragment extends BaseMainFragment{
 
 	@Override
 	protected void onSetupTabAdapter(TabsFragmentPagerAdapter adapter) {
-		adapter.addTab(mTabHost.newTabSpec("software_recommon").setIndicator(
-        		getString(R.string.frame_title_software_recommon)), 
-        		SoftwareRecommonFragment.class, null);
-        adapter.addTab(mTabHost.newTabSpec("software_lastest").setIndicator(
-        		getString(R.string.frame_title_software_lastest)),
-                SoftwareLastestFragment.class, null);
-        adapter.addTab(mTabHost.newTabSpec("software_hot").setIndicator(
-        		getString(R.string.frame_title_software_hot)),
-        		SoftwareHotFragment.class, null);
-        adapter.addTab(mTabHost.newTabSpec("software_china").setIndicator(
-        		getString(R.string.frame_title_software_china)),
-        		SoftwareChinaFragment.class, null);
+		adapter.addTab(getString(R.string.frame_title_software_recommon),
+				"software_recommon", SoftwareRecommonFragment.class, null);
+		
+        adapter.addTab(getString(R.string.frame_title_software_lastest),
+        		"software_lastest", SoftwareLastestFragment.class, null);
+        
+        adapter.addTab(getString(R.string.frame_title_software_hot),
+        		"software_hot", SoftwareHotFragment.class, null);
+        
+        adapter.addTab(getString(R.string.frame_title_software_china),
+        		"software_china", SoftwareChinaFragment.class, null);
 	}
 
 }
