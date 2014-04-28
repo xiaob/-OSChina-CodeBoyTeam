@@ -42,6 +42,9 @@ public class MessageData<Result extends PageList<?>>{
 			} else {
 				this.state = MESSAGE_STATE_MORE;
 			}
+			if(result.getList().size() == 0) {
+				this.state = MESSAGE_STATE_FULL;
+			}
 		} else {
 			this.state = MESSAGE_STATE_ERROR;
 		}

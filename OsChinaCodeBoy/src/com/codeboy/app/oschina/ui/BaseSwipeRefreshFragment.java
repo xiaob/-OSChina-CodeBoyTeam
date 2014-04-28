@@ -238,9 +238,10 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		if(adapter == null || adapter.getCount() == 0) {
 			return;
 		}
-		//数据已经全部加载，或数据为空时，不处理滚动事件
+		//数据已经全部加载，或数据为空时，或正在加载，不处理滚动事件
 		if(mMessageState == MessageData.MESSAGE_STATE_FULL
-				|| mMessageState == MessageData.MESSAGE_STATE_EMPTY) {
+				|| mMessageState == MessageData.MESSAGE_STATE_EMPTY
+				|| mState == STATE_LOADING) {
 			return;
 		}
 		// 判断是否滚动到底部

@@ -877,7 +877,7 @@ public class AppContext extends Application {
 	 */
 	public TweetList getTweetList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
 		TweetList list = null;
-		String key = "tweetlist_"+catalog+"_"+pageIndex+"_"+PAGE_SIZE;		
+		String key = "tweetlist_" + catalog + "_" + pageIndex + "_" + PAGE_SIZE;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
 			try{
 				list = ApiClient.getTweetList(this, catalog, pageIndex, PAGE_SIZE);
