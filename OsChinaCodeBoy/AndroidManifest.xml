@@ -33,12 +33,19 @@
         <!-- 登录 -->
         <activity
             android:name="com.codeboy.app.oschina.LoginActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:label="@string/login_dialog_title" />
+            android:label="@string/login_dialog_title"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
         
         <!-- 我的资料 -->
         <activity
             android:name="com.codeboy.app.oschina.UserInfoActivity"
-            android:label="@string/userinfo_title" />
+            android:label="@string/userinfo_title"
+            android:screenOrientation="portrait" />
+        
+        <!-- 资讯详情 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.NewsDetailActivity"
+            android:screenOrientation="portrait"/>
     </application>
 </manifest>

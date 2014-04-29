@@ -231,7 +231,15 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			long id) {
 		
 	}
-
+	
+	/** 
+	 * 返回某项的数据
+	 * @param position 数据位置
+	 * */
+	public Data getData(int position) {
+		return mDataList.get(position);
+	}
+	
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		Adapter adapter = view.getAdapter();

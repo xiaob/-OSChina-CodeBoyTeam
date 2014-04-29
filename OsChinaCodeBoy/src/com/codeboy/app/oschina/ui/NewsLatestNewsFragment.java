@@ -5,8 +5,11 @@ import java.util.List;
 import net.oschina.app.adapter.ListViewNewsAdapter;
 import net.oschina.app.bean.News;
 import net.oschina.app.bean.NewsList;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -49,5 +52,13 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment<News, NewsL
 			msg = new MessageData<NewsList>(e);
 		}
 		return msg;
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		super.onItemClick(parent, view, position, id);
+		News news = getData(position);
+		UIHelper.showNewsRedirect(getActivity(), news);
 	}
 }

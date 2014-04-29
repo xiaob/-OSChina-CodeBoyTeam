@@ -64,14 +64,10 @@
     <string name="login_dialog_rememberMe">记住我的登录信息</string>
     <string name="login_dialog_tips">正在登录,请稍候...</string>
     
-    <string name="pull_to_refresh_pull_label">下拉可以刷新</string>
-    <string name="pull_to_refresh_release_label">松开可以刷新</string>
-    <string name="pull_to_refresh_refreshing_label">加载中...</string>
-    <string name="pull_to_refresh_tap_label">下拉可以刷新</string>
-    <string name="pull_to_refresh_update">最近更新：</string>
-    
     <string name="news_detail_head_title">新闻正文</string>
     <string name="news_detail_lable_pub">发布于</string>
+    <string name="news_detail_publish_comment">发表评论</string>
+    
     <string name="question_detail_head_title">帖子正文</string>
     <string name="question_pub_head_title">我要发帖</string>
     <string name="blog_detail_head_title">博客正文</string>

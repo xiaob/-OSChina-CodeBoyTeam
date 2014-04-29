@@ -427,7 +427,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 	 * {@link android.support.v4.view.ViewPager.OnPageChangeListener}
 	 * */
 	public void onPageSelected(int position) {
-		tabsContainer.getChildAt(position).requestFocus();
+		
 	}
 
 	public void setIndicatorColor(int indicatorColor) {

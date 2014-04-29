@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.oschina.app.adapter.GridViewFaceAdapter;
+import net.oschina.app.bean.News;
+import net.oschina.app.bean.URLs;
 import net.oschina.app.core.ApiClient;
 import net.oschina.app.core.AppContext;
 import net.oschina.app.core.AppException;
@@ -38,12 +40,16 @@ import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codeboy.app.oschina.NewsDetailActivity;
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.core.Contanst;
 
 /**
  * 应用程序UI工具包：封装UI相关的一些操作
@@ -91,6 +97,55 @@ public class UIHelper {
 			+ "pre {font-size:9pt;line-height:12pt;font-family:Courier New,Arial;border:1px solid #ddd;border-left:5px solid #6CE26C;background:#f6f6f6;padding:5px;overflow: auto;} "
 			+ "a.tag {font-size:15px;text-decoration:none;background-color:#bbd6f3;border-bottom:2px solid #3E6D8E;border-right:2px solid #7F9FB6;color:#284a7b;margin:2px 2px 2px 0;padding:2px 4px;white-space:nowrap;}</style>";
 
+	
+	/**
+	 * 新闻超链接点击跳转
+	 * 
+	 * @param context
+	 * @param newsId
+	 * @param newsType
+	 * @param objId
+	 */
+	public static void showNewsRedirect(Context context, News news) {
+		String url = news.getUrl();
+		// url为空-旧方法
+		if (StringUtils.isEmpty(url)) {
+			int newsId = news.getId();
+			int newsType = news.getNewType().type;
+			String objId = news.getNewType().attachment;
+			switch (newsType) {
+			case News.NEWSTYPE_NEWS:
+				showNewsDetail(context, newsId);
+				break;
+			/*case News.NEWSTYPE_SOFTWARE:
+				showSoftwareDetail(context, objId);
+				break;
+			case News.NEWSTYPE_POST:
+				showQuestionDetail(context, StringUtils.toInt(objId));
+				break;
+			case News.NEWSTYPE_BLOG:
+				showBlogDetail(context, StringUtils.toInt(objId));
+				break;*/
+			}
+		} else {
+			//showUrlRedirect(context, url);
+		}
+	}
+	
+	/**
+	 * 显示新闻详情
+	 * 
+	 * @param context
+	 * @param newsId
+	 */
+	public static void showNewsDetail(Context context, int newsId) {
+		Intent intent = new Intent(context, NewsDetailActivity.class);
+		intent.putExtra(Contanst.NEWS_ID_KEY, newsId);
+		context.startActivity(intent);
+	}
+	
+	
+	
 	/**
 	 * 调用系统安装了的应用分享
 	 * 
@@ -253,6 +308,23 @@ public class UIHelper {
 			}
 		}.start();
 	}
+	
+	/**
+	 * url跳转
+	 * 
+	 * @param context
+	 * @param url
+	 */
+	public static void showUrlRedirect(Context context, String url) {
+		URLs urls = URLs.parseURL(url);
+		if (urls != null) {
+			//TODO
+			/*showLinkRedirect(context, urls.getObjType(), urls.getObjId(),
+					urls.getObjKey());*/
+		} else {
+			openBrowser(context, url);
+		}
+	}
 
 	/**
 	 * 打开浏览器
@@ -269,6 +341,21 @@ public class UIHelper {
 			e.printStackTrace();
 			ToastMessage(context, "无法浏览此网页", 500);
 		}
+	}
+	
+	/**
+	 * 获取webviewClient对象
+	 * 
+	 * @return
+	 */
+	public static WebViewClient getWebViewClient() {
+		return new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				showUrlRedirect(view.getContext(), url);
+				return true;
+			}
+		};
 	}
 
 	/**
