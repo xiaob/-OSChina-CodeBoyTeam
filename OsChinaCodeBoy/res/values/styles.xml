@@ -26,7 +26,7 @@
     <!-- 灰色按钮样式 -->
     <style name="GreyButtonStyle">
         <item name="android:background">@drawable/btn_style_grey</item>
-        <item name="android:textColor">@color/blue</item>
+        <item name="android:textColor">#ff2d62c0</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
     
@@ -56,6 +56,16 @@
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:backgroundDimEnabled">true</item><!--模糊-->
+    </style>
+    
+    <!-- 评论对话框 -->
+    <style name="CommentDialog" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowFrame">@null</item><!--边框-->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">true</item><!--半透明-->
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+        <item name="android:backgroundDimEnabled">false</item><!--模糊-->
+        <item name="android:windowContentOverlay">@null</item>
     </style>
     
     <!-- 用户资料layout样式 -->

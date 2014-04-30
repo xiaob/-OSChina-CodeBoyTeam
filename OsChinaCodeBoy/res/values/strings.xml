@@ -84,11 +84,15 @@
     <string name="user_friend_follower">关注(%d)</string>
     <string name="user_friend_fans">粉丝(%d)</string>
     
+    <string name="comment_send">发表</string>
+    <string name="comment_original_text">原文</string>
     <string name="comment_list_head_title">网友评论</string>
     <string name="comment_listitem_type">发布于</string>
     <string name="comment_pub_head_title">评论回复</string>
     <string name="comment_pub_content_hint">输入评论</string>
     <string name="comment_reply_title">---共有 %d 条评论---</string>
+    <string name="comment_notnull_tips">评论不能为空</string>
+    <string name="comment_publish_loading">正在发表，请稍候...</string>
     
     <string name="img_from_camera">手机拍照</string>
     <string name="img_from_album">手机相册</string>

@@ -45,6 +45,7 @@
     <string name="republish_tweet">网络超时，是否重新发布动弹？</string>
     <string name="clearwords">清除文字吗？</string>
     
+    <string name="msg_login_request">您尝未登录，请登录后再操作</string>
     <string name="msg_load_is_null">读取失败，可能已被删除</string>
     <string name="msg_load_audio_fail">读取语音文件失败</string>
     <string name="msg_login_email_error">无效的邮箱地址</string>
@@ -57,22 +58,4 @@
     <string name="msg_load_image_fail">图片加载失败</string>
     <string name="msg_read_detail_fail">无法获取文章信息</string>
     <string name="msg_noaccess_delete">您没有删除权限</string>
-   	
-    <!-- LoginSina -->
-    <string name="sinalogin_check_account">账号不能为空</string>
-    <string name="sinalogin_check_pass">密码不能为空</string>
-    <string name="sinalogin_check_server">服务器验证中...</string>
-    
-    <!-- sina share message -->
-    <string name="OAUTH_ERROR">服务器验证失败</string>
-	<string name="OAUTH_RequestToken_ACCESS">第三方应用验证成功</string>
-	<string name="OAUTH_RequestToken_ERROR">第三方应用验证失败</string>
-	<string name="OAUTH_AccessToken_ACCESS">用户授权登录成功</string>
-	<string name="OAUTH_AccessToken_ERROR">用户授权登录失败</string>
-	<string name="OAUTH_AccessToken_SXPIRED">授权已过期，请重新授权登录</string>
-	<string name="Weibo_Message_NULL">分享数据不能为空</string>
-	<string name="Weibo_Message_LONG">已超出140个字</string>
-	<string name="Weibo_Share_Success">微博分享成功</string>
-	<string name="Weibo_Share_Error">微博分享失败</string>
-	<string name="Weibo_Share_Repeat">已经分享过了</string>
 </resources>

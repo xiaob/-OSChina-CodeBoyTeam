@@ -6,6 +6,7 @@ import net.oschina.app.common.StringUtils;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppContext;
 import net.oschina.app.core.AppException;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
@@ -16,11 +17,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.BaseFragment;
 import com.codeboy.app.oschina.OSChinaApplication;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.core.BroadcastController;
 import com.codeboy.app.oschina.core.Contanst;
+import com.codeboy.app.oschina.modul.CommentCountCallBack;
 
 /**
  * 类名 NewsDetailBodyFragment.java</br>
@@ -50,8 +53,26 @@ public class NewsDetailBodyFragment extends BaseFragment {
 	private TextView mAuthorTextView;
 	private TextView mDateTextView;
 	private TextView mCountTextView;
+	private View mMainView;
+	private View mProgressBar;
 	
 	private News newsDetail;
+	
+	private CommentCountCallBack mCommentCountCallBack;
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		if(activity instanceof CommentCountCallBack){
+			mCommentCountCallBack = (CommentCountCallBack) activity;
+		}
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mCommentCountCallBack = null;
+	}
 	
 	@Override
 	public void onCreate(android.os.Bundle savedInstanceState) {
@@ -75,11 +96,15 @@ public class NewsDetailBodyFragment extends BaseFragment {
 		mAuthorTextView = (TextView) view.findViewById(R.id.news_detail_author);
 		mDateTextView = (TextView) view.findViewById(R.id.news_detail_date);
 		mCountTextView = (TextView) view.findViewById(R.id.news_detail_commentcount);
+		mMainView = view.findViewById(R.id.news_detail_scrollview);
+		mProgressBar = view.findViewById(R.id.news_detail_progressbar);
+		
+		mMainView.setVisibility(View.INVISIBLE);
 		
 		mWebView = (WebView) view.findViewById(R.id.news_detail_webview);
 		WebSettings settings = mWebView.getSettings();
 		settings.setSupportZoom(true);
-		settings.setBuiltInZoomControls(true);
+		settings.setBuiltInZoomControls(false);
 		//mWebView.getSettings().setDefaultFontSize(15);
 		
 		//TODO
@@ -98,48 +123,9 @@ public class NewsDetailBodyFragment extends BaseFragment {
 			protected Message doInBackground(Void... params) {
 				Message msg = new Message();
 				try {
-					News newsDetail = getOsChinaApplication().getNews(mNewsId, isRefresh);
-					msg.what = (newsDetail != null && newsDetail.getId() > 0) ? 1 : 0;
-					msg.obj = newsDetail;
-				} catch (AppException e) {
-					e.printStackTrace();
-					msg.what = -1;
-					msg.obj = e;
-				}
-				return msg;
-			}
-			
-			@Override
-			protected void onPostExecute(Message msg) {
-				if(isDetached()) {
-					return;
-				}
-				if (msg.what == 1) {
-					newsDetail = (News) msg.obj;
-
-					mTitleTextView.setText(newsDetail.getTitle());
-					mAuthorTextView.setText(newsDetail.getAuthor());
-					mDateTextView.setText(StringUtils.friendly_time(newsDetail.getPubDate()));
-					mCountTextView.setText(String.valueOf(newsDetail
-							.getCommentCount()));
-					//TODO
-					// 是否收藏
-					if (newsDetail.getFavorite() == 1) {
-						//mFavorite.setImageResource(R.drawable.widget_bar_favorite2);
-					} else {
-						//mFavorite.setImageResource(R.drawable.widget_bar_favorite);
-					}
-
-					// 显示评论数
-					if (newsDetail.getCommentCount() > 0) {
-						//bv_comment.setText(newsDetail.getCommentCount() + "");
-						//bv_comment.show();
-					} else {
-						//bv_comment.setText("");
-						//bv_comment.hide();
-					}
-
-					String body = UIHelper.WEB_STYLE + newsDetail.getBody();
+					News news = getOsChinaApplication().getNews(mNewsId, isRefresh);
+					
+					String body = UIHelper.WEB_STYLE + news.getBody();
 					// 读取用户设置：是否加载文章图片--默认有wifi下始终加载图片
 					boolean isLoadImage;
 					if (AppContext.NETTYPE_WIFI == mApplication.getNetworkType()) {
@@ -163,8 +149,8 @@ public class NewsDetailBodyFragment extends BaseFragment {
 					}
 
 					// 更多关于***软件的信息
-					String softwareName = newsDetail.getSoftwareName();
-					String softwareLink = newsDetail.getSoftwareLink();
+					String softwareName = news.getSoftwareName();
+					String softwareLink = news.getSoftwareLink();
 					if (!StringUtils.isEmpty(softwareName)
 							&& !StringUtils.isEmpty(softwareLink))
 						body += String
@@ -172,9 +158,9 @@ public class NewsDetailBodyFragment extends BaseFragment {
 										softwareLink, softwareName);
 
 					// 相关新闻
-					if (newsDetail.getRelatives().size() > 0) {
+					if (news.getRelatives().size() > 0) {
 						String strRelative = "";
-						for (Relative relative : newsDetail.getRelatives()) {
+						for (Relative relative : news.getRelatives()) {
 							strRelative += String
 									.format("<a href='%s' style='text-decoration:none'>%s</a><p/>",
 											relative.url, relative.title);
@@ -186,11 +172,63 @@ public class NewsDetailBodyFragment extends BaseFragment {
 
 					body += "<div style='margin-bottom: 80px'/>";
 
-					System.out.println(body);
+					if(L.Debug) {
+						L.d(body);
+					}
 
+					msg.what = (news != null && news.getId() > 0) ? 1 : 0;
+					msg.obj = body;
+					
+					newsDetail = news;
+				} catch (AppException e) {
+					e.printStackTrace();
+					msg.what = -1;
+					msg.obj = e;
+				}
+				return msg;
+			}
+			
+			@Override
+			protected void onPreExecute() {
+				mProgressBar.setVisibility(View.VISIBLE);
+			}
+			
+			@Override
+			protected void onPostExecute(Message msg) {
+				if(isDetached()) {
+					return;
+				}
+				mMainView.setVisibility(View.VISIBLE);
+				mProgressBar.setVisibility(View.GONE);
+				if (msg.what == 1) {
+					String body = (String) msg.obj;
+					
 					mWebView.loadDataWithBaseURL(null, body, "text/html", "utf-8", null);
 					mWebView.setWebViewClient(UIHelper.getWebViewClient());
+					
+					//TODO
+					// 是否收藏
+					if (newsDetail.getFavorite() == 1) {
+						//mFavorite.setImageResource(R.drawable.widget_bar_favorite2);
+					} else {
+						//mFavorite.setImageResource(R.drawable.widget_bar_favorite);
+					}
 
+					// 显示评论数
+					if (newsDetail.getCommentCount() > 0) {
+						//bv_comment.setText(newsDetail.getCommentCount() + "");
+						//bv_comment.show();
+					} else {
+						//bv_comment.setText("");
+						//bv_comment.hide();
+					}
+
+					mTitleTextView.setText(newsDetail.getTitle());
+					mAuthorTextView.setText(newsDetail.getAuthor());
+					mDateTextView.setText(StringUtils.friendly_time(newsDetail.getPubDate()));
+					mCountTextView.setText(String.valueOf(newsDetail
+							.getCommentCount()));
+					
 					// 发送通知广播
 					if (newsDetail.getNotice() != null) {
 						BroadcastController.sendNoticeBroadCast(getActivity(), newsDetail.getNotice());
@@ -199,6 +237,11 @@ public class NewsDetailBodyFragment extends BaseFragment {
 					UIHelper.ToastMessage(getActivity(), R.string.msg_load_is_null);
 				} else if (msg.what == -1 && msg.obj != null) {
 					((AppException) msg.obj).makeToast(getActivity());
+				}
+				
+				//回调给上层界面
+				if(newsDetail != null && mCommentCountCallBack != null) {
+					mCommentCountCallBack.onCommentCount(newsDetail.getCommentCount());
 				}
 			}
 		}.execute();
