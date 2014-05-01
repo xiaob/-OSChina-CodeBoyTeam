@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.core.Contanst;
 import com.codeboy.app.oschina.modul.MessageData;
+import com.codeboy.app.oschina.modul.UpdateDatasEvent;
 
 /**
  * 类名 NewsDetailCommentFragment.java</br>
@@ -23,7 +24,8 @@ import com.codeboy.app.oschina.modul.MessageData;
  * 
  * 说明 资讯详细界面-评论
  */
-public class NewsDetailCommentFragment extends BaseSwipeRefreshFragment<Comment, CommentList> {
+public class NewsDetailCommentFragment extends BaseSwipeRefreshFragment<Comment, CommentList>
+	implements UpdateDatasEvent {
 
 	public static NewsDetailCommentFragment newInstance(int newsid) {
 		NewsDetailCommentFragment fragment = new NewsDetailCommentFragment();
@@ -60,5 +62,12 @@ public class NewsDetailCommentFragment extends BaseSwipeRefreshFragment<Comment,
 			msg = new MessageData<CommentList>(e);
 		}
 		return msg;
+	}
+
+	@Override
+	public void onNotifyUpdate(Object obj) {
+		if(!isLoadding()) {
+			update();
+		}
 	}
 }

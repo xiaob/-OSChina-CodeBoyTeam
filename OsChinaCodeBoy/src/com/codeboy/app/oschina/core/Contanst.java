@@ -13,4 +13,5 @@ package com.codeboy.app.oschina.core;
 public interface Contanst {
 
 	public static final String NEWS_ID_KEY = "news_id";
+	public static final String NEWS_DATA_KEY = "news_data";
 }

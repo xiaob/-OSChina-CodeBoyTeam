@@ -57,6 +57,12 @@
     <color name="fff1f2f3">#fff1f2f3</color>
     <color name="ff40ab54">#ff40ab54</color>
     
+    <!-- 下拉刷新时，颜色值 -->
+    <color name="swiperefresh_color1">#ff00ddff</color>
+    <color name="swiperefresh_color2">#ffffbb33</color>
+    <color name="swiperefresh_color3">#ffff4444</color>
+    <color name="swiperefresh_color4">#ffaa66cc</color>
+    
     <!-- 二维码扫描颜色值 -->
 	<color name="contents_text">#ff000000</color>
 	<color name="encode_view">#ffffffff</color>

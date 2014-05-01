@@ -1,9 +1,13 @@
 package com.codeboy.app.oschina;
 
+import java.util.ArrayList;
+
+import net.oschina.app.bean.News;
 import net.oschina.app.bean.Result;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -21,12 +25,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.codeboy.app.library.util.L;
+import com.codeboy.app.oschina.NewsDetailActivity.NewsDetailPageAdapter.TabInfo;
 import com.codeboy.app.oschina.core.BroadcastController;
 import com.codeboy.app.oschina.core.Contanst;
-import com.codeboy.app.oschina.modul.CommentCountCallBack;
+import com.codeboy.app.oschina.modul.UpdateDatasEvent;
 import com.codeboy.app.oschina.ui.NewsDetailBodyFragment;
 import com.codeboy.app.oschina.ui.NewsDetailCommentFragment;
 import com.codeboy.app.oschina.widget.CommentDialog;
+import com.codeboy.app.oschina.widget.CommentDialog.OnCommentCallListener;
 
 /**
  * 类名 NewsDetailActivity.java</br>
@@ -39,20 +46,20 @@ import com.codeboy.app.oschina.widget.CommentDialog;
  * 说明 资讯详情界面
  */
 public class NewsDetailActivity extends BaseActionBarActivity 
-	implements CommentCountCallBack, OnClickListener, OnPageChangeListener,
-	CommentDialog.OnCommentCallListener {
-
+	implements OnClickListener, OnPageChangeListener, OnCommentCallListener {
+	
 	private ViewPager mViewPager;
 	//评论数显示的按钮
 	private Button mCommentCountButton;
+	private View mEditBoxView;
 	
 	private NewsDetailPageAdapter mAdapter;
 	
 	private int mNewsId;
 	private int mCommentCount;
+	private News mNews;
 	
 	private CommentDialog mCommentDialog;
-	
 	private OSChinaApplication mApplication;
 	
 	
@@ -67,11 +74,12 @@ public class NewsDetailActivity extends BaseActionBarActivity
 		
         mApplication = getOsChinaApplication();
 		mNewsId = getIntent().getIntExtra(Contanst.NEWS_ID_KEY, 0);
-		mAdapter = new NewsDetailPageAdapter(getSupportFragmentManager(), mNewsId);
+		mAdapter = new NewsDetailPageAdapter(this, getSupportFragmentManager());
 		
 		setContentView(R.layout.activity_news_detail);
 		
 		initView();
+		loadDatas(false);
 	}
 	
 	@Override
@@ -83,18 +91,37 @@ public class NewsDetailActivity extends BaseActionBarActivity
 	private void initView() {
 		mViewPager = (ViewPager) findViewById(R.id.newsdetail_viewpager);
 		mCommentCountButton = (Button) findViewById(R.id.newdetail_button);
-		findViewById(R.id.newsdetail_editbox).setOnClickListener(this);
+		mEditBoxView = findViewById(R.id.newsdetail_editbox);
 		
 		mCommentCountButton.setOnClickListener(this);
+		mEditBoxView.setOnClickListener(this);
+		
+		mEditBoxView.setEnabled(false);
 		
 		mViewPager.setOnPageChangeListener(this);
+		
+		Bundle args = new Bundle();
+		args.putInt(Contanst.NEWS_ID_KEY, mNewsId);
+		
+		mAdapter.addTab(makeFragmentName(mViewPager.getId(), 0), NewsDetailBodyFragment.class, new Bundle());
+		mAdapter.addTab(makeFragmentName(mViewPager.getId(), 1), NewsDetailCommentFragment.class, args);
 		mViewPager.setAdapter(mAdapter);
 	}
+	
+	/** 
+	 * 在AndroidSupportV4里，每一个位置的fragment的tag生成规则
+	 * 详细看源码
+	 * @param viewId ViewPager的id
+	 * @param id adapter里的long id,规则以位置作为id
+	 * */
+	private static String makeFragmentName(int viewId, long id) {
+        return "android:switcher:" + viewId + ":" + id;
+    }
 	
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-		
+
 		if(id == R.id.newdetail_button) {
 			//点击评论与原文
 			int pos = mViewPager.getCurrentItem();
@@ -104,6 +131,10 @@ public class NewsDetailActivity extends BaseActionBarActivity
 				mViewPager.setCurrentItem(0);
 			}
 		} else if(id == R.id.newsdetail_editbox) {
+			//先判断是否已经加载数据
+			if(mNews == null) {
+				return;
+			}
 			//判断是否已经登录
 			boolean login = mApplication.isLogin();
 			if(login) {
@@ -167,18 +198,43 @@ public class NewsDetailActivity extends BaseActionBarActivity
 		mCommentCountButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 	}
 	
-	@Override
-	public void onCommentCount(int count) {
-		mCommentCount = count;
-		updateButton();
-	}
-	
+	/** 获取并初始化评论的对话框*/
 	private CommentDialog getCommentDialog() {
 		if(mCommentDialog == null) {
 			mCommentDialog = new CommentDialog(this);
 			mCommentDialog.setOnCommentCallListener(this);
 		}
 		return mCommentDialog;
+	}
+	
+	/** 更新资讯内容数据*/
+	private void updateBodyFragment(News news) {
+		//更新adapter里的数据
+		TabInfo info = mAdapter.getTab(0);
+		FragmentManager fm = getSupportFragmentManager();
+		String tag = info.tag;
+		
+		Fragment fragment = fm.findFragmentByTag(tag);
+		if(fragment != null && fragment instanceof UpdateDatasEvent) {
+			UpdateDatasEvent event = (UpdateDatasEvent)fragment;
+			event.onNotifyUpdate(news);
+		} else {
+			L.d("body is null");
+			info.args.putSerializable(Contanst.NEWS_DATA_KEY, news);
+		}
+	}
+	
+	/** 更新评论界面*/
+	private void updateCommentFragment(int newsId) {
+		FragmentManager fm = getSupportFragmentManager();
+		String tag = mAdapter.getTab(1).tag;
+		Fragment fragment = fm.findFragmentByTag(tag);
+		if(fragment != null && fragment instanceof UpdateDatasEvent) {
+			UpdateDatasEvent event = (UpdateDatasEvent)fragment;
+			event.onNotifyUpdate(newsId);
+		} else {
+			L.d("comment is null");
+		}
 	}
 	
 	/**
@@ -213,7 +269,8 @@ public class NewsDetailActivity extends BaseActionBarActivity
 				Message msg = new Message();
 				Result res = new Result();
 				try {
-					res = getOsChinaApplication().pubComment(1, mNewsId, uid, text, 0);
+					res = getOsChinaApplication().pubComment(1, mNewsId, 
+							uid, text, 0);
 					msg.what = 1;
 					msg.obj = res;
 				} catch (AppException e) {
@@ -229,52 +286,136 @@ public class NewsDetailActivity extends BaseActionBarActivity
 				if(isFinishing()) {
 					return;
 				}
+				final Context context = NewsDetailActivity.this;
 				dialog.dismiss();
 				if (msg.what == 1) {
 					Result res = (Result) msg.obj;
-					UIHelper.ToastMessage(NewsDetailActivity.this,
+					UIHelper.ToastMessage(context,
 							res.getErrorMessage());
 					if (res.OK()) {
 						// 发送通知广播
 						if (res.getNotice() != null) {
 							BroadcastController.sendNoticeBroadCast(
-									NewsDetailActivity.this,
-									res.getNotice());
+									context, res.getNotice());
 						}
 						
 						// 显示评论数
 						mCommentCount ++;
 						updateButton();
+						//更新评论界面
+						updateCommentFragment(mNewsId);
+						//更新缓存数据
+						loadDatas(true);
 					}
 				} else {
-					((AppException) msg.obj).makeToast(NewsDetailActivity.this);
+					((AppException) msg.obj).makeToast(context);
 				}
 			}
 			
 		}.execute();
 	}
 	
+	/**
+	 * 加载资讯数据
+	 * @param isRefresh 是否刷新，否则加载本地缓存
+	 * */
+	private void loadDatas(final boolean isRefresh) {
+		new AsyncTask<Void, Void, Message>() {
+
+			@Override
+			protected Message doInBackground(Void... params) {
+				Message msg = new Message();
+				try {
+					News news = getOsChinaApplication().getNews(
+							mNewsId, isRefresh);
+					
+					msg.what = (news != null && news.getId() > 0) ? 1 : 0;
+					msg.obj = news;
+				} catch (AppException e) {
+					e.printStackTrace();
+					msg.what = -1;
+					msg.obj = e;
+				}
+				return msg;
+			}
+			
+			@Override
+			protected void onPreExecute() {
+				
+			}
+			
+			@Override
+			protected void onPostExecute(Message msg) {
+				if(isFinishing()) {
+					return;
+				}
+				final Context context = NewsDetailActivity.this;
+				if (msg.what == 1) {
+					final News newsDetail = (News) msg.obj;
+					mNews = newsDetail;
+					mCommentCount = newsDetail.getCommentCount();
+					
+					mEditBoxView.setEnabled(true);
+					//更新评论数
+					updateButton();
+					//更新内容界面
+					updateBodyFragment(newsDetail);
+					
+					// 发送通知广播
+					if (newsDetail.getNotice() != null) {
+						BroadcastController.sendNoticeBroadCast(context, newsDetail.getNotice());
+					}
+				} else if (msg.what == 0) {
+					UIHelper.ToastMessage(context, R.string.msg_load_is_null);
+				} else if (msg.what == -1 && msg.obj != null) {
+					((AppException) msg.obj).makeToast(context);
+				}
+			}
+		}.execute();
+	}
+	
+	//内容、评论两个界面的适配器
 	static class NewsDetailPageAdapter extends FragmentPagerAdapter {
 
-		private int mNewsId;
+		static final class TabInfo {
+            private final String tag;
+            private final Class<?> clss;
+            private final Bundle args;
+
+            TabInfo(String _tag, Class<?> _class, Bundle _args) {
+                tag = _tag;
+                clss = _class;
+                args = _args;
+            }
+        }
 		
-		public NewsDetailPageAdapter(FragmentManager fm, int newid) {
+		private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+		private Context mContext;
+		
+		public NewsDetailPageAdapter(Context context, FragmentManager fm) {
 			super(fm);
-			mNewsId = newid;
+			mContext = context;
+		}
+		
+		public void addTab(String tag, Class<?> clss, Bundle args) {
+            TabInfo info = new TabInfo(tag, clss, args);
+            mTabs.add(info);
+            notifyDataSetChanged();
+        }
+		
+		public TabInfo getTab(int position) {
+			return mTabs.get(position);
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			if(position == 0) {
-				return NewsDetailBodyFragment.newInstance(mNewsId);
-			} else {
-				return NewsDetailCommentFragment.newInstance(mNewsId);
-			}
+			TabInfo info = mTabs.get(position);
+	        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
 		}
 
 		@Override
 		public int getCount() {
-			return 2;
+			return mTabs.size();
 		}
 	}
 }

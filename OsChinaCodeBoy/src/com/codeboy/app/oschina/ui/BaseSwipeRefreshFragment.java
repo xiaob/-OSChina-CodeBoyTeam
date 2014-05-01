@@ -13,6 +13,7 @@ import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.BaseFragment;
 import com.codeboy.app.oschina.OSChinaApplication;
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.core.BroadcastController;
 import com.codeboy.app.oschina.core.DataRequestThreadHandler;
 import com.codeboy.app.oschina.modul.MessageData;
 
@@ -44,8 +45,13 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnItemClickListener,
 	AbsListView.OnScrollListener {
 	
+	//更新状态，不显示toast
+	public static final int LISTVIEW_ACTION_UPDATE = 0;
+	//初始化时，加载缓存状态
 	public static final int LISTVIEW_ACTION_INIT = 1;
+	//刷新状态，显示toast
 	public static final int LISTVIEW_ACTION_REFRESH = 2;
+	//下拉到底部时，获取下一页的状态
 	public static final int LISTVIEW_ACTION_SCROLL = 3;
 	
 	static final int STATE_NONE = -1;
@@ -71,6 +77,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	
 	//当前数据状态，如果是已经全部加载，则不再执行滚动到底部就加载的情况
 	private int mMessageState = MessageData.MESSAGE_STATE_MORE;
+	private boolean isPauseLife = true;
 	
 	private DataRequestThreadHandler mRequestThreadHandler = new DataRequestThreadHandler();
 	
@@ -87,6 +94,18 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		//初始化数据,只有首发创建时调用，如果因viewpager里划动而销毁，
 		//再次创建只会调用onActivityCreated-->onCreateView-->onViewCreated
 		loadList(0, LISTVIEW_ACTION_INIT);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		isPauseLife = true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		isPauseLife = false;
 	}
 	
 	@Override
@@ -117,10 +136,10 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		
 		mSwipeRefreshLayout.setOnRefreshListener(this);
 		mSwipeRefreshLayout.setColorScheme(
-				android.R.color.holo_blue_bright, 
-	            android.R.color.holo_green_light, 
-	            android.R.color.holo_orange_light, 
-	            android.R.color.holo_red_light);
+				R.color.swiperefresh_color1, 
+				R.color.swiperefresh_color2, 
+				R.color.swiperefresh_color3, 
+				R.color.swiperefresh_color4);
 		
 		setupListView();
 		
@@ -148,6 +167,16 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	@Override
 	public void onRefresh() {
 		loadList(0, LISTVIEW_ACTION_REFRESH);
+	}
+	
+	/** 更新数据，不显示toast*/
+	public void update() {
+		loadList(0, LISTVIEW_ACTION_UPDATE);
+	}
+	
+	/** 返回是否正在加载*/
+	public boolean isLoadding() {
+		return mState == STATE_LOADING;
 	}
 	
 	/** 加载下一页*/
@@ -352,7 +381,8 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			if(mPage == 0) {
 				int newdata = 0;
 				mSumData = result.getPageSize();
-				if (mAction == LISTVIEW_ACTION_REFRESH) {
+				if (mAction == LISTVIEW_ACTION_REFRESH
+						|| mAction == LISTVIEW_ACTION_UPDATE) {
 					if (mDataList.size() > 0) {
 						//计算新增数据条数
 						for (Data data1 : result.getList()) {
@@ -370,14 +400,19 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 					} else {
 						newdata = result.getPageSize();
 					}
-					// 提示新添加的数据条数
-					if (newdata > 0) {
-						NewDataToast.makeText( getActivity(),
-										getString(R.string.new_data_toast_message,
-										newdata), mApplication.isAppSound()).show();
-					} else {
-						NewDataToast.makeText(getActivity(),
-								getString(R.string.new_data_toast_none), false).show();
+					if(L.Debug) {
+						L.d("当前界面是否为 Pause 状态?" + isPauseLife);
+					}
+					if(mAction == LISTVIEW_ACTION_REFRESH && !isPauseLife) {
+						// 提示新添加的数据条数
+						if (newdata > 0) {
+							NewDataToast.makeText( getActivity(),
+											getString(R.string.new_data_toast_message,
+											newdata), mApplication.isAppSound()).show();
+						} else {
+							NewDataToast.makeText(getActivity(),
+									getString(R.string.new_data_toast_none), false).show();
+						}
 					}
 				}
 				// 先清除原有数据
@@ -406,6 +441,10 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			}
 			//通知listview去刷新界面
 			mAdapter.notifyDataSetChanged();
+			if(notice != null) {
+				// 发送通知广播
+				BroadcastController.sendNoticeBroadCast(getActivity(), notice);
+			}
 		}
 	}
 }
