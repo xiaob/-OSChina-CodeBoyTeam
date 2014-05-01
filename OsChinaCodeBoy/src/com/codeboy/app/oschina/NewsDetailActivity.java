@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.NewsDetailActivity.NewsDetailPageAdapter.TabInfo;
-import com.codeboy.app.oschina.core.BroadcastController;
 import com.codeboy.app.oschina.core.Contanst;
 import com.codeboy.app.oschina.modul.UpdateDatasEvent;
 import com.codeboy.app.oschina.ui.NewsDetailBodyFragment;
@@ -293,12 +292,6 @@ public class NewsDetailActivity extends BaseActionBarActivity
 					UIHelper.ToastMessage(context,
 							res.getErrorMessage());
 					if (res.OK()) {
-						// 发送通知广播
-						if (res.getNotice() != null) {
-							BroadcastController.sendNoticeBroadCast(
-									context, res.getNotice());
-						}
-						
 						// 显示评论数
 						mCommentCount ++;
 						updateButton();
@@ -360,11 +353,6 @@ public class NewsDetailActivity extends BaseActionBarActivity
 					updateButton();
 					//更新内容界面
 					updateBodyFragment(newsDetail);
-					
-					// 发送通知广播
-					if (newsDetail.getNotice() != null) {
-						BroadcastController.sendNoticeBroadCast(context, newsDetail.getNotice());
-					}
 				} else if (msg.what == 0) {
 					UIHelper.ToastMessage(context, R.string.msg_load_is_null);
 				} else if (msg.what == -1 && msg.obj != null) {

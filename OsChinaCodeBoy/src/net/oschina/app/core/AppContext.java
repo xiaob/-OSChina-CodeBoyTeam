@@ -20,6 +20,7 @@ import com.codeboy.app.oschina.core.BroadcastController;
 
 import net.oschina.app.bean.ActiveList;
 import net.oschina.app.bean.Barcode;
+import net.oschina.app.bean.Base;
 import net.oschina.app.bean.Blog;
 import net.oschina.app.bean.BlogCommentList;
 import net.oschina.app.bean.BlogList;
@@ -262,6 +263,18 @@ public class AppContext extends Application {
 		return unLoginHandler;
 	}
 	
+	/** 发送消息广播*/
+	private void sendNotice(Base entity) {
+		if(entity == null) {
+			return;
+		}
+		Notice notice = entity.getNotice();
+		if(notice == null) {
+			return;
+		}
+		BroadcastController.sendNoticeBroadCast(this, notice);
+	}
+	
 	/**
 	 * 用户登录验证
 	 * @param account 用户账号
@@ -285,7 +298,7 @@ public class AppContext extends Application {
         	//发送通知，用户账号发生变化
         	BroadcastController.sendUserChangeBroadcase(this);
         	//发送通知广播
-			BroadcastController.sendNoticeBroadCast(this, user.getNotice());
+        	sendNotice(user);
         }
 		return user;
 	}
@@ -308,6 +321,9 @@ public class AppContext extends Application {
 					myinfo.setCacheKey(key);
 					saveObject(myinfo, key);
 					myinfo.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(myinfo);
 				}
 			}catch(AppException e){
 				myinfo = (MyInformation)readObject(key);
@@ -349,6 +365,9 @@ public class AppContext extends Application {
 					userinfo.setCacheKey(key);
 					saveObject(userinfo, key);
 					userinfo.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(userinfo);
 				}
 			}catch(AppException e){
 				userinfo = (UserInformation)readObject(key);
@@ -426,6 +445,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (FavoriteList)readObject(key);
@@ -459,6 +481,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (FriendList)readObject(key);
@@ -493,6 +518,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				e.printStackTrace();
@@ -526,6 +554,9 @@ public class AppContext extends Application {
 					news.setCacheKey(key);
 					saveObject(news, key);
 					news.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(news);
 				}
 			}catch(AppException e){
 				news = (News)readObject(key);
@@ -561,6 +592,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (BlogList)readObject(key);
@@ -594,6 +628,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (BlogList)readObject(key);
@@ -626,6 +663,9 @@ public class AppContext extends Application {
 					blog.setCacheKey(key);
 					saveObject(blog, key);
 					blog.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(blog);
 				}
 			}catch(AppException e){
 				blog = (Blog)readObject(key);
@@ -659,6 +699,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (SoftwareList)readObject(key);
@@ -692,6 +735,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (SoftwareList)readObject(key);
@@ -724,6 +770,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (SoftwareCatalogList)readObject(key);
@@ -756,6 +805,9 @@ public class AppContext extends Application {
 					soft.setCacheKey(key);
 					saveObject(soft, key);
 					soft.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(soft);
 				}
 			}catch(AppException e){
 				soft = (Software)readObject(key);
@@ -789,6 +841,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (PostList)readObject(key);
@@ -822,6 +877,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (PostList)readObject(key);
@@ -854,6 +912,9 @@ public class AppContext extends Application {
 					post.setCacheKey(key);
 					saveObject(post, key);
 					post.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(post);
 				}
 			}catch(AppException e){
 				post = (Post)readObject(key);
@@ -887,6 +948,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (TweetList)readObject(key);
@@ -919,6 +983,9 @@ public class AppContext extends Application {
 					tweet.setCacheKey(key);
 					saveObject(tweet, key);
 					tweet.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(tweet);
 				}
 			}catch(AppException e){
 				tweet = (Tweet)readObject(key);
@@ -953,6 +1020,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (ActiveList)readObject(key);
@@ -985,6 +1055,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (MessageList)readObject(key);
@@ -1018,6 +1091,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (BlogCommentList)readObject(key);
@@ -1052,6 +1128,9 @@ public class AppContext extends Application {
 					list.setCacheKey(key);
 					saveObject(list, key);
 					list.setNotice(notice);
+					
+					//发送通知广播
+		        	sendNotice(list);
 				}
 			}catch(AppException e){
 				list = (CommentList)readObject(key);

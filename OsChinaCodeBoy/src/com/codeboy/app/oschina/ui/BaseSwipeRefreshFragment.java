@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.oschina.app.bean.Entity;
-import net.oschina.app.bean.Notice;
 import net.oschina.app.bean.PageList;
 import net.oschina.app.core.AppContext;
 import net.oschina.app.widget.NewDataToast;
@@ -45,6 +44,8 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, OnItemClickListener,
 	AbsListView.OnScrollListener {
 	
+	//没有状态
+	public static final int LISTVIEW_ACTION_NONE = -1;
 	//更新状态，不显示toast
 	public static final int LISTVIEW_ACTION_UPDATE = 0;
 	//初始化时，加载缓存状态
@@ -72,8 +73,10 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	//当前页面已加载的数据总和
 	private int mSumData;
 	
-	//当前UI状态
+	//当前加载状态
 	private int mState = STATE_NONE;
+	//UI状态
+	private int mAction = LISTVIEW_ACTION_NONE;
 	
 	//当前数据状态，如果是已经全部加载，则不再执行滚动到底部就加载的情况
 	private int mMessageState = MessageData.MESSAGE_STATE_MORE;
@@ -149,6 +152,10 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		} else if(mState == STATE_LOADED && mAdapter.getCount() < AppContext.PAGE_SIZE) {
 			setFooterFullState();
 		}
+		//正在刷新的状态
+		if(mAction == LISTVIEW_ACTION_REFRESH) {
+			setSwipeRefreshLoadingState();
+		}
 	}
 	
 	/** 初始化ListView*/
@@ -195,6 +202,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	 * @param action 加载的触发事件
 	 * */
 	void loadList(int page, int action) {
+		mAction = action;
 		mRequestThreadHandler.request(page, new AsyncDataHandler(page, action));
 	}
 	
@@ -377,7 +385,6 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 				L.d("PageSize:" + result.getPageSize());
 				L.d("ListSize:" + result.getList().size());
 			}
-			Notice notice = result.getNotice();
 			if(mPage == 0) {
 				int newdata = 0;
 				mSumData = result.getPageSize();
@@ -441,10 +448,6 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			}
 			//通知listview去刷新界面
 			mAdapter.notifyDataSetChanged();
-			if(notice != null) {
-				// 发送通知广播
-				BroadcastController.sendNoticeBroadCast(getActivity(), notice);
-			}
 		}
 	}
 }
