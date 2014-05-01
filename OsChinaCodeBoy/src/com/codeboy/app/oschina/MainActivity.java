@@ -10,6 +10,7 @@ import com.codeboy.app.oschina.ui.NewsMainFragment;
 import com.codeboy.app.oschina.ui.QAMainFragment;
 import com.codeboy.app.oschina.ui.SoftwareMainFragment;
 import com.codeboy.app.oschina.ui.TweetMainFragment;
+import com.umeng.update.UmengUpdateAgent;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -86,6 +87,9 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		//友盟检查更新
+		UmengUpdateAgent.update(this);
 		
 		mActionBar = getSupportActionBar();
 		mActionBar.setDisplayHomeAsUpEnabled(true);

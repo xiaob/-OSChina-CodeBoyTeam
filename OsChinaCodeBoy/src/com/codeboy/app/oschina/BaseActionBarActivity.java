@@ -1,5 +1,7 @@
 package com.codeboy.app.oschina;
 
+import com.umeng.analytics.MobclickAgent;
+
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
@@ -22,6 +24,18 @@ public class BaseActionBarActivity extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mHelper.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+	    MobclickAgent.onResume(this);   
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 	
 	@Override
