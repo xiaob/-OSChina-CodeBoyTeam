@@ -12,7 +12,6 @@ import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.BaseFragment;
 import com.codeboy.app.oschina.OSChinaApplication;
 import com.codeboy.app.oschina.R;
-import com.codeboy.app.oschina.core.BroadcastController;
 import com.codeboy.app.oschina.core.DataRequestThreadHandler;
 import com.codeboy.app.oschina.modul.MessageData;
 
@@ -76,7 +75,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	//当前加载状态
 	private int mState = STATE_NONE;
 	//UI状态
-	private int mAction = LISTVIEW_ACTION_NONE;
+	private int mListViewAction = LISTVIEW_ACTION_NONE;
 	
 	//当前数据状态，如果是已经全部加载，则不再执行滚动到底部就加载的情况
 	private int mMessageState = MessageData.MESSAGE_STATE_MORE;
@@ -153,7 +152,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			setFooterFullState();
 		}
 		//正在刷新的状态
-		if(mAction == LISTVIEW_ACTION_REFRESH) {
+		if(mListViewAction == LISTVIEW_ACTION_REFRESH) {
 			setSwipeRefreshLoadingState();
 		}
 	}
@@ -202,7 +201,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	 * @param action 加载的触发事件
 	 * */
 	void loadList(int page, int action) {
-		mAction = action;
+		mListViewAction = action;
 		mRequestThreadHandler.request(page, new AsyncDataHandler(page, action));
 	}
 	
@@ -347,9 +346,14 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		public void onPostExecute(MessageData<Result> msg) {
 			//加载结束
 			mState = STATE_LOADED;
+			
 			//如果动作是下拉刷新，则将刷新中的状态去掉
 			if(mAction == LISTVIEW_ACTION_REFRESH) {
 				setSwipeRefreshLoadedState();
+			}
+			//更新全局的状态
+			if(mListViewAction == mAction) {
+				mListViewAction = LISTVIEW_ACTION_NONE;
 			}
 			
 			//无数据的情况下(已经加载全部数据，与一开始没有数据)
