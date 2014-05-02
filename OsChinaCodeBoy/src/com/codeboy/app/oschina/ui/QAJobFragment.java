@@ -2,6 +2,8 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -10,6 +12,7 @@ import com.codeboy.app.oschina.modul.MessageData;
 import net.oschina.app.adapter.ListViewQuestionAdapter;
 import net.oschina.app.bean.PostList;
 import net.oschina.app.bean.Post;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 
 /**
@@ -41,5 +44,14 @@ public class QAJobFragment extends BaseSwipeRefreshFragment<Post, PostList> {
 			msg = new MessageData<PostList>(e);
 		}
 		return msg;
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		super.onItemClick(parent, view, position, id);
+		Post post = getData(position);
+		// 跳转到问答详情
+		UIHelper.showQuestionDetail(view.getContext(), post.getId());
 	}
 }

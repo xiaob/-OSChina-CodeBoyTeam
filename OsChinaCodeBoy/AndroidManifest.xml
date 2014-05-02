@@ -46,12 +46,19 @@
         <!-- 资讯详情 -->
         <activity 
             android:name="com.codeboy.app.oschina.NewsDetailActivity"
+            android:label="@string/news_detail_head_title"
             android:screenOrientation="portrait"/>
         
         <!-- 博客详情 -->
         <activity 
             android:name="com.codeboy.app.oschina.BlogDetailActivity"
+            android:label="@string/blog_detail_head_title"
             android:screenOrientation="portrait"/>
+        
+        <activity 
+            android:name="com.codeboy.app.oschina.QADetailActivity"
+            android:label="@string/question_detail_head_title"
+            android:screenOrientation="portrait" />
         
         <!-- 友盟统计模块 Start-->
         <!-- Update Activitys Start -->

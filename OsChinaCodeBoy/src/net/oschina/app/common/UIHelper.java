@@ -49,6 +49,7 @@ import android.widget.Toast;
 
 import com.codeboy.app.oschina.BlogDetailActivity;
 import com.codeboy.app.oschina.NewsDetailActivity;
+import com.codeboy.app.oschina.QADetailActivity;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.core.Contanst;
 
@@ -118,18 +119,18 @@ public class UIHelper {
 			case News.NEWSTYPE_NEWS:
 				showNewsDetail(context, newsId);
 				break;
-			/*case News.NEWSTYPE_SOFTWARE:
-				showSoftwareDetail(context, objId);
+			case News.NEWSTYPE_SOFTWARE:
+				//showSoftwareDetail(context, objId);
 				break;
 			case News.NEWSTYPE_POST:
-				showQuestionDetail(context, StringUtils.toInt(objId));
+				//showQuestionDetail(context, StringUtils.toInt(objId));
 				break;
 			case News.NEWSTYPE_BLOG:
 				showBlogDetail(context, StringUtils.toInt(objId));
-				break;*/
+				break;
 			}
 		} else {
-			//showUrlRedirect(context, url);
+			showUrlRedirect(context, url);
 		}
 	}
 	
@@ -350,7 +351,7 @@ public class UIHelper {
 			showNewsDetail(context, objId);
 			break;
 		case URLs.URL_OBJ_TYPE_QUESTION:
-			//showQuestionDetail(context, objId);
+			showQuestionDetail(context, objId);
 			break;
 		case URLs.URL_OBJ_TYPE_QUESTION_TAG:
 			//showQuestionListByTag(context, objKey);
@@ -382,6 +383,18 @@ public class UIHelper {
 	public static void showBlogDetail(Context context, int blogId) {
 		Intent intent = new Intent(context, BlogDetailActivity.class);
 		intent.putExtra(Contanst.BLOG_ID_KEY, blogId);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示帖子详情
+	 * 
+	 * @param context
+	 * @param postId
+	 */
+	public static void showQuestionDetail(Context context, int postId) {
+		Intent intent = new Intent(context, QADetailActivity.class);
+		intent.putExtra(Contanst.POST_ID_KEY, postId);
 		context.startActivity(intent);
 	}
 	
