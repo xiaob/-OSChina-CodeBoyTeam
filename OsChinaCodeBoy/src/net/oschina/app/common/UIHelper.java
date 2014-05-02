@@ -49,9 +49,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codeboy.app.oschina.BlogDetailActivity;
+import com.codeboy.app.oschina.MessageDetailActivity;
 import com.codeboy.app.oschina.NewsDetailActivity;
 import com.codeboy.app.oschina.QADetailActivity;
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.SoftwareDetailActivity;
+import com.codeboy.app.oschina.TweetDetailActivity;
 import com.codeboy.app.oschina.core.Contanst;
 
 /**
@@ -120,13 +123,13 @@ public class UIHelper {
 			//showQuestionListByTag(context, objKey);
 			break;
 		case URLs.URL_OBJ_TYPE_SOFTWARE:
-			//showSoftwareDetail(context, objKey);
+			showSoftwareDetail(context, objKey);
 			break;
 		case URLs.URL_OBJ_TYPE_ZONE:
 			//showUserCenter(context, objId, objKey);
 			break;
 		case URLs.URL_OBJ_TYPE_TWEET:
-			//showTweetDetail(context, objId);
+			showTweetDetail(context, objId);
 			break;
 		case URLs.URL_OBJ_TYPE_BLOG:
 			showBlogDetail(context, objId);
@@ -157,10 +160,10 @@ public class UIHelper {
 				showNewsDetail(context, newsId);
 				break;
 			case News.NEWSTYPE_SOFTWARE:
-				//showSoftwareDetail(context, objId);
+				showSoftwareDetail(context, objId);
 				break;
 			case News.NEWSTYPE_POST:
-				//showQuestionDetail(context, StringUtils.toInt(objId));
+				showQuestionDetail(context, StringUtils.toInt(objId));
 				break;
 			case News.NEWSTYPE_BLOG:
 				showBlogDetail(context, StringUtils.toInt(objId));
@@ -243,9 +246,9 @@ public class UIHelper {
 	 * TODO
 	 */
 	public static void showTweetDetail(Context context, int tweetId) {
-		/*Intent intent = new Intent(context, TweetDetail.class);
-		intent.putExtra("tweet_id", tweetId);
-		context.startActivity(intent);*/
+		Intent intent = new Intent(context, TweetDetailActivity.class);
+		intent.putExtra(Contanst.TWEET_ID_KEY, tweetId);
+		context.startActivity(intent);
 	}
 	
 	/**
@@ -282,10 +285,22 @@ public class UIHelper {
 	 */
 	public static void showMessageDetail(Context context, int friendid,
 			String friendname) {
-		/*Intent intent = new Intent(context, MessageDetail.class);
-		intent.putExtra("friend_name", friendname);
-		intent.putExtra("friend_id", friendid);
-		context.startActivity(intent);*/
+		Intent intent = new Intent(context, MessageDetailActivity.class);
+		intent.putExtra(Contanst.MESSAGE_FRIEND_NAME_KEY, friendname);
+		intent.putExtra(Contanst.MESSAGE_FRIEND_ID_KEY, friendid);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示软件详情
+	 * 
+	 * @param context
+	 * @param ident
+	 */
+	public static void showSoftwareDetail(Context context, String ident) {
+		Intent intent = new Intent(context, SoftwareDetailActivity.class);
+		intent.putExtra(Contanst.SOFTWARE_ID_KEY, ident);
+		context.startActivity(intent);
 	}
 	
 	/**

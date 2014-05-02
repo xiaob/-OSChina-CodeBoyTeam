@@ -20,4 +20,11 @@ public interface Contanst {
 	
 	public static final String POST_ID_KEY = "post_id";
 	public static final String POST_DATA_KEY = "post_data";
+	
+	public static final String TWEET_ID_KEY = "tweet_id";
+	
+	public static final String MESSAGE_FRIEND_NAME_KEY = "friend_name";
+	public static final String MESSAGE_FRIEND_ID_KEY = "friend_id";
+	
+	public static final String SOFTWARE_ID_KEY = "ident";
 }

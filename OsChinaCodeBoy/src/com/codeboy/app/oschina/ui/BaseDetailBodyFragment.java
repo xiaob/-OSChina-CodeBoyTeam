@@ -46,7 +46,7 @@ public abstract class BaseDetailBodyFragment extends BaseFragment implements Upd
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_newsdetail_body, null);
+		return inflater.inflate(R.layout.fragment_basedetail_body, null);
 	}
 	
 	@Override

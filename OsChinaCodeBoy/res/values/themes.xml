@@ -2,9 +2,18 @@
 <resources>
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
     </style>
+    
+    <style name="AppNightTheme" parent="Theme.AppCompat">
+        
+    </style>
 
-    <!-- Application theme. -->
+    <!-- 默认主题（日间模式） -->
     <style name="OSChinaAppTheme" parent="AppBaseTheme">
         <item name="android:buttonStyle">@android:style/Widget.Button</item>
+    </style>
+    
+    <!-- 夜间模式 -->
+    <style name="OSChinaAppNightTheme" parent="AppNightTheme">
+        
     </style>
 </resources>

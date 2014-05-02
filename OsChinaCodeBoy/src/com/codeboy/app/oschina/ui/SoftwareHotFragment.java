@@ -8,7 +8,10 @@ import com.codeboy.app.oschina.modul.MessageData;
 import net.oschina.app.adapter.ListViewSoftwareAdapter;
 import net.oschina.app.bean.SimpleSoftware;
 import net.oschina.app.bean.SoftwareList;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 /**
@@ -39,5 +42,14 @@ public class SoftwareHotFragment extends BaseSwipeRefreshFragment<SimpleSoftware
 			msg = new MessageData<SoftwareList>(e);
 		}
 		return msg;
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		super.onItemClick(parent, view, position, id);
+		SimpleSoftware sw = getData(position);
+		//跳转
+		UIHelper.showUrlRedirect(getActivity(), sw.getUrl());
 	}
 }

@@ -96,6 +96,14 @@
     <string name="comment_publish_success">评论成功!</string>
     <string name="comment_answer_view_count">%1$d回%2$d阅</string>
     
+    <string name="software_detail_license">授权协议：</string>
+    <string name="software_detail_language">开发语言：</string>
+    <string name="software_detail_os">操作系统：</string>
+    <string name="software_detail_recordtime">收录时间：</string>
+    <string name="software_detail_homepage">软件首页</string>
+    <string name="software_detail_download">软件下载</string>
+    <string name="software_detail_document">软件文档</string>
+    
     <string name="img_from_camera">手机拍照</string>
     <string name="img_from_album">手机相册</string>
     <string name="ui_insert_image">插入图片</string>  

@@ -43,6 +43,11 @@
             android:label="@string/userinfo_title"
             android:screenOrientation="portrait" />
         
+        <!-- 内置浏览器 -->
+        <activity
+            android:name="com.codeboy.app.oschina.OSChinaWebBrowser"
+            android:screenOrientation="portrait" />
+        
         <!-- 资讯详情 -->
         <activity 
             android:name="com.codeboy.app.oschina.NewsDetailActivity"
@@ -59,6 +64,24 @@
         <activity 
             android:name="com.codeboy.app.oschina.QADetailActivity"
             android:label="@string/question_detail_head_title"
+            android:screenOrientation="portrait" />
+        
+        <!-- 动弹详情 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.TweetDetailActivity"
+            android:label="@string/tweet_detail_head_title"
+            android:screenOrientation="portrait" />
+        
+        <!-- 空间消息详情 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.MessageDetailActivity"
+            android:label="@string/blog_detail_head_title"
+            android:screenOrientation="portrait" />
+        
+        <!-- 软件详情 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.SoftwareDetailActivity"
+            android:label="@string/software_detail_head_title"
             android:screenOrientation="portrait" />
         
         <!-- 友盟统计模块 Start-->
