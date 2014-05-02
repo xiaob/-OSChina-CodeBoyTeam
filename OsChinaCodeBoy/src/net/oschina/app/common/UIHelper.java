@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.oschina.app.adapter.GridViewFaceAdapter;
+import net.oschina.app.bean.Active;
 import net.oschina.app.bean.News;
 import net.oschina.app.bean.URLs;
 import net.oschina.app.core.ApiClient;
@@ -99,6 +100,42 @@ public class UIHelper {
 			+ "pre {font-size:9pt;line-height:12pt;font-family:Courier New,Arial;border:1px solid #ddd;border-left:5px solid #6CE26C;background:#f6f6f6;padding:5px;overflow: auto;} "
 			+ "a.tag {font-size:15px;text-decoration:none;background-color:#bbd6f3;border-bottom:2px solid #3E6D8E;border-right:2px solid #7F9FB6;color:#284a7b;margin:2px 2px 2px 0;padding:2px 4px;white-space:nowrap;}</style>";
 
+	/**
+	 * 点击链接时的处理
+	 * @param context 上下文
+	 * @param objType
+	 * @param objId
+	 * @param objKey
+	 * */
+	public static void showLinkRedirect(Context context, int objType,
+			int objId, String objKey) {
+		switch (objType) {
+		case URLs.URL_OBJ_TYPE_NEWS:
+			showNewsDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_QUESTION:
+			showQuestionDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_QUESTION_TAG:
+			//showQuestionListByTag(context, objKey);
+			break;
+		case URLs.URL_OBJ_TYPE_SOFTWARE:
+			//showSoftwareDetail(context, objKey);
+			break;
+		case URLs.URL_OBJ_TYPE_ZONE:
+			//showUserCenter(context, objId, objKey);
+			break;
+		case URLs.URL_OBJ_TYPE_TWEET:
+			//showTweetDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_BLOG:
+			showBlogDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_OTHER:
+			openBrowser(context, objKey);
+			break;
+		}
+	}
 	
 	/**
 	 * 新闻超链接点击跳转
@@ -135,6 +172,58 @@ public class UIHelper {
 	}
 	
 	/**
+	 * 动态点击跳转到相关新闻、帖子等
+	 * 
+	 * @param context
+	 * @param id
+	 * @param catalog
+	 *            0其他 1新闻 2帖子 3动弹 4博客
+	 */
+	public static void showActiveRedirect(Context context, Active active) {
+		String url = active.getUrl();
+		// url为空-旧方法
+		if (StringUtils.isEmpty(url)) {
+			int id = active.getObjectId();
+			int catalog = active.getActiveType();
+			switch (catalog) {
+			case Active.CATALOG_OTHER:
+				// 其他-无跳转
+				break;
+			case Active.CATALOG_NEWS:
+				showNewsDetail(context, id);
+				break;
+			case Active.CATALOG_POST:
+				showQuestionDetail(context, id);
+				break;
+			case Active.CATALOG_TWEET:
+				showTweetDetail(context, id);
+				break;
+			case Active.CATALOG_BLOG:
+				showBlogDetail(context, id);
+				break;
+			}
+		} else {
+			showUrlRedirect(context, url);
+		}
+	}
+	
+	/**
+	 * url跳转
+	 * 
+	 * @param context
+	 * @param url
+	 */
+	public static void showUrlRedirect(Context context, String url) {
+		URLs urls = URLs.parseURL(url);
+		if (urls != null) {
+			showLinkRedirect(context, urls.getObjType(), urls.getObjId(),
+					urls.getObjKey());
+		} else {
+			openBrowser(context, url);
+		}
+	}
+	
+	/**
 	 * 显示新闻详情
 	 * 
 	 * @param context
@@ -146,7 +235,75 @@ public class UIHelper {
 		context.startActivity(intent);
 	}
 	
+	/**
+	 * 显示动弹详情及评论
+	 * 
+	 * @param context
+	 * @param tweetId
+	 * TODO
+	 */
+	public static void showTweetDetail(Context context, int tweetId) {
+		/*Intent intent = new Intent(context, TweetDetail.class);
+		intent.putExtra("tweet_id", tweetId);
+		context.startActivity(intent);*/
+	}
 	
+	/**
+	 * 显示博客详情
+	 * 
+	 * @param context
+	 * @param blogId
+	 */
+	public static void showBlogDetail(Context context, int blogId) {
+		Intent intent = new Intent(context, BlogDetailActivity.class);
+		intent.putExtra(Contanst.BLOG_ID_KEY, blogId);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示帖子详情
+	 * 
+	 * @param context
+	 * @param postId
+	 */
+	public static void showQuestionDetail(Context context, int postId) {
+		Intent intent = new Intent(context, QADetailActivity.class);
+		intent.putExtra(Contanst.POST_ID_KEY, postId);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示留言对话页面
+	 * 
+	 * @param context
+	 * @param catalog
+	 * @param friendid
+	 * TODO
+	 */
+	public static void showMessageDetail(Context context, int friendid,
+			String friendname) {
+		/*Intent intent = new Intent(context, MessageDetail.class);
+		intent.putExtra("friend_name", friendname);
+		intent.putExtra("friend_id", friendid);
+		context.startActivity(intent);*/
+	}
+	
+	/**
+	 * 打开浏览器
+	 * 
+	 * @param context
+	 * @param url
+	 */
+	public static void openBrowser(Context context, String url) {
+		try {
+			Uri uri = Uri.parse(url);
+			Intent it = new Intent(Intent.ACTION_VIEW, uri);
+			context.startActivity(it);
+		} catch (Exception e) {
+			e.printStackTrace();
+			ToastMessage(context, "无法浏览此网页", 500);
+		}
+	}
 	
 	/**
 	 * 调用系统安装了的应用分享
@@ -309,93 +466,6 @@ public class UIHelper {
 				handler.sendMessage(msg);
 			}
 		}.start();
-	}
-	
-	/**
-	 * url跳转
-	 * 
-	 * @param context
-	 * @param url
-	 */
-	public static void showUrlRedirect(Context context, String url) {
-		URLs urls = URLs.parseURL(url);
-		if (urls != null) {
-			showLinkRedirect(context, urls.getObjType(), urls.getObjId(),
-					urls.getObjKey());
-		} else {
-			openBrowser(context, url);
-		}
-	}
-
-	/**
-	 * 打开浏览器
-	 * 
-	 * @param context
-	 * @param url
-	 */
-	public static void openBrowser(Context context, String url) {
-		try {
-			Uri uri = Uri.parse(url);
-			Intent it = new Intent(Intent.ACTION_VIEW, uri);
-			context.startActivity(it);
-		} catch (Exception e) {
-			e.printStackTrace();
-			ToastMessage(context, "无法浏览此网页", 500);
-		}
-	}
-	
-	public static void showLinkRedirect(Context context, int objType,
-			int objId, String objKey) {
-		switch (objType) {
-		case URLs.URL_OBJ_TYPE_NEWS:
-			showNewsDetail(context, objId);
-			break;
-		case URLs.URL_OBJ_TYPE_QUESTION:
-			showQuestionDetail(context, objId);
-			break;
-		case URLs.URL_OBJ_TYPE_QUESTION_TAG:
-			//showQuestionListByTag(context, objKey);
-			break;
-		case URLs.URL_OBJ_TYPE_SOFTWARE:
-			//showSoftwareDetail(context, objKey);
-			break;
-		case URLs.URL_OBJ_TYPE_ZONE:
-			//showUserCenter(context, objId, objKey);
-			break;
-		case URLs.URL_OBJ_TYPE_TWEET:
-			//showTweetDetail(context, objId);
-			break;
-		case URLs.URL_OBJ_TYPE_BLOG:
-			showBlogDetail(context, objId);
-			break;
-		case URLs.URL_OBJ_TYPE_OTHER:
-			openBrowser(context, objKey);
-			break;
-		}
-	}
-	
-	/**
-	 * 显示博客详情
-	 * 
-	 * @param context
-	 * @param blogId
-	 */
-	public static void showBlogDetail(Context context, int blogId) {
-		Intent intent = new Intent(context, BlogDetailActivity.class);
-		intent.putExtra(Contanst.BLOG_ID_KEY, blogId);
-		context.startActivity(intent);
-	}
-	
-	/**
-	 * 显示帖子详情
-	 * 
-	 * @param context
-	 * @param postId
-	 */
-	public static void showQuestionDetail(Context context, int postId) {
-		Intent intent = new Intent(context, QADetailActivity.class);
-		intent.putExtra(Contanst.POST_ID_KEY, postId);
-		context.startActivity(intent);
 	}
 	
 	/**

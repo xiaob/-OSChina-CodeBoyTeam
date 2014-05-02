@@ -2,6 +2,8 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -10,6 +12,7 @@ import com.codeboy.app.oschina.modul.MessageData;
 import net.oschina.app.adapter.ListViewMessageAdapter;
 import net.oschina.app.bean.MessageList;
 import net.oschina.app.bean.Messages;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 
 /**
@@ -43,4 +46,11 @@ public class ActiveMessageFragment extends BaseSwipeRefreshFragment<Messages, Me
 		return msg;
 	}
 
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		super.onItemClick(parent, view, position, id);
+		Messages msg = getData(position);
+		UIHelper.showMessageDetail(view.getContext(), msg.getFriendId(), msg.getFriendName());
+	}
 }

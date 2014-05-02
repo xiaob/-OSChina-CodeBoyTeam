@@ -55,6 +55,7 @@
             android:label="@string/blog_detail_head_title"
             android:screenOrientation="portrait"/>
         
+        <!-- 问答详情 -->
         <activity 
             android:name="com.codeboy.app.oschina.QADetailActivity"
             android:label="@string/question_detail_head_title"

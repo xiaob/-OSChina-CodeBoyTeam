@@ -2,6 +2,8 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -10,6 +12,7 @@ import com.codeboy.app.oschina.modul.MessageData;
 import net.oschina.app.adapter.ListViewActiveAdapter;
 import net.oschina.app.bean.Active;
 import net.oschina.app.bean.ActiveList;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 
 /**
@@ -44,4 +47,11 @@ public class ActiveMySelfFragment extends BaseSwipeRefreshFragment<Active, Activ
 		return msg;
 	}
 
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		super.onItemClick(parent, view, position, id);
+		Active active = getData(position);
+		UIHelper.showActiveRedirect(getActivity(), active);
+	}
 }
