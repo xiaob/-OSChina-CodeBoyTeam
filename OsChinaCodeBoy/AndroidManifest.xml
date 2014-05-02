@@ -48,6 +48,11 @@
             android:name="com.codeboy.app.oschina.NewsDetailActivity"
             android:screenOrientation="portrait"/>
         
+        <!-- 博客详情 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.BlogDetailActivity"
+            android:screenOrientation="portrait"/>
+        
         <!-- 友盟统计模块 Start-->
         <!-- Update Activitys Start -->
         <activity 

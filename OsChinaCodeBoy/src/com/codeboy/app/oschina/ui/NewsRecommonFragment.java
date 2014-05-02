@@ -2,14 +2,18 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
+import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.modul.MessageData;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import net.oschina.app.adapter.ListViewBlogAdapter;
 import net.oschina.app.bean.Blog;
 import net.oschina.app.bean.BlogList;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 
 /**
@@ -46,5 +50,18 @@ public class NewsRecommonFragment extends BaseSwipeRefreshFragment<Blog, BlogLis
 			msg = new MessageData<BlogList>(e);
 		}
 		return msg;
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		super.onItemClick(parent, view, position, id);
+		Blog blog = getData(position);
+		
+		if(L.Debug) {
+			L.d("blog -->id:" + blog.getId());
+		}
+		
+		UIHelper.showUrlRedirect(getActivity(), blog.getUrl());
 	}
 }

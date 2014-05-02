@@ -60,4 +60,9 @@ public class BaseActivity extends Activity implements ActivityHelperInterface{
 	public OSChinaApplication getOsChinaApplication() {
 		return mHelper.getOsChinaApplication();
 	}
+
+	@Override
+	public Activity getActivity() {
+		return mHelper.getActivity();
+	}
 }

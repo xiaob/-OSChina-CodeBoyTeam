@@ -1,6 +1,6 @@
 package com.codeboy.app.oschina;
 
-import net.oschina.app.bean.News;
+import net.oschina.app.bean.Blog;
 import net.oschina.app.bean.Result;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
@@ -18,34 +18,37 @@ import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.adapter.TabInfo;
 import com.codeboy.app.oschina.core.Contanst;
 import com.codeboy.app.oschina.modul.UpdateDatasEvent;
-import com.codeboy.app.oschina.ui.NewsDetailBodyFragment;
-import com.codeboy.app.oschina.ui.NewsDetailCommentFragment;
+import com.codeboy.app.oschina.ui.BlogDetailBodyFragment;
+import com.codeboy.app.oschina.ui.BlogDetailCommentFragment;
 import com.codeboy.app.oschina.widget.CommentDialog;
 import com.codeboy.app.oschina.widget.CommentDialog.OnCommentCallListener;
 
 /**
- * 类名 NewsDetailActivity.java</br>
- * 创建日期 2014年4月28日</br>
+ * 类名 BlogDetailActivity.java</br>
+ * 创建日期 2014年5月2日</br>
  * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
- * 更新时间 2014年4月28日 下午11:49:49</br>
+ * 更新时间 2014年5月2日 上午11:25:42</br>
  * 最后更新者 LeonLee</br>
  * 
- * 说明 资讯详情界面
+ * 说明 博客详情界面
  */
-public class NewsDetailActivity extends BaseDetailActivity 
+public class BlogDetailActivity extends BaseDetailActivity 
 	implements OnCommentCallListener {
 	
-	private int mNewsId;
+	private int mBlogId;
 	private int mCommentCount;
-	private News mNews;
+	private Blog mBlog;
 	
 	private CommentDialog mCommentDialog;
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		mNewsId = getIntent().getIntExtra(Contanst.NEWS_ID_KEY, 0);
+		mBlogId = getIntent().getIntExtra(Contanst.BLOG_ID_KEY, 0);
+		if(L.Debug) {
+			L.d("---> blog id:" + mBlogId);
+		}
 		super.onCreate(savedInstanceState);
 		loadDatas(false);
 	}
@@ -53,15 +56,15 @@ public class NewsDetailActivity extends BaseDetailActivity
 	@Override
 	protected TabInfo getBodyTabInfo(String tag) {
 		Bundle args = new Bundle();
-		args.putSerializable(Contanst.NEWS_DATA_KEY, mNews);
-		return new TabInfo(null, tag, NewsDetailBodyFragment.class, args);
+		args.putSerializable(Contanst.BLOG_DATA_KEY, mBlog);
+		return new TabInfo(null, tag, BlogDetailBodyFragment.class, args);
 	}
 
 	@Override
 	protected TabInfo getCommentTabInfo(String tag) {
 		Bundle args = new Bundle();
-		args.putInt(Contanst.NEWS_ID_KEY, mNewsId);
-		return new TabInfo(null, tag, NewsDetailCommentFragment.class, args);
+		args.putInt(Contanst.BLOG_ID_KEY, mBlogId);
+		return new TabInfo(null, tag, BlogDetailCommentFragment.class, args);
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class NewsDetailActivity extends BaseDetailActivity
 
 	@Override
 	protected boolean isDataLoaded() {
-		return mNews != null;
+		return mBlog != null;
 	}
 	
 	/** 获取并初始化评论的对话框*/
@@ -85,7 +88,7 @@ public class NewsDetailActivity extends BaseDetailActivity
 	}
 	
 	/** 更新资讯内容数据*/
-	private void updateBodyFragment(News news) {
+	private void updateBodyFragment(Blog blog) {
 		//更新adapter里的数据
 		TabInfo info = mAdapter.getTab(0);
 		FragmentManager fm = getSupportFragmentManager();
@@ -94,10 +97,10 @@ public class NewsDetailActivity extends BaseDetailActivity
 		Fragment fragment = fm.findFragmentByTag(tag);
 		if(fragment != null && fragment instanceof UpdateDatasEvent) {
 			UpdateDatasEvent event = (UpdateDatasEvent)fragment;
-			event.onNotifyUpdate(news);
+			event.onNotifyUpdate(blog);
 		} else {
 			L.d("body is null");
-			info.args.putSerializable(Contanst.NEWS_DATA_KEY, news);
+			info.args.putSerializable(Contanst.BLOG_DATA_KEY, blog);
 		}
 	}
 	
@@ -146,8 +149,7 @@ public class NewsDetailActivity extends BaseDetailActivity
 				Message msg = new Message();
 				Result res = new Result();
 				try {
-					res = getOsChinaApplication().pubComment(1, mNewsId, 
-							uid, text, 0);
+					res = getOsChinaApplication().pubBlogComment(mBlogId, uid, text);
 					msg.what = 1;
 					msg.obj = res;
 				} catch (AppException e) {
@@ -163,7 +165,7 @@ public class NewsDetailActivity extends BaseDetailActivity
 				if(isFinishing()) {
 					return;
 				}
-				final Context context = NewsDetailActivity.this;
+				final Context context = BlogDetailActivity.this;
 				dialog.dismiss();
 				if (msg.what == 1) {
 					Result res = (Result) msg.obj;
@@ -173,7 +175,7 @@ public class NewsDetailActivity extends BaseDetailActivity
 						mCommentCount ++;
 						updateButton();
 						//更新评论界面
-						updateCommentFragment(mNewsId);
+						updateCommentFragment(mBlogId);
 						//更新缓存数据
 						loadDatas(true);
 					} else {
@@ -198,10 +200,10 @@ public class NewsDetailActivity extends BaseDetailActivity
 			protected Message doInBackground(Void... params) {
 				Message msg = new Message();
 				try {
-					News news = mApplication.getNews(mNewsId, isRefresh);
+					Blog blog = mApplication.getBlog(mBlogId, isRefresh);
 					
-					msg.what = (news != null && news.getId() > 0) ? 1 : 0;
-					msg.obj = news;
+					msg.what = (blog != null && blog.getId() > 0) ? 1 : 0;
+					msg.obj = blog;
 				} catch (AppException e) {
 					e.printStackTrace();
 					msg.what = -1;
@@ -220,16 +222,16 @@ public class NewsDetailActivity extends BaseDetailActivity
 				if(isFinishing()) {
 					return;
 				}
-				final Context context = NewsDetailActivity.this;
+				final Context context = BlogDetailActivity.this;
 				if (msg.what == 1) {
-					final News newsDetail = (News) msg.obj;
-					mNews = newsDetail;
-					mCommentCount = newsDetail.getCommentCount();
+					final Blog blog = (Blog) msg.obj;
+					mBlog = blog;
+					mCommentCount = blog.getCommentCount();
 					
 					//更新评论数
 					updateButton();
 					//更新内容界面
-					updateBodyFragment(newsDetail);
+					updateBodyFragment(blog);
 				} else if (msg.what == 0) {
 					UIHelper.ToastMessage(context, R.string.msg_load_is_null);
 				} else if (msg.what == -1 && msg.obj != null) {

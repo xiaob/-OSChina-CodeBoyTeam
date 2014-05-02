@@ -93,6 +93,7 @@
     <string name="comment_reply_title">---共有 %d 条评论---</string>
     <string name="comment_notnull_tips">评论不能为空</string>
     <string name="comment_publish_loading">正在发表，请稍候...</string>
+    <string name="comment_publish_success">评论成功!</string>
     
     <string name="img_from_camera">手机拍照</string>
     <string name="img_from_album">手机相册</string>

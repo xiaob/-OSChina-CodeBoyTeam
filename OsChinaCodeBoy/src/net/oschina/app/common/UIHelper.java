@@ -47,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codeboy.app.oschina.BlogDetailActivity;
 import com.codeboy.app.oschina.NewsDetailActivity;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.core.Contanst;
@@ -318,9 +319,8 @@ public class UIHelper {
 	public static void showUrlRedirect(Context context, String url) {
 		URLs urls = URLs.parseURL(url);
 		if (urls != null) {
-			//TODO
-			/*showLinkRedirect(context, urls.getObjType(), urls.getObjId(),
-					urls.getObjKey());*/
+			showLinkRedirect(context, urls.getObjType(), urls.getObjId(),
+					urls.getObjKey());
 		} else {
 			openBrowser(context, url);
 		}
@@ -341,6 +341,48 @@ public class UIHelper {
 			e.printStackTrace();
 			ToastMessage(context, "无法浏览此网页", 500);
 		}
+	}
+	
+	public static void showLinkRedirect(Context context, int objType,
+			int objId, String objKey) {
+		switch (objType) {
+		case URLs.URL_OBJ_TYPE_NEWS:
+			showNewsDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_QUESTION:
+			//showQuestionDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_QUESTION_TAG:
+			//showQuestionListByTag(context, objKey);
+			break;
+		case URLs.URL_OBJ_TYPE_SOFTWARE:
+			//showSoftwareDetail(context, objKey);
+			break;
+		case URLs.URL_OBJ_TYPE_ZONE:
+			//showUserCenter(context, objId, objKey);
+			break;
+		case URLs.URL_OBJ_TYPE_TWEET:
+			//showTweetDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_BLOG:
+			showBlogDetail(context, objId);
+			break;
+		case URLs.URL_OBJ_TYPE_OTHER:
+			openBrowser(context, objKey);
+			break;
+		}
+	}
+	
+	/**
+	 * 显示博客详情
+	 * 
+	 * @param context
+	 * @param blogId
+	 */
+	public static void showBlogDetail(Context context, int blogId) {
+		Intent intent = new Intent(context, BlogDetailActivity.class);
+		intent.putExtra(Contanst.BLOG_ID_KEY, blogId);
+		context.startActivity(intent);
 	}
 	
 	/**

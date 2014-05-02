@@ -14,4 +14,7 @@ public interface Contanst {
 
 	public static final String NEWS_ID_KEY = "news_id";
 	public static final String NEWS_DATA_KEY = "news_data";
+	
+	public static final String BLOG_ID_KEY = "blog_id";
+	public static final String BLOG_DATA_KEY = "blog_data";
 }

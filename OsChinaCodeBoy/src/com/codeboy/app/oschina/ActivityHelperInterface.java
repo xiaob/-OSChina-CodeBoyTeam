@@ -1,5 +1,7 @@
 package com.codeboy.app.oschina;
 
+import android.app.Activity;
+
 /**
  * 类名 ActivityHelperInterface.java</br>
  * 创建日期 2014年4月22日</br>
@@ -13,4 +15,5 @@ package com.codeboy.app.oschina;
 public interface ActivityHelperInterface {
 
 	public OSChinaApplication getOsChinaApplication();
+	public Activity getActivity();
 }

@@ -31,20 +31,6 @@ public class TabsFragmentPagerAdapter extends FragmentPagerAdapter
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
-    static final class TabInfo {
-        private final String tag;
-        private final Class<?> clss;
-        private final Bundle args;
-        private final String title;
-
-        TabInfo(String _title, String _tag, Class<?> _class, Bundle _args) {
-        	title = _title;
-            tag = _tag;
-            clss = _class;
-            args = _args;
-        }
-    }
-
     static class DummyTabFactory implements TabHost.TabContentFactory {
         private final Context mContext;
 

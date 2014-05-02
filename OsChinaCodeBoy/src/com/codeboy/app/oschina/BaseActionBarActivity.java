@@ -2,6 +2,7 @@ package com.codeboy.app.oschina;
 
 import com.umeng.analytics.MobclickAgent;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
@@ -55,4 +56,8 @@ public class BaseActionBarActivity extends ActionBarActivity
 		return mHelper.getOsChinaApplication();
 	}
 
+	@Override
+	public Activity getActivity() {
+		return mHelper.getActivity();
+	}
 }

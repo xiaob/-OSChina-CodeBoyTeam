@@ -37,4 +37,9 @@ public class ActivityHelper implements ActivityHelperInterface{
 	public OSChinaApplication getOsChinaApplication() {
 		return (OSChinaApplication) mActivity.getApplication();
 	}
+
+	@Override
+	public Activity getActivity() {
+		return mActivity;
+	}
 }
