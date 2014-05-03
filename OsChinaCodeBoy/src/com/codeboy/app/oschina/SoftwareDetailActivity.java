@@ -19,7 +19,6 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.codeboy.app.oschina.core.Contanst;
@@ -60,7 +59,6 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 	private Button mDownload;
 	
 	private View mMainView;
-	private ProgressBar mProgressBar;
 
 	private WebView mWebView;
 	
@@ -72,7 +70,7 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 	
 	private int mStatus = STATUS_NONE;
 	
-	private MenuItem mReflashItem;
+	private Menu optionsMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,25 +104,14 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		optionsMenu = menu;
 		//刷新按钮
 		MenuItem reflashItem = menu.add(0, REFLASH_ITEM_ID, 
 				100, R.string.footbar_refresh);
         reflashItem.setIcon(R.drawable.ic_menu_refresh);
         MenuItemCompat.setShowAsAction(reflashItem, 
         		MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
-        mReflashItem = reflashItem;
 		return true;
-	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem item = menu.findItem(REFLASH_ITEM_ID);
-		if(mStatus == STATUS_LOADED) {
-			item.setVisible(true);
-		} else {
-			item.setVisible(false);
-		}
-		return super.onPrepareOptionsMenu(menu);
 	}
 	
 	@Override
@@ -137,14 +124,20 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	/** 更新菜单的状态*/
 	private void updateMenu() {
-		if(mReflashItem == null) {
+		if(optionsMenu == null) {
 			return;
 		}
+		final MenuItem refreshItem = optionsMenu.findItem(REFLASH_ITEM_ID);
+        if (refreshItem == null) {
+            return;
+        }
 		if(mStatus == STATUS_LOADED) {
-			mReflashItem.setVisible(true);
+			MenuItemCompat.setActionView(refreshItem, null);
 		} else {
-			mReflashItem.setVisible(false);
+			MenuItemCompat.setActionView(refreshItem, 
+					R.layout.actionbar_indeterminate_progress);
 		}
 	}
 	
@@ -169,8 +162,6 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 		iv_language = findViewById(R.id.software_detail_language_iv);
 		iv_os = findViewById(R.id.software_detail_os_iv);
 		
-		mProgressBar = (ProgressBar) findViewById(R.id.software_detail_progressbar);
-
 		mWebView = (WebView) findViewById(R.id.software_detail_webview);
 		mWebView.getSettings().setSupportZoom(true);
 		mWebView.getSettings().setBuiltInZoomControls(false);
@@ -241,7 +232,6 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 			
 			@Override
 			protected void onPreExecute() {
-				mProgressBar.setVisibility(View.VISIBLE);
 				mStatus = STATUS_LOADING;
 				updateMenu();
 			}
@@ -251,7 +241,6 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 				if(isFinishing()) {
 					return;
 				}
-				mProgressBar.setVisibility(View.GONE);
 				mStatus = STATUS_LOADED;
 				updateMenu();
 				

@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import com.codeboy.app.library.util.Util;
-
 import net.oschina.app.bean.MyInformation;
 import net.oschina.app.bean.Result;
 import net.oschina.app.common.FileUtils;
@@ -16,6 +14,7 @@ import net.oschina.app.common.StringUtils;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppConfig;
 import net.oschina.app.core.AppException;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -91,6 +90,8 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 	private Bitmap protraitBitmap;
 	
 	private OSChinaApplication application;
+	
+	private Menu optionsMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +132,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		optionsMenu = menu;
 		//刷新按钮
 		MenuItem reflashItem = menu.add(0, REFLASH_ITEM_ID, 
 				100, R.string.footbar_refresh);
@@ -149,11 +151,23 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	/** 设置刷新状态*/
+	private void setRefreshActionButtonState(final boolean refreshing) {
+	    if (optionsMenu != null) {
+	        final MenuItem refreshItem = optionsMenu.findItem(REFLASH_ITEM_ID);
+	        if (refreshItem != null) {
+	            if (refreshing) {
+	            	MenuItemCompat.setActionView(refreshItem, R.layout.actionbar_indeterminate_progress);
+	            } else {
+	                MenuItemCompat.setActionView(refreshItem, null);
+	            }
+	        }
+	    }
+	}
 
 	/** 初始化界面*/
 	private void initView() {
-		loadingDialog = new ProgressDialog(this);
-		
 		editer = (Button) findViewById(R.id.user_info_editer);
 		editer.setOnClickListener(this);
 
@@ -229,8 +243,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 			protected void onPreExecute() {
 				if(isRefresh) {
 					isLoaddingUserInfo = true;
-					loadingDialog.setMessage(getString(R.string.loading_userinfo));
-					loadingDialog.show();
+					setRefreshActionButtonState(true);
 				}
 			}
 
@@ -243,7 +256,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 				if(isFinishing()) {
 					return;
 				}
-				loadingDialog.hide();
+				setRefreshActionButtonState(false);
 				if (msg.what == 1 && msg.obj != null) {
 					user = (MyInformation) msg.obj;
 
@@ -319,6 +332,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 	 * 生成输出图片的文件
 	 * @return
 	 */
+	@SuppressLint("NewApi")
 	private File getOutputMediaFile() {
 		File mediaStorageDir = null;
 		if(Util.hasFroyo()) {
@@ -476,9 +490,12 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 			
 			@Override
 			protected void onPreExecute() {
-				loadingDialog.setMessage(getString(R.string.upload_user_avatar));
-				//设置为不可以关闭的对话框
-				loadingDialog.setCancelable(false);
+				if(loadingDialog == null) {
+					loadingDialog = new ProgressDialog(getActivity());
+					loadingDialog.setMessage(getString(R.string.upload_user_avatar));
+					//设置为不可以关闭的对话框
+					loadingDialog.setCancelable(false);
+				}
 				loadingDialog.show();
 			}
 			
@@ -488,8 +505,9 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 				if(isFinishing()) {
 					return;
 				}
-				loadingDialog.setCancelable(true);
-				loadingDialog.hide();
+				if(loadingDialog != null) {
+					loadingDialog.dismiss();
+				}
 				if (msg.what == 1 && msg.obj != null) {
 					Result res = (Result) msg.obj;
 					if (res.OK()) {
