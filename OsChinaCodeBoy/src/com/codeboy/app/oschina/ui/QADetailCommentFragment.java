@@ -71,4 +71,9 @@ public class QADetailCommentFragment extends BaseSwipeRefreshFragment<Comment, C
 			update();
 		}
 	}
+
+	@Override
+	public void onItemClick(int position, Comment data) {
+		
+	}
 }

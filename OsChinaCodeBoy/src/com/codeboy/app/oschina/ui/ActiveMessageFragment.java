@@ -2,8 +2,6 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -47,10 +45,8 @@ public class ActiveMessageFragment extends BaseSwipeRefreshFragment<Messages, Me
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		Messages msg = getData(position);
-		UIHelper.showMessageDetail(view.getContext(), msg.getFriendId(), msg.getFriendName());
+	public void onItemClick(int position, Messages msg) {
+		UIHelper.showMessageDetail(getActivity(), 
+				msg.getFriendId(), msg.getFriendName());
 	}
 }

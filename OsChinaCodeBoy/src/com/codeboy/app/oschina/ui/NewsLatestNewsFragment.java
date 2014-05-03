@@ -53,12 +53,9 @@ public class NewsLatestNewsFragment extends BaseSwipeRefreshFragment<News, NewsL
 		}
 		return msg;
 	}
-	
+
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		News news = getData(position);
+	public void onItemClick(int position, News news) {
 		UIHelper.showNewsRedirect(getActivity(), news);
 	}
 }

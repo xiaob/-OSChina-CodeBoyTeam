@@ -5,6 +5,7 @@ import java.util.List;
 import net.oschina.app.adapter.ListViewTweetAdapter;
 import net.oschina.app.bean.Tweet;
 import net.oschina.app.bean.TweetList;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 import android.widget.BaseAdapter;
 
@@ -39,5 +40,12 @@ public class TweetLatestFragment extends BaseSwipeRefreshFragment<Tweet, TweetLi
 			msg = new MessageData<TweetList>(e);
 		}
 		return msg;
+	}
+	
+	@Override
+	public void onItemClick(int position, Tweet data) {
+		Tweet tweet = getData(position);
+		// 跳转到动弹详情&评论页面
+		UIHelper.showTweetDetail(getActivity(), tweet.getId());
 	}
 }

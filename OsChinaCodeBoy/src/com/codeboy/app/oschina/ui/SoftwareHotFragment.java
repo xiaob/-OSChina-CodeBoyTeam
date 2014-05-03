@@ -10,8 +10,6 @@ import net.oschina.app.bean.SimpleSoftware;
 import net.oschina.app.bean.SoftwareList;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 /**
@@ -45,10 +43,7 @@ public class SoftwareHotFragment extends BaseSwipeRefreshFragment<SimpleSoftware
 	}
 	
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		SimpleSoftware sw = getData(position);
+	public void onItemClick(int position, SimpleSoftware sw) {
 		//跳转
 		UIHelper.showUrlRedirect(getActivity(), sw.getUrl());
 	}

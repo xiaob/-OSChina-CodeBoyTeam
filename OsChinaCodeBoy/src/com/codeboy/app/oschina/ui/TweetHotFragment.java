@@ -10,6 +10,7 @@ import com.codeboy.app.oschina.modul.MessageData;
 import net.oschina.app.adapter.ListViewTweetAdapter;
 import net.oschina.app.bean.TweetList;
 import net.oschina.app.bean.Tweet;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 
 /**
@@ -40,5 +41,12 @@ public class TweetHotFragment extends BaseSwipeRefreshFragment<Tweet, TweetList>
 			msg = new MessageData<TweetList>(e);
 		}
 		return msg;
+	}
+	
+	@Override
+	public void onItemClick(int position, Tweet data) {
+		Tweet tweet = getData(position);
+		// 跳转到动弹详情&评论页面
+		UIHelper.showTweetDetail(getActivity(), tweet.getId());
 	}
 }

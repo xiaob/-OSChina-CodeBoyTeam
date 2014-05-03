@@ -5,8 +5,6 @@ import java.util.List;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.modul.MessageData;
 
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import net.oschina.app.adapter.ListViewSoftwareAdapter;
 import net.oschina.app.bean.SoftwareList;
@@ -43,12 +41,9 @@ public class SoftwareChinaFragment extends BaseSwipeRefreshFragment<SimpleSoftwa
 		}
 		return msg;
 	}
-	
+
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		SimpleSoftware sw = getData(position);
+	public void onItemClick(int position, SimpleSoftware sw) {
 		//跳转
 		UIHelper.showUrlRedirect(getActivity(), sw.getUrl());
 	}

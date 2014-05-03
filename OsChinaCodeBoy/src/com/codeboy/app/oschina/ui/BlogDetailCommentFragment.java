@@ -23,7 +23,7 @@ import net.oschina.app.core.AppException;
  * 更新时间 2014年5月2日 下午1:13:35</br>
  * 最后更新者 LeonLee</br>
  * 
- * 说明 类的描述
+ * 说明 博客评论界面
  */
 public class BlogDetailCommentFragment extends BaseSwipeRefreshFragment<Comment, BlogCommentList> 
 	implements UpdateDatasEvent {
@@ -72,5 +72,10 @@ public class BlogDetailCommentFragment extends BaseSwipeRefreshFragment<Comment,
 		if(!isLoadding()) {
 			update();
 		}
+	}
+
+	@Override
+	public void onItemClick(int position, Comment data) {
+		
 	}
 }

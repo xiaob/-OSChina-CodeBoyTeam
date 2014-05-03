@@ -8,11 +8,8 @@ import net.oschina.app.bean.BlogList;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
-import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.R;
 import com.codeboy.app.oschina.modul.MessageData;
 
@@ -51,17 +48,9 @@ public class NewsRecentBlogPostsFragment extends BaseSwipeRefreshFragment<Blog, 
 		}
 		return msg;
 	}
-	
+
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		Blog blog = getData(position);
-		
-		if(L.Debug) {
-			L.d("blog -->id:" + blog.getId());
-		}
-		
+	public void onItemClick(int position, Blog blog) {
 		UIHelper.showUrlRedirect(getActivity(), blog.getUrl());
 	}
 }

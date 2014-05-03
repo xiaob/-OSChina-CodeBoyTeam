@@ -2,8 +2,6 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -47,11 +45,8 @@ public class QAJobFragment extends BaseSwipeRefreshFragment<Post, PostList> {
 	}
 	
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		Post post = getData(position);
+	public void onItemClick(int position, Post post) {
 		// 跳转到问答详情
-		UIHelper.showQuestionDetail(view.getContext(), post.getId());
+		UIHelper.showQuestionDetail(getActivity(), post.getId());
 	}
 }

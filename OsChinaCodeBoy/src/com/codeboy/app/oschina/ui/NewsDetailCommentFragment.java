@@ -70,4 +70,9 @@ public class NewsDetailCommentFragment extends BaseSwipeRefreshFragment<Comment,
 			update();
 		}
 	}
+
+	@Override
+	public void onItemClick(int position, Comment data) {
+		
+	}
 }

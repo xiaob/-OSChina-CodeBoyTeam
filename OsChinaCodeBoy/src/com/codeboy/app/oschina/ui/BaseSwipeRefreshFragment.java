@@ -62,6 +62,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	
 	protected SwipeRefreshLayout mSwipeRefreshLayout;
 	protected ListView mListView;
+	private View mHeaderView;
 	private View mFooterView;
 	private BaseAdapter mAdapter;
 	
@@ -124,6 +125,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		mHeaderView = getHeaderView(inflater);
 		mFooterView = inflater.inflate(R.layout.listview_footer, null);
 		mFooterProgressBar = mFooterView.findViewById(R.id.listview_foot_progress);
 		mFooterTextView = (TextView) mFooterView.findViewById(R.id.listview_foot_more);
@@ -157,12 +159,20 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 		}
 	}
 	
+	/** 获取HeaderView*/
+	protected View getHeaderView(LayoutInflater inflater) {
+		return null;
+	}
+	
 	/** 初始化ListView*/
 	protected void setupListView() {
 		mListView.setOnItemClickListener(this);
 		mListView.setOnScrollListener(this);
 		mListView.addFooterView(mFooterView);
 		mListView.setAdapter(mAdapter);
+		if(mHeaderView != null) {
+			mListView.addHeaderView(mHeaderView);
+		}
 	}
 	
 	/** 获取适配器*/
@@ -265,8 +275,23 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		
+		//点击了底部
+		if(view == mFooterView) {
+			return;
+		}
+		//点击了顶部
+		if(mHeaderView == view) {
+			return;
+		}
+		if(mHeaderView != null) {
+			position = position - 1;
+		}
+		Data data = getData(position);
+		onItemClick(position, data);
 	}
+	
+	/** 点击了某个item*/
+	public void onItemClick(int position, Data data) {} 
 	
 	/** 
 	 * 返回某项的数据

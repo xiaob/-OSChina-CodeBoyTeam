@@ -2,8 +2,6 @@ package com.codeboy.app.oschina.ui;
 
 import java.util.List;
 
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 
 import com.codeboy.app.oschina.R;
@@ -48,10 +46,7 @@ public class ActiveLastestFragment extends BaseSwipeRefreshFragment<Active, Acti
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		super.onItemClick(parent, view, position, id);
-		Active active = getData(position);
-		UIHelper.showActiveRedirect(getActivity(), active);
+	public void onItemClick(int position, Active data) {
+		UIHelper.showActiveRedirect(getActivity(), data);
 	}
 }
