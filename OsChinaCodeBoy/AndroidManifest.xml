@@ -72,10 +72,9 @@
             android:label="@string/tweet_detail_head_title"
             android:screenOrientation="portrait" />
         
-        <!-- 空间消息详情 -->
+        <!-- 留言消息详情 -->
         <activity 
             android:name="com.codeboy.app.oschina.MessageDetailActivity"
-            android:label="@string/blog_detail_head_title"
             android:screenOrientation="portrait" />
         
         <!-- 软件详情 -->

@@ -66,7 +66,7 @@ public class TweetDetailActivity extends BaseActionBarActivity
         tweetId = getIntent().getIntExtra(Contanst.TWEET_ID_KEY, 0);
         mApplication = getOsChinaApplication();
         
-        setContentView(R.layout.activity_tweet_detail);
+        setContentView(R.layout.activity_base_detail2);
         
         if(savedInstanceState == null) {
         	getSupportFragmentManager().beginTransaction()
@@ -130,8 +130,8 @@ public class TweetDetailActivity extends BaseActionBarActivity
 	}
 	
 	private void initView() {
-		mEditBoxView = findViewById(R.id.tweetetail_editbox);
-		mCommentButton = (Button)findViewById(R.id.tweetetail_button);
+		mEditBoxView = findViewById(R.id.basedetail_editbox);
+		mCommentButton = (Button)findViewById(R.id.basedetail_button);
 		
 		mEditBoxView.setOnClickListener(this);
 		

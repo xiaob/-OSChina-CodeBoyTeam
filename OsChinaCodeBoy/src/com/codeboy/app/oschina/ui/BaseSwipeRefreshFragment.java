@@ -222,6 +222,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			//防止多次重复刷新
 			mSwipeRefreshLayout.setEnabled(false);
 		}
+		onRefreshLoadingStatus();
 	}
 	
 	/** 设置顶部加载完毕的状态*/
@@ -230,6 +231,7 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 			mSwipeRefreshLayout.setRefreshing(false);
 			mSwipeRefreshLayout.setEnabled(true);
 		}
+		onRefreshLoadedStatus();
 	}
 	
 	/** 设置底部有错误的状态*/
@@ -291,7 +293,11 @@ public abstract class BaseSwipeRefreshFragment <Data extends Entity, Result exte
 	}
 	
 	/** 点击了某个item*/
-	public void onItemClick(int position, Data data) {} 
+	public void onItemClick(int position, Data data) {}
+	/** 正在加载的状态*/
+	public void onRefreshLoadingStatus() {}
+	/** 加载完毕的状态*/
+	public void onRefreshLoadedStatus() {}
 	
 	/** 
 	 * 返回某项的数据
