@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -43,6 +44,7 @@ import android.text.style.URLSpan;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -839,5 +841,29 @@ public class UIHelper {
 				handler.sendMessage(msg);
 			}
 		}.start();
+	}
+	
+	/** 
+	 * 设置评论的按钮
+	 * @param commentButton
+	 * @param commentCount 评论数
+	 * */
+	public static void setupCommentButton(Button commentButton, int commentCount) {
+		String text = String.valueOf(commentCount);
+		
+		Drawable drable = null;
+		Resources res = commentButton.getResources();
+		if(commentCount > 100) {
+			drable = res.getDrawable(R.drawable.comment_lajiao2_icon);
+		} else if(commentCount > 50) {
+			drable = res.getDrawable(R.drawable.comment_lajiao1_icon);
+		} else if(commentCount == 0){
+			text = "";
+			drable = res.getDrawable(R.drawable.comment_sofa_icon);
+		} else {
+			drable = res.getDrawable(R.drawable.comment_simple_icon);
+		}
+		commentButton.setText(text);
+		commentButton.setCompoundDrawablesWithIntrinsicBounds(null, null, drable, null);
 	}
 }

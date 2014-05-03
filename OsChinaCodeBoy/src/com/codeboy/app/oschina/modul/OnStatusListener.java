@@ -1,7 +1,7 @@
 package com.codeboy.app.oschina.modul;
 
 /**
- * 类名 OnLoadingStatusListener.java</br>
+ * 类名 OnStatusListener.java</br>
  * 创建日期 2014年5月3日</br>
  * @author LeonLee (http://my.oschina.net/lendylongli)</br>
  * Email lendylongli@gmail.com</br>
@@ -10,7 +10,7 @@ package com.codeboy.app.oschina.modul;
  * 
  * 说明 回调加载状态
  */
-public interface OnLoadingStatusListener {
+public interface OnStatusListener {
 	
 	public final static int STATUS_NONE = 0x0;
 	public final static int STATUS_LOADING = 0x01;

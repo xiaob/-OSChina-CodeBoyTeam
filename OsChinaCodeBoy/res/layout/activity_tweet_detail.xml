@@ -4,8 +4,41 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <FrameLayout 
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="10dip"
+        android:paddingLeft="20dip"
+        android:paddingRight="20dip"
+        android:paddingTop="10dip" >
+
+        <Button
+            android:id="@+id/tweetetail_editbox"
+            style="@style/EditTextStyle"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:hint="@string/news_detail_publish_comment" />
+
+        <Button
+            android:id="@+id/tweetetail_button"
+            style="@style/GreyButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dip"
+            android:minWidth="60dip"
+            android:paddingBottom="5dip"
+            android:paddingLeft="20dip"
+            android:paddingRight="20dip"
+            android:paddingTop="5dip" />
+    </LinearLayout>
+
 </LinearLayout>

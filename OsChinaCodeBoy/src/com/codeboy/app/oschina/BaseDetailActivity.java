@@ -1,8 +1,7 @@
 package com.codeboy.app.oschina;
 
+import net.oschina.app.common.UIHelper;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -169,22 +168,7 @@ public abstract class BaseDetailActivity extends BaseActionBarActivity
 	
 	/** 在显示内容时，按钮为显示评论数*/
 	protected void updateBodyButton (int count) {
-		String text = String.valueOf(count);
-		
-		Drawable drable = null;
-		Resources res = getResources();
-		if(count > 100) {
-			drable = res.getDrawable(R.drawable.comment_lajiao2_icon);
-		} else if(count > 50) {
-			drable = res.getDrawable(R.drawable.comment_lajiao1_icon);
-		} else if(count == 0){
-			text = "";
-			drable = res.getDrawable(R.drawable.comment_sofa_icon);
-		} else {
-			drable = res.getDrawable(R.drawable.comment_simple_icon);
-		}
-		mCommentCountButton.setText(text);
-		mCommentCountButton.setCompoundDrawablesWithIntrinsicBounds(null, null, drable, null);
+		UIHelper.setupCommentButton(mCommentCountButton, count);
 	}
 	
 	/** 在显示评论时，按钮为显示原文*/

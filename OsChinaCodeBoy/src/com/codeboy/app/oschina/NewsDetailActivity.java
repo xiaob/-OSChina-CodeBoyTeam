@@ -144,9 +144,8 @@ public class NewsDetailActivity extends BaseDetailActivity
 			@Override
 			protected Message doInBackground(Void... params) {
 				Message msg = new Message();
-				Result res = new Result();
 				try {
-					res = getOsChinaApplication().pubComment(1, mNewsId, 
+					Result res = getOsChinaApplication().pubComment(1, mNewsId, 
 							uid, text, 0);
 					msg.what = 1;
 					msg.obj = res;
