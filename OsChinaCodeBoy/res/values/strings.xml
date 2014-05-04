@@ -123,4 +123,15 @@
     <string name="userinfo_expertise">专长领域：</string>
     <string name="userinfo_upload_avatar_title">上传头像</string>
     <string name="userinfo_upload_avatar_choose">选择图片</string>
+    
+    <string name="publish_post_headline_title">标题：</string>
+    <string name="publish_post_input_title_hint">输入标题</string>
+    <string name="publish_post_headline_category">分类：</string>
+    <string name="publish_post_headline_question">请对问题进行详细描述：</string>
+    <string name="publish_post_input_question_hint">输入提问内容</string>
+    <string name="publish_post_email_notify">有人回答时邮件通知我</string>
+    <string name="publish_post_button">发布</string>
+    <string name="publish_post_wait_tips">正在发布中...</string>
+    <string name="publish_post_error_tips1">请输入标题</string>
+    <string name="publish_post_error_tips2">请输入提问内容</string>
 </resources>

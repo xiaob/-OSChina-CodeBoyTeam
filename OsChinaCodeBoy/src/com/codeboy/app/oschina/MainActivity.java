@@ -12,6 +12,7 @@ import com.codeboy.app.oschina.ui.SoftwareMainFragment;
 import com.codeboy.app.oschina.ui.TweetMainFragment;
 import com.umeng.update.UmengUpdateAgent;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -23,6 +24,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -86,7 +89,6 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 		
 		//友盟检查更新
 		UmengUpdateAgent.update(this);
@@ -94,6 +96,8 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 		mActionBar = getSupportActionBar();
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setHomeButtonEnabled(true);
+		
+		setContentView(R.layout.activity_main);
 		
 		mDoubleClickExitHelper = new DoubleClickExitHelper(this);
 		
@@ -123,12 +127,29 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	}
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        int id = item.getItemId();
+        if(id == R.id.action_publish_post) {
+        	showPublishPostUI();
+        	return true;
+        }
         return super.onOptionsItemSelected(item);
     }
+	
+	private void showPublishPostUI() {
+		Intent intent = new Intent(this, PublishPostActivity.class);
+		startActivity(intent);
+	}
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

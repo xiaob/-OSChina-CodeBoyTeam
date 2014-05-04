@@ -83,6 +83,12 @@
             android:label="@string/software_detail_head_title"
             android:screenOrientation="portrait" />
         
+        <!-- 我要发贴 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.PublishPostActivity"
+            android:label="@string/question_pub_head_title"
+            android:screenOrientation="portrait"/>
+        
         <!-- 友盟统计模块 Start-->
         <!-- Update Activitys Start -->
         <activity 
