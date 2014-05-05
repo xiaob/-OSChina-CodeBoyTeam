@@ -1,17 +1,6 @@
 package com.codeboy.app.oschina;
 
 
-import com.codeboy.app.library.common.DoubleClickExitHelper;
-import com.codeboy.app.library.util.L;
-import com.codeboy.app.oschina.modul.DrawerMenuCallBack;
-import com.codeboy.app.oschina.ui.ActiveMainFragment;
-import com.codeboy.app.oschina.ui.DrawerMenuFragment;
-import com.codeboy.app.oschina.ui.NewsMainFragment;
-import com.codeboy.app.oschina.ui.QAMainFragment;
-import com.codeboy.app.oschina.ui.SoftwareMainFragment;
-import com.codeboy.app.oschina.ui.TweetMainFragment;
-import com.umeng.update.UmengUpdateAgent;
-
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -28,6 +17,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.codeboy.app.library.common.DoubleClickExitHelper;
+import com.codeboy.app.library.util.L;
+import com.codeboy.app.oschina.modul.DrawerMenuCallBack;
+import com.codeboy.app.oschina.ui.ActiveMainFragment;
+import com.codeboy.app.oschina.ui.DrawerMenuFragment;
+import com.codeboy.app.oschina.ui.NewsMainFragment;
+import com.codeboy.app.oschina.ui.QAMainFragment;
+import com.codeboy.app.oschina.ui.SoftwareMainFragment;
+import com.codeboy.app.oschina.ui.TweetMainFragment;
+import com.umeng.update.UmengUpdateAgent;
 
 
 /**
@@ -90,6 +90,8 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		requestActionBarMenu();
+		
 		//友盟检查更新
 		UmengUpdateAgent.update(this);
 		
@@ -142,12 +144,20 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
         if(id == R.id.action_publish_post) {
         	showPublishPostUI();
         	return true;
+        } else if(id == R.id.action_publish_tweet) {
+        	showTweetUI();
+        	return true;
         }
         return super.onOptionsItemSelected(item);
     }
 	
 	private void showPublishPostUI() {
 		Intent intent = new Intent(this, PublishPostActivity.class);
+		startActivity(intent);
+	}
+	
+	private void showTweetUI() {
+		Intent intent = new Intent(this, PublishTweetActivity.class);
 		startActivity(intent);
 	}
 

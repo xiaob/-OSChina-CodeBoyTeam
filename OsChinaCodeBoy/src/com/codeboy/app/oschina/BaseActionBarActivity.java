@@ -1,10 +1,13 @@
 package com.codeboy.app.oschina;
 
+import java.lang.reflect.Field;
+
 import com.umeng.analytics.MobclickAgent;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ViewConfiguration;
 
 /**
  * 类名 BaseActionBarActivity.java</br>
@@ -59,5 +62,21 @@ public class BaseActionBarActivity extends ActionBarActivity
 	@Override
 	public Activity getActivity() {
 		return mHelper.getActivity();
+	}
+	
+	/** 将菜单显示在actionbar上，而不是在底部*/
+	protected void requestActionBarMenu() {
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class
+					.getDeclaredField("sHasPermanentMenuKey");
+
+			if (menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception e) {
+			// presumably, not relevant
+		}
 	}
 }

@@ -100,7 +100,8 @@ public class AppContext extends Application {
 	public void onCreate() {
 		super.onCreate();
         //注册App异常崩溃处理器
-        Thread.setDefaultUncaughtExceptionHandler(AppException.getAppExceptionHandler());
+        Thread.setDefaultUncaughtExceptionHandler(
+        		AppException.getAppExceptionHandler(this));
         
         init();
 	}

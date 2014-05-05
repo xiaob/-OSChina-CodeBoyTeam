@@ -134,4 +134,15 @@
     <string name="publish_post_wait_tips">正在发布中...</string>
     <string name="publish_post_error_tips1">请输入标题</string>
     <string name="publish_post_error_tips2">请输入提问内容</string>
+    
+    <string name="publish_tweet_input_content_hint">请输入动弹内容</string>
+    <string name="publish_tweet_wait_tips">动弹后台发布中···</string>
+    <string name="publish_tweet_default_voice_text">\#语音分享\#</string>
+    <string name="publish_tweet_voice_tips">按住  说话</string>
+    <string name="publish_tweet_voice_cancel_tips">松开  结束</string>
+    <string name="publish_tweet_voice_time_tips">录音时间还剩下%1$d秒</string>
+    <string name="publish_tweet_at_text">\@请输入用户名</string>
+    <string name="publish_tweet_software_text">\#请输入软件名\#</string>
+    <string name="publish_tweet_success">动弹发布成功!</string>
+    <string name="publish_tweet_fail">动弹发布失败...</string>
 </resources>

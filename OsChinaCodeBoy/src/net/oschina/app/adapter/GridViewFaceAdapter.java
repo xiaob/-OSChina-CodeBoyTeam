@@ -1,5 +1,7 @@
 package net.oschina.app.adapter;
 
+import com.codeboy.app.oschina.R;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +15,12 @@ import android.widget.ImageView;
  * @version 1.0
  * @created 2012-8-9
  */
-public class GridViewFaceAdapter extends BaseAdapter
-{
+public class GridViewFaceAdapter extends BaseAdapter {
 	// 定义Context
 	private Context	mContext;
 	// 定义整型数组 即图片源
 	private static int[] mImageIds = new int[]{
-			/*R.drawable.f001,R.drawable.f002,R.drawable.f003,R.drawable.f004,R.drawable.f005,R.drawable.f006,
+			R.drawable.f001,R.drawable.f002,R.drawable.f003,R.drawable.f004,R.drawable.f005,R.drawable.f006,
 			R.drawable.f007,R.drawable.f008,R.drawable.f009,R.drawable.f010,R.drawable.f011,R.drawable.f012,
 			R.drawable.f013,R.drawable.f014,R.drawable.f015,R.drawable.f016,R.drawable.f017,R.drawable.f018,
 			R.drawable.f019,R.drawable.f020,R.drawable.f021,R.drawable.f022,R.drawable.f023,R.drawable.f024,
@@ -36,7 +37,7 @@ public class GridViewFaceAdapter extends BaseAdapter
 			R.drawable.f086,R.drawable.f087,R.drawable.f088,R.drawable.f089,R.drawable.f090,R.drawable.f091,
 			R.drawable.f092,R.drawable.f093,R.drawable.f094,R.drawable.f095,R.drawable.f096,R.drawable.f097,
 			R.drawable.f098,R.drawable.f099,R.drawable.f100,R.drawable.f101,R.drawable.f103,R.drawable.f104,
-			R.drawable.f105*/
+			R.drawable.f105
 		};
 
 	public static int[] getImageIds() {

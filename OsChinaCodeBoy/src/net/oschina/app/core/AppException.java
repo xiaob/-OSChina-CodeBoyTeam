@@ -12,7 +12,9 @@ import java.util.Date;
 
 import org.apache.commons.httpclient.HttpException;
 
+import com.codeboy.app.library.util.L;
 import com.codeboy.app.oschina.R;
+import com.umeng.analytics.MobclickAgent;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -44,9 +46,11 @@ public class AppException extends Exception implements UncaughtExceptionHandler{
 	
 	/** 系统默认的UncaughtException处理类 */
 	private Thread.UncaughtExceptionHandler mDefaultHandler;
+	private Context mContext;
 	
-	private AppException(){
+	private AppException(Context context){
 		this.mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
+		this.mContext = context;
 	}
 	
 	private AppException(byte type, int code, Exception excp) {
@@ -194,16 +198,18 @@ public class AppException extends Exception implements UncaughtExceptionHandler{
 	 * @param context
 	 * @return
 	 */
-	public static AppException getAppExceptionHandler(){
-		return new AppException();
+	public static AppException getAppExceptionHandler(Context context){
+		return new AppException(context.getApplicationContext());
 	}
 	
 	@Override
 	public void uncaughtException(Thread thread, Throwable ex) {
-
 		if(!handleException(ex) && mDefaultHandler != null) {
+			// 如果用户没有处理则让系统默认的异常处理器来处理
 			mDefaultHandler.uncaughtException(thread, ex);
 		}
+		MobclickAgent.onKillProcess(mContext);
+		android.os.Process.killProcess(android.os.Process.myPid());
 
 	}
 	/**
@@ -216,22 +222,12 @@ public class AppException extends Exception implements UncaughtExceptionHandler{
 			return false;
 		}
 		
-		/*final Context context = AppManager.getAppManager().currentActivity();
-		
-		if(context == null) {
+		if(L.Debug) {
+			ex.printStackTrace();
 			return false;
 		}
-		
-		final String crashReport = getCrashReport(context, ex);
-		//显示异常信息&发送报告
-		new Thread() {
-			public void run() {
-				Looper.prepare();
-				UIHelper.sendAppCrashReport(context, crashReport);
-				Looper.loop();
-			}
-
-		}.start();*/
+		//反馈到友盟的后台
+		MobclickAgent.reportError(mContext, ex);
 		return true;
 	}
 	/**

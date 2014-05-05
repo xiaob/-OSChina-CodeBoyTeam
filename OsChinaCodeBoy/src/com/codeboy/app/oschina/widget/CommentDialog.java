@@ -9,10 +9,9 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.Window;
-import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,23 +67,17 @@ public class CommentDialog {
 		
 		LayoutInflater inflater = mDialog.getLayoutInflater();
 		View view = inflater.inflate(R.layout.comment_dialog_layout, null);
-		container.addView(view);
+		
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+				Gravity.BOTTOM);
+		container.addView(view, params);
+		
 		mDialog.setContentView(container);
-		
-		final Window window = mDialog.getWindow();
-		//对话框一显示，则自动弹出软键盘
-		window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		
-		DisplayMetrics dm = context.getResources().getDisplayMetrics();
-		LayoutParams lp = window.getAttributes();
-		//设置对话框的宽度为全屏的宽
-		lp.width = dm.widthPixels;
-		//设置对话框的重点在底部
-		lp.gravity = Gravity.BOTTOM;
-		window.setAttributes(lp);
 		
 		mEditText = (EditText)mDialog.findViewById(R.id.comment_edittext);
 		mButton = (Button) mDialog.findViewById(R.id.comment_button);
+		
 		//发表按钮监听
 		mButton.setOnClickListener(new OnClickListener() {
 			
@@ -183,19 +176,22 @@ public class CommentDialog {
 		public void setOnSoftKeyboardShowListener(OnSoftKeyboardShowListener listener) {
 			this.listener = listener;
 		}
-
+		
 		@Override
 		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 			//判断软件键盘是否显示
 			int location[] = new int[2];
 			getLocationOnScreen(location);
+			int height = getHeight();
 			if(L.Debug) {
-				L.d("location: " + location[0] + "  " + location[1] + "  height:" + (location[1] + getHeight()));
+				L.d("screenHeight:" + screenHeight + "  location: " + location[0] 
+						+ "  " + location[1] + "  height:" + height 
+						+ "  size:" + (location[1] + height));
 			}
 			//因为将Dialog的重心设置为底部，则高度就是从底部为0，往上加
-			if(listener != null && location[1] != 0) {
+			if(listener != null && location[1] != 0 && height != 0) {
 				//当前view的y坐标+自身高度等于屏幕高度，则表明正在显示软键盘
-				boolean show = location[1] + getHeight() == screenHeight;
+				boolean show = location[1] + height == screenHeight;
 				listener.onSoftKeyboardShow(show);
 			}
 			super.onMeasure(widthMeasureSpec, heightMeasureSpec);

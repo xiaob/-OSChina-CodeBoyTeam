@@ -102,14 +102,14 @@ public class PublishPostActivity extends BaseActionBarActivity implements TextWa
     	//显示临时编辑内容
     	UIHelper.showTempEditContent(this, mContent, AppConfig.TEMP_POST_CONTENT);
     	//显示临时选择分类
-    	String position = getOsChinaApplication().getProperty(AppConfig.TEMP_POST_CATALOG);
+    	String position = mApplication.getProperty(AppConfig.TEMP_POST_CATALOG);
     	mCatalog.setSelection(StringUtils.toInt(position, 0));
 	}
 	
 	private AdapterView.OnItemSelectedListener catalogSelectedListener = new AdapterView.OnItemSelectedListener(){
 		public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 			//保存临时选择的分类
-			getOsChinaApplication().setProperty(AppConfig.TEMP_POST_CATALOG, position + "");
+			mApplication.setProperty(AppConfig.TEMP_POST_CATALOG, position + "");
 		}
 		
 		public void onNothingSelected(AdapterView<?> parent) {}

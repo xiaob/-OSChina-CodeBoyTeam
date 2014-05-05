@@ -58,4 +58,8 @@
     <string name="msg_load_image_fail">图片加载失败</string>
     <string name="msg_read_detail_fail">无法获取文章信息</string>
     <string name="msg_noaccess_delete">您没有删除权限</string>
+    
+    <string name="msg_choose_image">选择图片</string>
+    
+    <string name="save_image_error">无法保存照片，请检查SD卡是否挂载</string>
 </resources>
