@@ -152,4 +152,8 @@
     <string name="favorite_code_title">代码</string>
     <string name="favorite_blog_title">博客</string>
     <string name="favorite_news_title">资讯</string>
+    
+    <string name="friends_headline_title">我的好友</string>
+    <string name="friends_follower">关注</string>
+    <string name="friends_fans">粉丝</string>
 </resources>

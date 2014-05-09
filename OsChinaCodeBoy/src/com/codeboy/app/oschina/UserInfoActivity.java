@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import com.codeboy.app.library.util.Util;
+
+import net.oschina.app.bean.FriendList;
 import net.oschina.app.bean.MyInformation;
 import net.oschina.app.bean.Result;
 import net.oschina.app.common.FileUtils;
@@ -36,6 +37,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.codeboy.app.library.util.Util;
 
 /**
  * 用户资料
@@ -313,18 +316,16 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 	private void onFansClick() {
 		int followers = user != null ? user.getFollowerscount() : 0;
 		int fans = user != null ? user.getFanscount() : 0;
-		//TODO
-		/*UIHelper.showUserFriend(v.getContext(), FriendList.TYPE_FANS,
-				followers, fans);*/
+		UIHelper.showUserFriend(getActivity(), FriendList.TYPE_FANS,
+				followers, fans);
 	}
 	
 	/** 点击了关注*/
 	private void onFollowersClick() {
 		int followers = user != null ? user.getFollowerscount() : 0;
 		int fans = user != null ? user.getFanscount() : 0;
-		//TODO
-		/*UIHelper.showUserFriend(v.getContext(), FriendList.TYPE_FOLLOWER,
-				followers, fans);*/
+		UIHelper.showUserFriend(getActivity(), FriendList.TYPE_FOLLOWER,
+				followers, fans);
 	}
 
 	/**

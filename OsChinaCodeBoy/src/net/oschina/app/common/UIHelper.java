@@ -52,6 +52,7 @@ import android.widget.Toast;
 
 import com.codeboy.app.oschina.BlogDetailActivity;
 import com.codeboy.app.oschina.FavoriteActivity;
+import com.codeboy.app.oschina.FriendsActivity;
 import com.codeboy.app.oschina.MessageDetailActivity;
 import com.codeboy.app.oschina.NewsDetailActivity;
 import com.codeboy.app.oschina.QADetailActivity;
@@ -119,6 +120,35 @@ public class UIHelper {
 	}
 	
 	/**
+	 * 显示用户好友
+	 * @param context
+	 */
+	public static void showUserFriend(Context context, int friendType,
+			int followers, int fans) {
+		Intent intent = new Intent(context, FriendsActivity.class);
+		intent.putExtra(Contanst.FRIENDS_TYPE, friendType);
+		intent.putExtra(Contanst.FRIENDS_FOLLOWERS, followers);
+		intent.putExtra(Contanst.FRIENDS_FANS, fans);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示用户动态
+	 * 
+	 * @param context
+	 * @param uid
+	 * @param hisuid
+	 * @param hisname
+	 */
+	public static void showUserCenter(Context context, int hisuid,
+			String hisname) {
+		/*Intent intent = new Intent(context, UserCenter.class);
+		intent.putExtra("his_id", hisuid);
+		intent.putExtra("his_name", hisname);
+		context.startActivity(intent);*/
+	}
+	
+	/**
 	 * 点击链接时的处理
 	 * @param context 上下文
 	 * @param objType
@@ -141,7 +171,7 @@ public class UIHelper {
 			showSoftwareDetail(context, objKey);
 			break;
 		case URLs.URL_OBJ_TYPE_ZONE:
-			//showUserCenter(context, objId, objKey);
+			showUserCenter(context, objId, objKey);
 			break;
 		case URLs.URL_OBJ_TYPE_TWEET:
 			showTweetDetail(context, objId);
@@ -296,7 +326,6 @@ public class UIHelper {
 	 * @param context
 	 * @param catalog
 	 * @param friendid
-	 * TODO
 	 */
 	public static void showMessageDetail(Context context, int friendid,
 			String friendname) {

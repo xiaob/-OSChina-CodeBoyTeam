@@ -27,4 +27,8 @@ public interface Contanst {
 	public static final String MESSAGE_FRIEND_ID_KEY = "friend_id";
 	
 	public static final String SOFTWARE_ID_KEY = "ident";
+	
+	public static final String FRIENDS_TYPE = "friend_type";
+	public static final String FRIENDS_FOLLOWERS = "friend_followers";
+	public static final String FRIENDS_FANS = "friend_fans";
 }

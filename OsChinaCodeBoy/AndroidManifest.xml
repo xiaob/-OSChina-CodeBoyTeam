@@ -103,6 +103,12 @@
             android:label="@string/favorite_headline_title"
             android:screenOrientation="portrait"/>
         
+        <!-- 我的好友 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.FriendsActivity"
+            android:label="@string/friends_headline_title"
+            android:screenOrientation="portrait"/>
+        
         <!-- 友盟统计模块 Start-->
         <!-- Update Activitys Start -->
         <activity 

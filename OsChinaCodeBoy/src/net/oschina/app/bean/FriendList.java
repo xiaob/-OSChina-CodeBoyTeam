@@ -28,12 +28,12 @@ public class FriendList extends Entity implements PageList<Friend> {
 	
 	@Override
 	public int getPageSize() {
-		return 0;
+		return friendlist.size();
 	}
 
 	@Override
 	public int getCount() {
-		return 0;
+		return friendlist.size();
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class FriendList extends Entity implements PageList<Friend> {
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("friend") && friend != null) {
-						friendlist.getList().add(friend);
+						friendlist.friendlist.add(friend);
 						friend = null;
 					}
 					break;
