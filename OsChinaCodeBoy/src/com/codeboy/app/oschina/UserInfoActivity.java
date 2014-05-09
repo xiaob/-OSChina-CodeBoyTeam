@@ -306,8 +306,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 
 	/**点击了收藏 */
 	private void onFavoritesClick() {
-		//TODO
-		//UIHelper.showUserFavorite(v.getContext());
+		UIHelper.showUserFavorite(this);
 	}
 	
 	/** 点击了粉丝*/

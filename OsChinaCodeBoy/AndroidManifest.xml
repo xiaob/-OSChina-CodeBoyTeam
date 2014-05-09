@@ -97,6 +97,12 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
         
+        <!-- 我的收藏夹 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.FavoriteActivity"
+            android:label="@string/favorite_headline_title"
+            android:screenOrientation="portrait"/>
+        
         <!-- 友盟统计模块 Start-->
         <!-- Update Activitys Start -->
         <activity 

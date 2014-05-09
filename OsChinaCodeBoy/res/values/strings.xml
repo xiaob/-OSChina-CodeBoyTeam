@@ -145,4 +145,11 @@
     <string name="publish_tweet_software_text">\#请输入软件名\#</string>
     <string name="publish_tweet_success">动弹发布成功!</string>
     <string name="publish_tweet_fail">动弹发布失败...</string>
+    
+    <string name="favorite_headline_title">我的收藏夹</string>
+    <string name="favorite_software_title">软件</string>
+    <string name="favorite_post_title">话题</string>
+    <string name="favorite_code_title">代码</string>
+    <string name="favorite_blog_title">博客</string>
+    <string name="favorite_news_title">资讯</string>
 </resources>

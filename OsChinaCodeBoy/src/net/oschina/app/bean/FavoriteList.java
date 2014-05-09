@@ -29,12 +29,11 @@ public class FavoriteList extends Entity implements PageList<Favorite> {
 	public final static int TYPE_CODE = 0x05;
 
 	private int pageSize;
-	private int favoriteCount;
 	private List<Favorite> favoritelist = new ArrayList<Favorite>();
 
 	@Override
 	public int getCount() {
-		return favoriteCount;
+		return favoritelist.size();
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public class FavoriteList extends Entity implements PageList<Favorite> {
 				switch (evtType) {
 				case XmlPullParser.START_TAG:
 					if (tag.equalsIgnoreCase("pagesize")) {
-						favoritelist.favoriteCount = StringUtils.toInt(
+						favoritelist.pageSize = StringUtils.toInt(
 								xmlParser.nextText(), 0);
 					} else if (tag.equalsIgnoreCase("favorite")) {
 						favorite = new Favorite();
@@ -102,7 +101,7 @@ public class FavoriteList extends Entity implements PageList<Favorite> {
 				case XmlPullParser.END_TAG:
 					// 如果遇到标签结束，则把对象添加进集合中
 					if (tag.equalsIgnoreCase("favorite") && favorite != null) {
-						favoritelist.getList().add(favorite);
+						favoritelist.favoritelist.add(favorite);
 						favorite = null;
 					}
 					break;

@@ -51,6 +51,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codeboy.app.oschina.BlogDetailActivity;
+import com.codeboy.app.oschina.FavoriteActivity;
 import com.codeboy.app.oschina.MessageDetailActivity;
 import com.codeboy.app.oschina.NewsDetailActivity;
 import com.codeboy.app.oschina.QADetailActivity;
@@ -100,11 +101,23 @@ public class UIHelper {
 			+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/shThemeDefault.css\">"
 			+ "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///android_asset/shCore.css\">"
 			+ "<script type=\"text/javascript\">SyntaxHighlighter.all();</script>";
+	
 	public final static String WEB_STYLE = linkCss + "<style>* {font-size:14px;line-height:20px;} p {color:#333;} a {color:#3E62A6;} img {max-width:310px;} "
 			+ "img.alignleft {float:left;max-width:120px;margin:0 10px 5px 0;border:1px solid #ccc;background:#fff;padding:2px;} "
 			+ "pre {font-size:9pt;line-height:12pt;font-family:Courier New,Arial;border:1px solid #ddd;border-left:5px solid #6CE26C;background:#f6f6f6;padding:5px;overflow: auto;} "
 			+ "a.tag {font-size:15px;text-decoration:none;background-color:#bbd6f3;border-bottom:2px solid #3E6D8E;border-right:2px solid #7F9FB6;color:#284a7b;margin:2px 2px 2px 0;padding:2px 4px;white-space:nowrap;}</style>";
 
+	
+	/**
+	 * 显示用户收藏夹
+	 * 
+	 * @param context
+	 */
+	public static void showUserFavorite(Context context) {
+		Intent intent = new Intent(context, FavoriteActivity.class);
+		context.startActivity(intent);
+	}
+	
 	/**
 	 * 点击链接时的处理
 	 * @param context 上下文
