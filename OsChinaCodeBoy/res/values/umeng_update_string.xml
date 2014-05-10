@@ -14,4 +14,7 @@
 	<string name="UMToast_IsUpdating">正在更新中....</string>
 	<string name="UMDialog_InstallAPK">最新版本已下载，是否安装？</string>
 	<string name="UMUpdateCheck">2.4.1.20140228</string>
+	<string name="UMCheck_checking">正在检查...</string>
+	<string name="UMCheck_noupdate">已经是最新版了</string>
+	<string name="UMCheck_timeout">请求超时,请稍候再试...</string>
 </resources>

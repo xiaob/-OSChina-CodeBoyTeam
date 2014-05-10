@@ -1,6 +1,7 @@
 package com.codeboy.app.oschina;
 
 
+import net.oschina.app.common.UIHelper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -146,6 +147,9 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
         	return true;
         } else if(id == R.id.action_publish_tweet) {
         	showTweetUI();
+        	return true;
+        } else if(id == R.id.action_settings) {
+        	UIHelper.showSetting(this);
         	return true;
         }
         return super.onOptionsItemSelected(item);

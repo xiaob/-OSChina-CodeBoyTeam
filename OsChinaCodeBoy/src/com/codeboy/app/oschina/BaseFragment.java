@@ -1,5 +1,6 @@
 package com.codeboy.app.oschina;
 
+import com.codeboy.app.oschina.core.HandleActivityForResult;
 import com.umeng.analytics.MobclickAgent;
 
 import android.os.Bundle;
@@ -15,7 +16,7 @@ import android.support.v4.app.Fragment;
  * 
  * 说明 碎片的基类
  */
-public class BaseFragment extends Fragment{
+public class BaseFragment extends Fragment implements HandleActivityForResult {
 
 	
 	public OSChinaApplication getOsChinaApplication() {

@@ -31,6 +31,12 @@
             </intent-filter>
         </activity>
         
+        <!-- 系统设置 -->
+        <activity 
+            android:name="com.codeboy.app.oschina.SettingActivity"
+            android:label="@string/main_menu_setting"
+            android:screenOrientation="portrait"/>
+        
         <!-- 登录 -->
         <activity
             android:name="com.codeboy.app.oschina.LoginActivity"

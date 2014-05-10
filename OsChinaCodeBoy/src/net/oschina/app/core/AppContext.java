@@ -311,6 +311,9 @@ public class AppContext extends Application {
 	 * @throws AppException
 	 */
 	public MyInformation getMyInformation(boolean isRefresh) throws AppException {
+		if(loginUid <= 0) {
+			return null;
+		}
 		MyInformation myinfo = null;
 		String key = "myinfo_" + loginUid;
 		if(isNetworkConnected() && (!isReadDataCache(key) || isRefresh)) {
@@ -1791,5 +1794,6 @@ public class AppContext extends Application {
 	 */
 	public void setSaveImagePath(String saveImagePath) {
 		this.saveImagePath = saveImagePath;
+		setProperty(AppConfig.SAVE_IMAGE_PATH, saveImagePath);
 	}	
 }

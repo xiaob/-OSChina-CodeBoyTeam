@@ -405,7 +405,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 	private void startActionCamera() {
 		File file = getOutputMediaFile();
 		if(file == null) {
-			UIHelper.ToastMessage(this, R.string.tips_check_sdcart);
+			UIHelper.ToastMessage(this, R.string.tips_check_sdcard);
 			return;
 		}
 		photoUri = Uri.fromFile(file);
@@ -424,7 +424,7 @@ public class UserInfoActivity extends BaseActionBarActivity implements OnClickLi
 		//截图后保存的文件
 		File file = getOutputMediaFile();
 		if(file == null) {
-			UIHelper.ToastMessage(this, R.string.tips_check_sdcart);
+			UIHelper.ToastMessage(this, R.string.tips_check_sdcard);
 			return;
 		}
 		protraitFile = file;

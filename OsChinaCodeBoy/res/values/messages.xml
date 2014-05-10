@@ -25,7 +25,7 @@
     <string name="new_data_toast_message">有 %d 条更新</string>
     <string name="new_data_toast_none">没有新更新</string>
     
-    <string name="tips_check_sdcart">请检查SD卡是否挂载</string>
+    <string name="tips_check_sdcard">请检查SD卡是否挂载</string>
     
     <string name="loading_userinfo">正在加载资料,请稍候...</string>
     <string name="loaded_userinfo">加载完毕</string>
@@ -62,4 +62,7 @@
     <string name="msg_choose_image">选择图片</string>
     
     <string name="save_image_error">无法保存照片，请检查SD卡是否挂载</string>
+    
+    <string name="clean_cache_success">缓存清除成功</string>
+    <string name="clean_cache_fail">缓存清除失败</string>
 </resources>

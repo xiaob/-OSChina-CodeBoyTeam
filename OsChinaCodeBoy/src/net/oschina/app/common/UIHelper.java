@@ -53,13 +53,17 @@ import android.widget.Toast;
 import com.codeboy.app.oschina.BlogDetailActivity;
 import com.codeboy.app.oschina.FavoriteActivity;
 import com.codeboy.app.oschina.FriendsActivity;
+import com.codeboy.app.oschina.LoginActivity;
 import com.codeboy.app.oschina.MessageDetailActivity;
 import com.codeboy.app.oschina.NewsDetailActivity;
 import com.codeboy.app.oschina.QADetailActivity;
 import com.codeboy.app.oschina.R;
+import com.codeboy.app.oschina.SettingActivity;
 import com.codeboy.app.oschina.SoftwareDetailActivity;
 import com.codeboy.app.oschina.TweetDetailActivity;
+import com.codeboy.app.oschina.UserInfoActivity;
 import com.codeboy.app.oschina.core.Contanst;
+import com.codeboy.app.oschina.core.HandleActivityForResult;
 
 /**
  * 应用程序UI工具包：封装UI相关的一些操作
@@ -108,6 +112,44 @@ public class UIHelper {
 			+ "pre {font-size:9pt;line-height:12pt;font-family:Courier New,Arial;border:1px solid #ddd;border-left:5px solid #6CE26C;background:#f6f6f6;padding:5px;overflow: auto;} "
 			+ "a.tag {font-size:15px;text-decoration:none;background-color:#bbd6f3;border-bottom:2px solid #3E6D8E;border-right:2px solid #7F9FB6;color:#284a7b;margin:2px 2px 2px 0;padding:2px 4px;white-space:nowrap;}</style>";
 
+	/**
+	 * 跳转登录
+	 * @param context 上下文
+	 * */
+	public static void showLogin(Context context) {
+		Intent intent = new Intent(context, LoginActivity.class);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 跳转登录，回调状态值
+	 * @param context 上下文
+	 * @param handle Activity或Fragment
+	 * @param request 请求代号
+	 * */
+	public static void loginRequest(Context context, HandleActivityForResult handle, int request) {
+		Intent intent = new Intent(context, LoginActivity.class);
+		handle.startActivityForResult(intent, request);
+	}
+	
+	/**
+	 * 显示用户资料
+	 * @param context 上下文
+	 * */
+	public static void showUserInfo(Context context) {
+		Intent intent = new Intent(context, UserInfoActivity.class);
+		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示系统设置界面
+	 * 
+	 * @param context
+	 */
+	public static void showSetting(Context context) {
+		Intent intent = new Intent(context, SettingActivity.class);
+		context.startActivity(intent);
+	}
 	
 	/**
 	 * 显示用户收藏夹
@@ -117,6 +159,22 @@ public class UIHelper {
 	public static void showUserFavorite(Context context) {
 		Intent intent = new Intent(context, FavoriteActivity.class);
 		context.startActivity(intent);
+	}
+	
+	/**
+	 * 显示关于我们
+	 * @param context
+	 * */
+	public static void showAbout(Context context) {
+		//TODO
+	}
+	
+	/**
+	 * 显示意见反馈
+	 * @param context
+	 * */
+	public static void showFeedBack(Context context) {
+		
 	}
 	
 	/**
@@ -832,28 +890,6 @@ public class UIHelper {
 		};
 	}
 
-
-	/**
-	 * 文章是否加载图片显示
-	 * 
-	 * @param activity
-	 */
-	public static void changeSettingIsLoadImage(Activity activity) {
-		AppContext ac = (AppContext) activity.getApplication();
-		if (ac.isLoadImage()) {
-			ac.setConfigLoadimage(false);
-			ToastMessage(activity, "已设置文章不加载图片");
-		} else {
-			ac.setConfigLoadimage(true);
-			ToastMessage(activity, "已设置文章加载图片");
-		}
-	}
-
-	public static void changeSettingIsLoadImage(Activity activity, boolean b) {
-		AppContext ac = (AppContext) activity.getApplication();
-		ac.setConfigLoadimage(b);
-	}
-
 	/**
 	 * 清除app缓存
 	 * 
@@ -864,9 +900,9 @@ public class UIHelper {
 		final Handler handler = new Handler() {
 			public void handleMessage(Message msg) {
 				if (msg.what == 1) {
-					ToastMessage(ac, "缓存清除成功");
+					ToastMessage(ac, R.string.clean_cache_success);
 				} else {
-					ToastMessage(ac, "缓存清除失败");
+					ToastMessage(ac, R.string.clean_cache_fail);
 				}
 			}
 		};

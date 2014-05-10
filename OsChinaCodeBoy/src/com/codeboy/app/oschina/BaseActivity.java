@@ -1,5 +1,6 @@
 package com.codeboy.app.oschina;
 
+import com.codeboy.app.oschina.core.HandleActivityForResult;
 import com.umeng.analytics.MobclickAgent;
 
 import android.app.Activity;
@@ -15,7 +16,7 @@ import android.os.Bundle;
  * 
  * 说明 类的描述
  */
-public class BaseActivity extends Activity implements ActivityHelperInterface{
+public class BaseActivity extends Activity implements ActivityHelperInterface, HandleActivityForResult{
 
 	ActivityHelper mHelper = new ActivityHelper(this);
 	
