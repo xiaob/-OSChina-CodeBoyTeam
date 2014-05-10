@@ -309,6 +309,10 @@ public class SettingPreferenceFragment extends PreferenceFragment{
 			public void onUpdateReturned(int updateStatus, UpdateResponse updateInfo) {
 				switch (updateStatus) {
 		        case UpdateStatus.Yes: // has update
+		        	if(L.Debug) {
+		        		L.d("-->path:" + updateInfo.path);
+		        	}
+		        	UIHelper.ToastMessage(getActivity(), R.string.UMCheck_foundupdate);
 		        	UmengUpdateAgent.showUpdateDialog(getActivity(), updateInfo);
 		            break;
 		        case UpdateStatus.No: // has no update

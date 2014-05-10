@@ -93,8 +93,11 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
 		
 		requestActionBarMenu();
 		
-		//友盟检查更新
-		UmengUpdateAgent.update(this);
+		//是否自动检查更新
+		if(getOsChinaApplication().isCheckUp()) {
+			//友盟检查更新
+			UmengUpdateAgent.update(this);
+		}
 		
 		mActionBar = getSupportActionBar();
 		mActionBar.setDisplayHomeAsUpEnabled(true);
