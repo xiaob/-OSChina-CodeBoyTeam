@@ -175,8 +175,7 @@ public class ListViewCommentAdapter extends BaseAdapter {
 	private View.OnClickListener faceClickListener = new View.OnClickListener(){
 		public void onClick(View v) {
 			Comment comment = (Comment)v.getTag();
-			//TODO
-			//UIHelper.showUserCenter(v.getContext(), comment.getAuthorId(), comment.getAuthor());
+			UIHelper.showUserCenter(v.getContext(), comment.getAuthorId(), comment.getAuthor());
 		}
 	};
 }

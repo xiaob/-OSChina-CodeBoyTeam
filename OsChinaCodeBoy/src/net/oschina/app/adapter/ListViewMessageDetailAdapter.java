@@ -161,8 +161,7 @@ public class ListViewMessageDetailAdapter extends BaseAdapter {
 	private View.OnClickListener faceClickListener = new View.OnClickListener(){
 		public void onClick(View v) {
 			Comment msg = (Comment)v.getTag();
-			//TODO
-			//UIHelper.showUserCenter(v.getContext(), msg.getAuthorId(), msg.getAuthor());
+			UIHelper.showUserCenter(v.getContext(), msg.getAuthorId(), msg.getAuthor());
 		}
 	};
     

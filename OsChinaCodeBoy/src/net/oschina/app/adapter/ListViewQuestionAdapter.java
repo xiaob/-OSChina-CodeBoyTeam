@@ -113,8 +113,7 @@ public class ListViewQuestionAdapter extends BaseAdapter {
 	private View.OnClickListener faceClickListener = new View.OnClickListener(){
 		public void onClick(View v) {
 			Post post = (Post)v.getTag();
-			//TODO
-			//UIHelper.showUserCenter(v.getContext(), post.getAuthorId(), post.getAuthor());
+			UIHelper.showUserCenter(v.getContext(), post.getAuthorId(), post.getAuthor());
 		}
 	};
 }

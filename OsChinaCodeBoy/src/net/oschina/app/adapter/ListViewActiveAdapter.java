@@ -215,9 +215,8 @@ public class ListViewActiveAdapter extends MyBaseAdapter {
 	private View.OnClickListener faceClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
 			Active active = (Active) v.getTag();
-			//TODO
-			/*UIHelper.showUserCenter(v.getContext(), active.getAuthorId(),
-					active.getAuthor());*/
+			UIHelper.showUserCenter(v.getContext(), active.getAuthorId(),
+					active.getAuthor());
 		}
 	};
 
@@ -237,8 +236,7 @@ public class ListViewActiveAdapter extends MyBaseAdapter {
 	private View.OnClickListener linkViewClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
 			if(!isLinkViewClick()){
-				//TODO
-				//UIHelper.showActiveRedirect(v.getContext(), (Active)v.getTag());
+				UIHelper.showActiveRedirect(v.getContext(), (Active)v.getTag());
 			}
 			setLinkViewClick(false);
 		}

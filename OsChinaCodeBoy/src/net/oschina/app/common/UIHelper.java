@@ -164,16 +164,26 @@ public class UIHelper {
 	/**
 	 * 显示关于我们
 	 * @param context
+	 * TODO
 	 * */
 	public static void showAbout(Context context) {
-		//TODO
 	}
 	
 	/**
 	 * 显示意见反馈
 	 * @param context
+	 * TODO
 	 * */
 	public static void showFeedBack(Context context) {
+		
+	}
+	
+	/**
+	 * 显示可以缩放的图片
+	 * @param context
+	 * @param imgUrl 图片的链接
+	 * */
+	public static void showImageZoomDialog(Context context, String imgUrl) {
 		
 	}
 	
@@ -197,6 +207,7 @@ public class UIHelper {
 	 * @param uid
 	 * @param hisuid
 	 * @param hisname
+	 * TODO
 	 */
 	public static void showUserCenter(Context context, int hisuid,
 			String hisname) {
@@ -223,6 +234,7 @@ public class UIHelper {
 			showQuestionDetail(context, objId);
 			break;
 		case URLs.URL_OBJ_TYPE_QUESTION_TAG:
+			//TODO
 			//showQuestionListByTag(context, objKey);
 			break;
 		case URLs.URL_OBJ_TYPE_SOFTWARE:
@@ -346,7 +358,6 @@ public class UIHelper {
 	 * 
 	 * @param context
 	 * @param tweetId
-	 * TODO
 	 */
 	public static void showTweetDetail(Context context, int tweetId) {
 		Intent intent = new Intent(context, TweetDetailActivity.class);

@@ -159,9 +159,8 @@ public class ListViewMessageAdapter extends MyBaseAdapter {
 	private View.OnClickListener faceClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
 			Messages msg = (Messages) v.getTag();
-			//TODO
-			/*UIHelper.showUserCenter(v.getContext(), msg.getFriendId(),
-					msg.getFriendName());*/
+			UIHelper.showUserCenter(v.getContext(), msg.getFriendId(),
+					msg.getFriendName());
 		}
 	};
 	
@@ -169,9 +168,8 @@ public class ListViewMessageAdapter extends MyBaseAdapter {
 		public void onClick(View v) {
 			if(!isLinkViewClick()){
 				Messages msg = (Messages)v.getTag();
-				//TODO
-				/*UIHelper.showMessageDetail(v.getContext(),
-						msg.getFriendId(), msg.getFriendName());*/
+				UIHelper.showMessageDetail(v.getContext(),
+						msg.getFriendId(), msg.getFriendName());
 			}
 			setLinkViewClick(false);
 		}

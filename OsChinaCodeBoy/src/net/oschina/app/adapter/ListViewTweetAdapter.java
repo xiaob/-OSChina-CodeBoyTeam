@@ -7,6 +7,7 @@ import com.codeboy.app.oschina.R;
 import net.oschina.app.bean.Tweet;
 import net.oschina.app.common.BitmapManager;
 import net.oschina.app.common.StringUtils;
+import net.oschina.app.common.UIHelper;
 import net.oschina.app.widget.LinkView;
 import net.oschina.app.widget.LinkView.OnLinkClickListener;
 import android.content.Context;
@@ -173,25 +174,22 @@ public class ListViewTweetAdapter extends MyBaseAdapter {
 	private View.OnClickListener faceClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
 			Tweet tweet = (Tweet) v.getTag();
-			//TODO
-			/*UIHelper.showUserCenter(v.getContext(), tweet.getAuthorId(),
-					tweet.getAuthor());*/
+			UIHelper.showUserCenter(v.getContext(), tweet.getAuthorId(),
+					tweet.getAuthor());
 		}
 	};
 
 	private View.OnClickListener imageClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
-			//TODO
-			//UIHelper.showImageZoomDialog(v.getContext(), (String) v.getTag());
+			UIHelper.showImageZoomDialog(v.getContext(), (String) v.getTag());
 		}
 	};
 
 	private View.OnClickListener linkViewClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
 			if (!isLinkViewClick()) {
-				//TODO
-				/*UIHelper.showTweetDetail(v.getContext(),
-						((Tweet) v.getTag()).getId());*/
+				UIHelper.showTweetDetail(v.getContext(),
+						((Tweet) v.getTag()).getId());
 			}
 			setLinkViewClick(false);
 		}
