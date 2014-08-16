@@ -62,6 +62,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 
 /**
  * API客户端接口：用于访问网络数据
@@ -87,14 +88,14 @@ public class ApiClient {
 	}
 	
 	private static String getCookie(AppContext appContext) {
-		if(appCookie == null || appCookie == "") {
+        if(TextUtils.isEmpty(appCookie)) {
 			appCookie = appContext.getProperty("cookie");
 		}
 		return appCookie;
 	}
 	
 	private static String getUserAgent(AppContext appContext) {
-		if(appUserAgent == null || appUserAgent == "") {
+		if(TextUtils.isEmpty(appUserAgent)) {
 			StringBuilder ua = new StringBuilder("OSChina.NET");
 			ua.append('/'+appContext.getPackageInfo().versionName+'_'+appContext.getPackageInfo().versionCode);//App版本
 			ua.append("/Android");//手机系统平台
@@ -281,7 +282,7 @@ public class ApiClient {
 		                tmpcookies += ck.toString()+";";
 		            }
 		            //保存cookie   
-	        		if(appContext != null && tmpcookies != ""){
+	        		if(appContext != null && !"".equals(tmpcookies)){
 	        			appContext.setProperty("cookie", tmpcookies);
 	        			appCookie = tmpcookies;
 	        		}

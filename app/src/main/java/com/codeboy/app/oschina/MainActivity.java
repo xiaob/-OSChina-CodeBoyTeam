@@ -164,8 +164,7 @@ public class MainActivity extends BaseActionBarActivity implements DrawerMenuCal
     }
 	
 	private void showPublishPostUI() {
-		Intent intent = new Intent(this, WBAuthActivity.class);
-		//Intent intent = new Intent(this, PublishPostActivity.class);
+		Intent intent = new Intent(this, PublishPostActivity.class);
 		startActivity(intent);
 	}
 	

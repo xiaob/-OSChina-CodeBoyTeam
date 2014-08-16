@@ -10,6 +10,7 @@ import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.ApiClient;
 import net.oschina.app.core.AppContext;
 import net.oschina.app.core.AppException;
+
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -89,8 +90,7 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 		
 		ActionBar bar = getSupportActionBar();
 		int flags = ActionBar.DISPLAY_HOME_AS_UP;
-		int change = bar.getDisplayOptions() ^ flags;
-        bar.setDisplayOptions(change, flags);
+        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP, flags);
         
 		mApplication = getOsChinaApplication();
 		
@@ -127,7 +127,7 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	/** 更新菜单的状态*/
 	private void updateMenu() {
 		if(optionsMenu == null) {

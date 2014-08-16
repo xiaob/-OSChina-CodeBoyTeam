@@ -45,9 +45,7 @@ public abstract class BaseDetailActivity extends BaseActionBarActivity
 		super.onCreate(savedInstanceState);
 		
 		ActionBar bar = getSupportActionBar();
-		int flags = ActionBar.DISPLAY_HOME_AS_UP;
-		int change = bar.getDisplayOptions() ^ flags;
-        bar.setDisplayOptions(change, flags);
+        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP, ActionBar.DISPLAY_HOME_AS_UP);
 		
         mApplication = getOsChinaApplication();
         mAdapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());

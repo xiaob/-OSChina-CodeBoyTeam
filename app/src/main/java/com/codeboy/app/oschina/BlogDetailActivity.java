@@ -16,6 +16,10 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.codeboy.app.library.util.L;
@@ -45,7 +49,8 @@ public class BlogDetailActivity extends BaseDetailActivity
 	private Blog mBlog;
 	
 	private CommentDialog mCommentDialog;
-	
+
+    private ShareActionProvider mShareActionProvider;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +61,30 @@ public class BlogDetailActivity extends BaseDetailActivity
 		super.onCreate(savedInstanceState);
 		loadDatas(false);
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.share_menu, menu);
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        return true;
+    }
+
+    private void setupShareAction() {
+        String url = "";
+        if(mBlog != null) {
+            url = mBlog.getUrl();
+        }
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/*");
+        intent.putExtra(Intent.EXTRA_SUBJECT, url);
+        intent.putExtra(Intent.EXTRA_TEXT, url);
+        intent.putExtra("Kdescription", url);
+        intent.putExtra("sms_body", url);
+
+        mShareActionProvider.setShareIntent(intent);
+    }
 	
 	@Override
 	protected TabInfo getBodyTabInfo(String tag) {
@@ -230,6 +259,7 @@ public class BlogDetailActivity extends BaseDetailActivity
 				if (msg.what == 1) {
 					final Blog blog = (Blog) msg.obj;
 					mBlog = blog;
+                    setupShareAction();
 					mCommentCount = blog.getCommentCount();
 					
 					//更新评论数

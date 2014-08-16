@@ -61,8 +61,7 @@ public class MessageDetailActivity extends BaseActionBarActivity
 			
 			ActionBar bar = getSupportActionBar();
 			int flags = ActionBar.DISPLAY_HOME_AS_UP;
-			int change = bar.getDisplayOptions() ^ flags;
-	        bar.setDisplayOptions(change, flags);
+	        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP, flags);
 	        
 	        mApplication = getOsChinaApplication();
 	        

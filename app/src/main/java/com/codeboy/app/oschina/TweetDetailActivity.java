@@ -57,15 +57,14 @@ public class TweetDetailActivity extends BaseActionBarActivity
 	private CommentDialog mCommentDialog;
 	
 	private OSChinaApplication mApplication;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		ActionBar bar = getSupportActionBar();
 		int flags = ActionBar.DISPLAY_HOME_AS_UP;
-		int change = bar.getDisplayOptions() ^ flags;
-        bar.setDisplayOptions(change, flags);
+        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP, flags);
         
         tweetId = getIntent().getIntExtra(Contanst.TWEET_ID_KEY, 0);
         mApplication = getOsChinaApplication();

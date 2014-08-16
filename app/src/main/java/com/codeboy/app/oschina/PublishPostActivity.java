@@ -57,10 +57,7 @@ public class PublishPostActivity extends BaseActionBarActivity implements TextWa
 		
 		//初始化actionbar
 		ActionBar bar = getSupportActionBar();
-		int flags = ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_CUSTOM;
-		
-		int change = bar.getDisplayOptions() ^ flags;
-        bar.setDisplayOptions(change, flags);
+        bar.setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP, ActionBar.DISPLAY_HOME_AS_UP);
 		
 		mPublishButton = (Button) getLayoutInflater().inflate(R.layout.actionbar_button, null);
 		mPublishButton.setOnClickListener(publishClickListener);

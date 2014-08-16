@@ -16,6 +16,10 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.codeboy.app.library.util.L;
@@ -45,16 +49,40 @@ public class NewsDetailActivity extends BaseDetailActivity
 	private News mNews;
 	
 	private CommentDialog mCommentDialog;
-	
-	
-	@Override
+
+    private ShareActionProvider mShareActionProvider;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		mNewsId = getIntent().getIntExtra(Contanst.NEWS_ID_KEY, 0);
 		super.onCreate(savedInstanceState);
 		loadDatas(false);
 	}
-	
-	@Override
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.share_menu, menu);
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void setupShareAction() {
+        String url = "";
+        if(mNews != null) {
+            url = mNews.getUrl();
+        }
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/*");
+        intent.putExtra(Intent.EXTRA_SUBJECT, url);
+        intent.putExtra(Intent.EXTRA_TEXT, url);
+        intent.putExtra("Kdescription", url);
+        intent.putExtra("sms_body", url);
+
+        mShareActionProvider.setShareIntent(intent);
+    }
+
+    @Override
 	protected TabInfo getBodyTabInfo(String tag) {
 		Bundle args = new Bundle();
 		args.putSerializable(Contanst.NEWS_DATA_KEY, mNews);
@@ -228,7 +256,8 @@ public class NewsDetailActivity extends BaseDetailActivity
 					final News newsDetail = (News) msg.obj;
 					mNews = newsDetail;
 					mCommentCount = newsDetail.getCommentCount();
-					
+                    setupShareAction();
+
 					//更新评论数
 					updateButton();
 					//更新内容界面
