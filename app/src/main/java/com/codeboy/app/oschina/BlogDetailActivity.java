@@ -5,6 +5,7 @@
 package com.codeboy.app.oschina;
 
 import net.oschina.app.bean.Blog;
+import net.oschina.app.bean.FavoriteList;
 import net.oschina.app.bean.Result;
 import net.oschina.app.common.UIHelper;
 import net.oschina.app.core.AppException;
@@ -43,7 +44,10 @@ import com.codeboy.app.oschina.widget.CommentDialog.OnCommentCallListener;
  */
 public class BlogDetailActivity extends BaseDetailActivity 
 	implements OnCommentCallListener {
-	
+
+    private final static int SHARE_ITEM_ID = 100;
+    private final static int FAVORITE_ITEM_ID = 101;
+
 	private int mBlogId;
 	private int mCommentCount;
 	private Blog mBlog;
@@ -51,6 +55,9 @@ public class BlogDetailActivity extends BaseDetailActivity
 	private CommentDialog mCommentDialog;
 
     private ShareActionProvider mShareActionProvider;
+    private Menu optionsMenu;
+    //是否正在处理收藏的事件
+    private boolean isFavoriting = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +66,37 @@ public class BlogDetailActivity extends BaseDetailActivity
 			L.d("---> blog id:" + mBlogId);
 		}
 		super.onCreate(savedInstanceState);
+        mShareActionProvider = new ShareActionProvider(this);
 		loadDatas(false);
 	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.share_menu, menu);
-        MenuItem item = menu.findItem(R.id.menu_item_share);
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        optionsMenu = menu;
 
+        //收藏按钮
+        MenuItem favoriteItem = menu.add(0, FAVORITE_ITEM_ID,
+                100, R.string.footbar_favorite);
+        favoriteItem.setIcon(R.drawable.ic_menu_favorite_n);
+        MenuItemCompat.setShowAsAction(favoriteItem,
+                MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
+
+        //分享按钮
+        MenuItem shareItem = menu.add(0, SHARE_ITEM_ID,
+                101, R.string.footbar_share);
+        MenuItemCompat.setActionProvider(shareItem, mShareActionProvider);
+        MenuItemCompat.setShowAsAction(shareItem,
+                MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == FAVORITE_ITEM_ID) {
+            favoriteClick();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setupShareAction() {
@@ -266,6 +294,7 @@ public class BlogDetailActivity extends BaseDetailActivity
 					updateButton();
 					//更新内容界面
 					updateBodyFragment(blog);
+                    updateMenu();
 				} else if (msg.what == 0) {
 					UIHelper.ToastMessage(context, R.string.msg_load_is_null);
 				} else if (msg.what == -1 && msg.obj != null) {
@@ -274,4 +303,85 @@ public class BlogDetailActivity extends BaseDetailActivity
 			}
 		}.execute();
 	}
+
+    private void updateMenu() {
+        if(optionsMenu == null) {
+            return;
+        }
+        final MenuItem favoriteItem = optionsMenu.findItem(FAVORITE_ITEM_ID);
+        //收藏状态
+        if(mBlog != null && favoriteItem != null) {
+            if (mBlog.getFavorite() == 1) {
+                favoriteItem.setIcon(R.drawable.ic_menu_favorite_y);
+            } else {
+                favoriteItem.setIcon(R.drawable.ic_menu_favorite_n);
+            }
+        }
+    }
+
+    //处理收藏事件
+    private void favoriteClick() {
+        if(isFavoriting) {
+            return;
+        }
+
+        if (mBlogId == 0 || mBlog == null) {
+            return;
+        }
+
+        if(!mApplication.isLogin()) {
+            Toast.makeText(this, R.string.msg_login_request, Toast.LENGTH_LONG).show();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            return;
+        }
+        isFavoriting = true;
+        final int uid = mApplication.getLoginUid();
+        new AsyncTask<Void, Void, Message>(){
+
+            @Override
+            protected Message doInBackground(Void... params) {
+                Message msg = new Message();
+                try {
+                    Result res = null;
+                    if (mBlog.getFavorite() == 1) {
+                        res = mApplication.delFavorite(uid, mBlogId,
+                                FavoriteList.TYPE_NEWS);
+                    } else {
+                        res = mApplication.addFavorite(uid, mBlogId,
+                                FavoriteList.TYPE_NEWS);
+                    }
+                    msg.what = 1;
+                    msg.obj = res;
+                } catch (AppException e) {
+                    e.printStackTrace();
+                    msg.what = -1;
+                    msg.obj = e;
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(Message msg) {
+                if (msg.what == 1) {
+                    Result res = (Result) msg.obj;
+                    if (res.OK()) {
+                        if (mBlog.getFavorite() == 1) {
+                            mBlog.setFavorite(0);
+                        } else {
+                            mBlog.setFavorite(1);
+                        }
+                        // 重新保存缓存
+                        mApplication.saveObject(mBlog,
+                                mBlog.getCacheKey());
+                    }
+                    UIHelper.ToastMessage(getActivity(), res.getErrorMessage());
+                    updateMenu();
+                } else {
+                    ((AppException) msg.obj).makeToast(getActivity());
+                }
+                isFavoriting = false;
+            }
+        }.execute();
+    }
 }

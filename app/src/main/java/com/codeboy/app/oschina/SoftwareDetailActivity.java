@@ -4,6 +4,8 @@
 
 package com.codeboy.app.oschina;
 
+import net.oschina.app.bean.FavoriteList;
+import net.oschina.app.bean.Result;
 import net.oschina.app.bean.Software;
 import net.oschina.app.common.StringUtils;
 import net.oschina.app.common.UIHelper;
@@ -11,6 +13,7 @@ import net.oschina.app.core.ApiClient;
 import net.oschina.app.core.AppContext;
 import net.oschina.app.core.AppException;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codeboy.app.oschina.core.Contanst;
 
@@ -41,6 +45,7 @@ import com.codeboy.app.oschina.core.Contanst;
 public class SoftwareDetailActivity extends BaseActionBarActivity {
 	
 	private final static int REFLASH_ITEM_ID = 100;
+    private final static int FAVORITE_ITEM_ID = 101;
 	
 	final static int STATUS_NONE = 0x0;
 	final static int STATUS_LOADING = 0x01;
@@ -76,6 +81,8 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 	private int mStatus = STATUS_NONE;
 	
 	private Menu optionsMenu;
+    //是否正在处理收藏的事件
+    private boolean isFavoriting = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +116,15 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		optionsMenu = menu;
+        //收藏按钮
+        MenuItem favoriteItem = menu.add(0, FAVORITE_ITEM_ID,
+                100, R.string.footbar_favorite);
+        favoriteItem.setIcon(R.drawable.ic_menu_favorite_n);
+        MenuItemCompat.setShowAsAction(favoriteItem,
+                MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
 		//刷新按钮
 		MenuItem reflashItem = menu.add(0, REFLASH_ITEM_ID, 
-				100, R.string.footbar_refresh);
+				101, R.string.footbar_refresh);
         reflashItem.setIcon(R.drawable.ic_menu_refresh);
         MenuItemCompat.setShowAsAction(reflashItem, 
         		MenuItemCompat.SHOW_AS_ACTION_ALWAYS);
@@ -124,7 +137,10 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 			//刷新
 			loadDatas(true);
 			return true;
-		}
+		} else if(item.getItemId() == FAVORITE_ITEM_ID) {
+            favoriteClick();
+            return true;
+        }
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -133,6 +149,15 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 		if(optionsMenu == null) {
 			return;
 		}
+        final MenuItem favoriteItem = optionsMenu.findItem(FAVORITE_ITEM_ID);
+        //收藏状态
+        if(softwareDetail != null && favoriteItem != null) {
+            if (softwareDetail.getFavorite() == 1) {
+                favoriteItem.setIcon(R.drawable.ic_menu_favorite_y);
+            } else {
+                favoriteItem.setIcon(R.drawable.ic_menu_favorite_n);
+            }
+        }
 		final MenuItem refreshItem = optionsMenu.findItem(REFLASH_ITEM_ID);
         if (refreshItem == null) {
             return;
@@ -252,12 +277,6 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 					mMainView.setVisibility(View.VISIBLE);
 				}
 				if (msg.what == 1) {
-					// 是否收藏 TODO
-					/*if (softwareDetail.getFavorite() == 1)
-						mFavorite.setImageResource(R.drawable.head_favorite_y);
-					else
-						mFavorite.setImageResource(R.drawable.head_favorite_n);*/
-
 					mLogo.setImageBitmap(logo);
 
 					String title = softwareDetail.getExtensionTitle() + " "
@@ -314,6 +333,71 @@ public class SoftwareDetailActivity extends BaseActionBarActivity {
 			
 		}.execute();
 	}
+
+    private void favoriteClick() {
+        if(isFavoriting) {
+            return;
+        }
+
+        if (ident == "" || softwareDetail == null) {
+            return;
+        }
+
+        if(!mApplication.isLogin()) {
+            Toast.makeText(this, R.string.msg_login_request, Toast.LENGTH_LONG).show();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            return;
+        }
+        isFavoriting = true;
+        final int uid = mApplication.getLoginUid();
+        new AsyncTask<Void, Void, Message>(){
+
+            @Override
+            protected Message doInBackground(Void... params) {
+                Message msg = new Message();
+                try {
+                    Result res = null;
+                    if (softwareDetail.getFavorite() == 1) {
+                        res = mApplication.delFavorite(uid, softwareDetail.getId(),
+                                FavoriteList.TYPE_SOFTWARE);
+                    } else {
+                        res = mApplication.addFavorite(uid, softwareDetail.getId(),
+                                FavoriteList.TYPE_SOFTWARE);
+                    }
+                    msg.what = 1;
+                    msg.obj = res;
+                } catch (AppException e) {
+                    e.printStackTrace();
+                    msg.what = -1;
+                    msg.obj = e;
+                }
+                return msg;
+            }
+
+            @Override
+            protected void onPostExecute(Message msg) {
+                if (msg.what == 1) {
+                    Result res = (Result) msg.obj;
+                    if (res.OK()) {
+                        if (softwareDetail.getFavorite() == 1) {
+                            softwareDetail.setFavorite(0);
+                        } else {
+                            softwareDetail.setFavorite(1);
+                        }
+                        // 重新保存缓存
+                        mApplication.saveObject(softwareDetail,
+                                softwareDetail.getCacheKey());
+                    }
+                    UIHelper.ToastMessage(getActivity(), res.getErrorMessage());
+                    updateMenu();
+                } else {
+                    ((AppException) msg.obj).makeToast(getActivity());
+                }
+                isFavoriting = false;
+            }
+        }.execute();
+    }
 	
 	private View.OnClickListener homepageClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
